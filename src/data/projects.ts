@@ -1,0 +1,364 @@
+export type PackageLink = {
+  name: string;
+  note: string;
+};
+
+export type Project = {
+  slug: string;
+  name: string;
+  eyebrow: string;
+  category: 'Graphics' | 'Frameworks' | 'Avalonia' | 'Controls' | 'Tools';
+  repo: string;
+  branch?: string;
+  description: string;
+  statement: string;
+  accent: string;
+  featured?: boolean;
+  status: 'Active' | 'Preview' | 'Maintained';
+  packages: PackageLink[];
+  install: string;
+  usageLanguage: 'csharp' | 'xml' | 'bash';
+  usage: string;
+  highlights: string[];
+};
+
+export const projects: Project[] = [
+  {
+    slug: 'progpu',
+    name: 'ProGPU',
+    eyebrow: 'GPU-first UI substrate',
+    category: 'Graphics',
+    repo: 'ProGPU',
+    description: 'Cross-platform rendering, composition, vector, text, compute, and framework interop built directly on WebGPU and Silk.NET.',
+    statement: 'A lightweight GPU foundation for the next generation of .NET interfaces.',
+    accent: '#8ea2ff',
+    featured: true,
+    status: 'Preview',
+    packages: [
+      { name: 'ProGPU.Backend', note: 'WebGPU device, swapchain, windowing, and platform services.' },
+      { name: 'ProGPU.Vector', note: 'Paths, geometry, brushes, pens, and GPU-ready vector data.' },
+      { name: 'ProGPU.Scene', note: 'Retained visuals, compositor commands, effects, and presentation.' },
+      { name: 'ProGPU.Text', note: 'Text layout, glyph metrics, and GPU text rendering.' }
+    ],
+    install: 'dotnet add package ProGPU.Backend --prerelease\ndotnet add package ProGPU.Scene --prerelease',
+    usageLanguage: 'csharp',
+    usage: 'using ProGPU.Backend;\n\n// Create the platform host and render through a retained GPU scene.\n// See the Gallery sample for complete window and frame setup.\nvar options = new BackendOptions();',
+    highlights: ['WebGPU-native pipelines', 'Retained scene composition', 'Vector, text, and compute', 'Avalonia, Uno, WPF, and WinForms bridges']
+  },
+  {
+    slug: 'librewpf',
+    name: 'LibreWPF',
+    eyebrow: 'WPF, beyond Windows',
+    category: 'Frameworks',
+    repo: 'wpf',
+    branch: 'progpu-rendering-port',
+    description: 'A portable WPF runtime and SDK that retains familiar managed WPF source and XAML while rendering through ProGPU and Silk.NET.',
+    statement: 'Keep the WPF programming model. Change the platform beneath it.',
+    accent: '#75d8ff',
+    featured: true,
+    status: 'Preview',
+    packages: [
+      { name: 'LibreWPF.Sdk', note: 'MSBuild SDK that redirects WPF apps to the portable runtime.' },
+      { name: 'LibreWPF.ProGPU', note: 'WPF host, input bridge, and ProGPU compositor adapter.' },
+      { name: 'LibreWPF.Transport', note: 'Managed assemblies, themes, XAML tasks, and runtime metadata.' }
+    ],
+    install: '<Project Sdk="LibreWPF.Sdk/0.1.0-preview.15">\n  <PropertyGroup>\n    <OutputType>WinExe</OutputType>\n    <TargetFramework>net10.0-windows</TargetFramework>\n    <UseWPF>true</UseWPF>\n  </PropertyGroup>\n</Project>',
+    usageLanguage: 'bash',
+    usage: 'dotnet restore\ndotnet run',
+    highlights: ['Source-compatible WPF XAML', 'macOS, Linux, and Windows', 'ProGPU/WebGPU composition', 'Portable SDK switch']
+  },
+  {
+    slug: 'librewinforms',
+    name: 'LibreWinForms',
+    eyebrow: 'Portable WinForms APIs',
+    category: 'Frameworks',
+    repo: 'winforms',
+    branch: 'librewinforms-progpu-port',
+    description: 'Cross-platform WinForms-shaped APIs and SDK backed by ProGPU, Silk.NET, and the shared LibreWPF interop layer.',
+    statement: 'Classic desktop APIs, carried onto a modern GPU stack.',
+    accent: '#8be8c3',
+    featured: true,
+    status: 'Preview',
+    packages: [
+      { name: 'LibreWinForms.Sdk', note: 'Portable SDK for existing WinForms projects.' },
+      { name: 'LibreWinForms.System.Windows.Forms', note: 'Managed WinForms API and runtime surface.' },
+      { name: 'LibreWinForms.WindowsFormsIntegration', note: 'Bridge for hosting WinForms in LibreWPF.' }
+    ],
+    install: '<Project Sdk="LibreWinForms.Sdk/0.1.0-preview.11">\n  <PropertyGroup>\n    <OutputType>WinExe</OutputType>\n    <TargetFramework>net10.0</TargetFramework>\n    <UseWindowsForms>true</UseWindowsForms>\n  </PropertyGroup>\n</Project>',
+    usageLanguage: 'csharp',
+    usage: 'using System.Windows.Forms;\n\nApplicationConfiguration.Initialize();\nApplication.Run(new MainForm());',
+    highlights: ['Familiar System.Windows.Forms', 'Portable managed controls', 'GPU-backed drawing', 'WPF/WinForms interop']
+  },
+  {
+    slug: 'avalonia-progpu',
+    name: 'Avalonia ProGPU',
+    eyebrow: 'Rendering backend',
+    category: 'Avalonia',
+    repo: 'Avalonia',
+    branch: 'feature/progpu',
+    description: 'A GPU-first WebGPU rendering backend that preserves Avalonia rendering contracts while replacing the default Skia renderer.',
+    statement: 'Avalonia rendering, rebuilt around a direct GPU composition path.',
+    accent: '#d39cff',
+    featured: true,
+    status: 'Preview',
+    packages: [{ name: 'ProGPU.Avalonia.Rendering', note: 'ProGPU, Silk.NET, and WebGPU rendering platform for Avalonia.' }],
+    install: 'dotnet add package ProGPU.Avalonia.Rendering --prerelease',
+    usageLanguage: 'csharp',
+    usage: 'AppBuilder.Configure<App>()\n    .UseSilkNet()\n    .UseProGpu();',
+    highlights: ['Skia-free render path', 'Custom vector operation lease', 'WebGPU shaders in-frame', 'Avalonia rendering contracts']
+  },
+  {
+    slug: 'avalonia-silknet',
+    name: 'Avalonia Silk.NET',
+    eyebrow: 'Platform backend',
+    category: 'Avalonia',
+    repo: 'Avalonia',
+    branch: 'feature/progpu',
+    description: 'Cross-platform desktop windowing, input, surfaces, and WebGPU integration for Avalonia applications through Silk.NET.',
+    statement: 'A lean platform layer between Avalonia and the desktop.',
+    accent: '#ff9d78',
+    featured: true,
+    status: 'Preview',
+    packages: [{ name: 'ProGPU.Avalonia.SilkNet', note: 'Silk.NET windowing and platform services for Avalonia.' }],
+    install: 'dotnet add package ProGPU.Avalonia.SilkNet --prerelease',
+    usageLanguage: 'csharp',
+    usage: 'AppBuilder.Configure<App>()\n    .UseSilkNet()\n    .UseProGpu();',
+    highlights: ['Silk.NET windowing', 'Cross-platform input', 'WebGPU surfaces', 'Renderer-independent host design']
+  },
+  {
+    slug: 'dock',
+    name: 'Dock',
+    eyebrow: 'Docking workspace system',
+    category: 'Controls',
+    repo: 'Dock',
+    description: 'A complete docking layout system for Avalonia with floating windows, serialization, theming, and multiple MVVM integrations.',
+    statement: 'Composable workspaces for serious desktop applications.',
+    accent: '#7dc7ff',
+    featured: true,
+    status: 'Active',
+    packages: [
+      { name: 'Dock.Avalonia', note: 'Avalonia controls and docking host.' },
+      { name: 'Dock.Model.Mvvm', note: 'Framework-neutral MVVM model implementation.' },
+      { name: 'Dock.Avalonia.Themes.Fluent', note: 'Fluent theme for Dock controls.' }
+    ],
+    install: 'dotnet add package Dock.Avalonia\ndotnet add package Dock.Model.Mvvm\ndotnet add package Dock.Avalonia.Themes.Fluent',
+    usageLanguage: 'xml',
+    usage: '<dock:DockControl Layout="{Binding Layout}"\n                  Factory="{Binding Factory}" />',
+    highlights: ['Documents and tool panes', 'Floating windows', 'JSON, XML, YAML, and Protobuf layouts', 'MVVM, ReactiveUI, and Prism']
+  },
+  {
+    slug: 'xaml-behaviors',
+    name: 'XAML Behaviors',
+    eyebrow: 'Composable interaction',
+    category: 'Avalonia',
+    repo: 'Xaml.Behaviors',
+    description: 'Reusable actions, triggers, and behaviors for Avalonia, including strongly typed source-generated options for AOT-friendly apps.',
+    statement: 'Add interaction in XAML without turning views into code-behind.',
+    accent: '#bd9bff',
+    featured: true,
+    status: 'Active',
+    packages: [
+      { name: 'Xaml.Behaviors', note: 'Complete behavior, action, and trigger library.' },
+      { name: 'Xaml.Behaviors.Interactivity', note: 'Foundation types for custom behaviors.' },
+      { name: 'Xaml.Behaviors.Interactions', note: 'Common built-in triggers and actions.' }
+    ],
+    install: 'dotnet add package Xaml.Behaviors',
+    usageLanguage: 'xml',
+    usage: '<Button Content="Save">\n  <Interaction.Behaviors>\n    <EventTriggerBehavior EventName="Click">\n      <InvokeCommandAction Command="{Binding SaveCommand}" />\n    </EventTriggerBehavior>\n  </Interaction.Behaviors>\n</Button>',
+    highlights: ['Actions and triggers', 'Drag and drop behaviors', 'ReactiveUI integrations', 'AOT-friendly source generators']
+  },
+  {
+    slug: 'svg-skia',
+    name: 'Svg.Skia',
+    eyebrow: 'SVG rendering library',
+    category: 'Graphics',
+    repo: 'Svg.Skia',
+    description: 'A robust SVG 1.1 and static SVG 2 rendering library for SkiaSharp, with Avalonia controls and source-generation support.',
+    statement: 'Standards-minded SVG rendering across the .NET ecosystem.',
+    accent: '#ffb45f',
+    featured: true,
+    status: 'Active',
+    packages: [
+      { name: 'Svg.Skia', note: 'Core SVG parser and Skia renderer.' },
+      { name: 'Svg.Controls.Skia.Avalonia', note: 'Ready-to-use Avalonia SVG controls.' },
+      { name: 'Svg.SourceGenerator.Skia', note: 'Compile SVG resources into drawing code.' }
+    ],
+    install: 'dotnet add package Svg.Skia\ndotnet add package Svg.Controls.Skia.Avalonia',
+    usageLanguage: 'csharp',
+    usage: 'using Svg.Skia;\n\nvar svg = new SKSvg();\nsvg.Load("icon.svg");\ncanvas.DrawPicture(svg.Picture);',
+    highlights: ['SVG 1.1 support', 'SkiaSharp rendering', 'Avalonia controls', 'W3C and resvg parity lanes']
+  },
+  {
+    slug: 'prodatagrid',
+    name: 'ProDataGrid',
+    eyebrow: 'High-performance data UI',
+    category: 'Controls',
+    repo: 'ProDataGrid',
+    description: 'A high-performance Avalonia DataGrid family with charting, formulas, diagnostics, virtualization, and production-grade editing.',
+    statement: 'Dense data workflows without compromising interaction or speed.',
+    accent: '#5ce1b9',
+    featured: true,
+    status: 'Active',
+    packages: [
+      { name: 'ProDataGrid', note: 'The high-performance Avalonia grid control.' },
+      { name: 'ProDataGrid.Charting', note: 'Grid and pivot integration for ProCharts.' },
+      { name: 'ProDataGrid.FormulaEngine', note: 'Parsing, evaluation, and recalculation.' },
+      { name: 'ProDiagnostics', note: 'Runtime visual tree and property inspection.' }
+    ],
+    install: 'dotnet add package ProDataGrid',
+    usageLanguage: 'xml',
+    usage: '<DataGrid ItemsSource="{Binding People}" AutoGenerateColumns="False">\n  <DataGrid.Columns>\n    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" />\n    <DataGridCheckBoxColumn Header="Active" Binding="{Binding IsActive}" />\n  </DataGrid.Columns>\n</DataGrid>',
+    highlights: ['Row and column virtualization', 'Formula engine and charting', 'Fluent and Simple themes', 'Built-in developer diagnostics']
+  },
+  {
+    slug: 'treedatagrid',
+    name: 'TreeDataGrid',
+    eyebrow: 'Hierarchical data control',
+    category: 'Controls',
+    repo: 'TreeDataGrid',
+    description: 'An Avalonia control that presents hierarchical and tabular data together, with both tree and flat operating modes.',
+    statement: 'A tree and a table, resolved into one efficient control.',
+    accent: '#a6d76b',
+    featured: true,
+    status: 'Maintained',
+    packages: [{ name: 'TreeDataGrid', note: 'Control, models, column types, and themes.' }],
+    install: 'dotnet add package TreeDataGrid',
+    usageLanguage: 'xml',
+    usage: '<TreeDataGrid ItemsSource="{Binding People}">\n  <TreeDataGridTextColumn Header="Name" Binding="{Binding Name}" />\n  <TreeDataGridTextColumn Header="Role" Binding="{Binding Role}" />\n</TreeDataGrid>',
+    highlights: ['Hierarchical and flat modes', 'Code or XAML columns', 'Selection models', 'Virtualized data presentation']
+  },
+  {
+    slug: 'core2d',
+    name: 'Core2D',
+    eyebrow: 'Diagram editor engine',
+    category: 'Tools',
+    repo: 'Core2D',
+    description: 'A multi-platform, data-driven 2D diagram editor with a portable model, rendering backends, and extensible tooling.',
+    statement: 'A complete foundation for technical drawing and diagramming.',
+    accent: '#ff8177',
+    status: 'Maintained',
+    packages: [{ name: 'Core2D', note: 'Core diagram model and editor primitives.' }],
+    install: 'git clone https://github.com/wieslawsoltes/Core2D.git\ncd Core2D && dotnet build',
+    usageLanguage: 'csharp',
+    usage: 'var project = new Project();\n// Compose shapes, layers, and editor tools against the portable model.',
+    highlights: ['Data-driven diagrams', 'Multiple rendering backends', 'Extensible editor tools', 'Cross-platform architecture']
+  },
+  {
+    slug: 'proedit',
+    name: 'ProEdit',
+    eyebrow: 'Document platform',
+    category: 'Tools',
+    repo: 'ProEdit',
+    description: 'A modular .NET document editing, rendering, reporting, and collaboration platform for desktop and embedded scenarios.',
+    statement: 'Structured documents, editing, and collaboration in one modular system.',
+    accent: '#ee8fff',
+    status: 'Active',
+    packages: [{ name: 'ProEdit', note: 'Modular document platform packages are published from the repository.' }],
+    install: 'git clone https://github.com/wieslawsoltes/ProEdit.git\ncd ProEdit && dotnet build',
+    usageLanguage: 'csharp',
+    usage: '// Explore the sample hosts for document creation, editing,\n// rendering, reporting, and collaboration workflows.',
+    highlights: ['Document editing', 'Rendering and reporting', 'Collaboration primitives', 'Desktop and embedded hosts']
+  },
+  {
+    slug: 'protext',
+    name: 'ProText',
+    eyebrow: 'Text controls',
+    category: 'Controls',
+    repo: 'ProText',
+    description: 'High-performance text controls for Avalonia, powered by the Pretext layout engine and Skia rendering.',
+    statement: 'Text surfaces designed for speed, scale, and rich layout.',
+    accent: '#ffd56b',
+    status: 'Active',
+    packages: [{ name: 'ProText', note: 'Avalonia text controls and rendering integration.' }],
+    install: 'dotnet add package ProText',
+    usageLanguage: 'xml',
+    usage: '<pro:ProTextBlock Text="{Binding DocumentText}"\n                  TextWrapping="Wrap" />',
+    highlights: ['High-performance layout', 'Avalonia integration', 'Skia rendering', 'Pretext-powered line breaking']
+  },
+  {
+    slug: 'pretext',
+    name: 'Pretext',
+    eyebrow: 'Universal text preparation',
+    category: 'Graphics',
+    repo: 'PretextSharp',
+    description: 'Universal text preparation and line layout with grapheme-aware wrapping, locale segmentation, bidi, and streaming line walking.',
+    statement: 'Predictable, allocation-conscious text layout for any SkiaSharp UI.',
+    accent: '#ffce8a',
+    status: 'Active',
+    packages: [
+      { name: 'Pretext', note: 'Core preparation and line layout engine.' },
+      { name: 'Pretext.SkiaSharp', note: 'Portable SkiaSharp measurement backend.' }
+    ],
+    install: 'dotnet add package Pretext\ndotnet add package Pretext.SkiaSharp',
+    usageLanguage: 'csharp',
+    usage: 'var prepared = PretextLayout.PrepareWithSegments(text, "16px Inter");\nvar lines = PretextLayout.LayoutWithLines(prepared, 320, 22);\n\nforeach (var line in lines.Lines)\n    Console.WriteLine(line.Text);',
+    highlights: ['Unicode-aware wrapping', 'Locale-sensitive segmentation', 'Bidirectional text', 'Streaming, allocation-light APIs']
+  },
+  {
+    slug: 'protranslate',
+    name: 'ProTranslate',
+    eyebrow: 'XAML globalization',
+    category: 'Frameworks',
+    repo: 'ProTranslate',
+    description: 'Translation and globalization infrastructure for Avalonia, WPF, MAUI, WinUI, and Uno with generated bindings and analyzers.',
+    statement: 'One translation model across the modern XAML ecosystem.',
+    accent: '#67dbc6',
+    status: 'Active',
+    packages: [
+      { name: 'ProTranslate.Core', note: 'Culture, provider, formatting, and fallback services.' },
+      { name: 'ProTranslate.Avalonia', note: 'Avalonia markup extensions and binding refresh.' },
+      { name: 'ProTranslate.SourceGenerator', note: 'Strongly typed keys and compiled-binding surfaces.' }
+    ],
+    install: 'dotnet add package ProTranslate.Core\ndotnet add package ProTranslate.Avalonia',
+    usageLanguage: 'xml',
+    usage: '<StackPanel Translation.AutoFlowDirection="True">\n  <TextBlock Text="{Translate Shell.FileMenu}" />\n</StackPanel>',
+    highlights: ['Five XAML frameworks', 'Runtime culture switching', 'Source generators and analyzers', 'XLIFF, PO, RESX, ARB, and more']
+  },
+  {
+    slug: 'effector',
+    name: 'Effector',
+    eyebrow: 'Custom visual effects',
+    category: 'Graphics',
+    repo: 'Effector',
+    description: 'Extensible Skia-backed custom effects for Avalonia, built for reusable image and control processing pipelines.',
+    statement: 'A focused effects layer for expressive Avalonia rendering.',
+    accent: '#ff759f',
+    status: 'Active',
+    packages: [{ name: 'Effector', note: 'Effects primitives and Avalonia integration.' }],
+    install: 'dotnet add package Effector',
+    usageLanguage: 'csharp',
+    usage: '// Attach an Effector pipeline to an Avalonia visual.\n// The repository samples cover custom Skia-backed effects.',
+    highlights: ['Skia-backed effects', 'Composable pipelines', 'Avalonia integration', 'Extensible effect model']
+  },
+  {
+    slug: 'xaml-visual-editor',
+    name: 'XamlVisualEditor',
+    eyebrow: 'Live XAML tooling',
+    category: 'Tools',
+    repo: 'XamlVisualEditor',
+    description: 'An extensible Avalonia XAML visual editor with a live designer, code editor, language services, debugging, and .NET extensions.',
+    statement: 'Design, inspect, and extend XAML in one living workspace.',
+    accent: '#a894ff',
+    status: 'Active',
+    packages: [{ name: 'XamlVisualEditor', note: 'Build and run the editor from source.' }],
+    install: 'git clone https://github.com/wieslawsoltes/XamlVisualEditor.git\ncd XamlVisualEditor && dotnet run',
+    usageLanguage: 'bash',
+    usage: '# Open a XAML document, edit markup, and inspect the live preview.\ndotnet run',
+    highlights: ['Live visual designer', 'Code editor', 'Language services', 'Extensible .NET tooling']
+  }
+];
+
+export const featuredProjects = projects.filter((project) => project.featured);
+
+export function projectUrl(project: Project, base = '/') {
+  return `${base}projects/${project.slug}/`;
+}
+
+export function githubUrl(project: Project) {
+  const root = `https://github.com/wieslawsoltes/${project.repo}`;
+  return project.branch ? `${root}/tree/${project.branch}` : root;
+}
+
+export function nugetUrl(packageName: string) {
+  return `https://www.nuget.org/packages/${packageName}`;
+}

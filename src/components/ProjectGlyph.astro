@@ -1,0 +1,57 @@
+---
+interface Props {
+  slug: string;
+  accent: string;
+  large?: boolean;
+}
+
+const { slug, accent, large = false } = Astro.props;
+const seed = [...slug].reduce((sum, char) => sum + char.charCodeAt(0), 0);
+const mode = seed % 4;
+const gradientId = `glyph-${slug}`;
+---
+
+<svg class:list={['project-glyph', { large }]} viewBox="0 0 320 240" role="img" aria-label={`${slug} abstract project artwork`}>
+  <defs>
+    <linearGradient id={gradientId} x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color={accent} stop-opacity=".95" />
+      <stop offset="1" stop-color={accent} stop-opacity=".08" />
+    </linearGradient>
+    <filter id={`${gradientId}-glow`} x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="10" />
+    </filter>
+  </defs>
+  <rect width="320" height="240" fill="#0d0f14" />
+  <path class="glyph-grid" d="M0 40h320M0 80h320M0 120h320M0 160h320M0 200h320M40 0v240M80 0v240M120 0v240M160 0v240M200 0v240M240 0v240M280 0v240" />
+  {mode === 0 && (
+    <g>
+      <circle cx="160" cy="120" r="76" fill="none" stroke={`url(#${gradientId})`} stroke-width="2" />
+      <circle cx="160" cy="120" r="45" fill="none" stroke={accent} stroke-opacity=".55" stroke-width="10" stroke-dasharray="36 18" />
+      <path d="M66 166C110 90 190 180 254 72" fill="none" stroke={accent} stroke-width="3" />
+    </g>
+  )}
+  {mode === 1 && (
+    <g>
+      <path d="M48 178 112 62l50 94 46-74 64 96Z" fill={`url(#${gradientId})`} opacity=".72" />
+      <path d="M48 178 112 62l50 94 46-74 64 96" fill="none" stroke={accent} stroke-width="3" />
+      <circle cx="112" cy="62" r="8" fill={accent} />
+      <circle cx="208" cy="82" r="8" fill={accent} />
+    </g>
+  )}
+  {mode === 2 && (
+    <g>
+      <rect x="64" y="52" width="192" height="136" rx="2" fill={`url(#${gradientId})`} opacity=".18" stroke={accent} stroke-width="2" />
+      <path d="M96 86h128M96 120h86M96 154h104" stroke={accent} stroke-width="8" stroke-linecap="round" opacity=".82" />
+      <path d="M208 112v52M182 138h52" stroke="#fff" stroke-width="2" />
+    </g>
+  )}
+  {mode === 3 && (
+    <g>
+      <path d="M76 58h84v62H76zM160 120h84v62h-84z" fill={`url(#${gradientId})`} opacity=".74" />
+      <path d="M160 58h84v62h-84zM76 120h84v62H76z" fill="none" stroke={accent} stroke-width="2" />
+      <path d="M50 204 270 36" stroke={accent} stroke-width="2" />
+    </g>
+  )}
+  <circle cx="160" cy="120" r="38" fill={accent} opacity=".16" filter={`url(#${gradientId}-glow)`} />
+  <text x="18" y="222" fill="#fff" fill-opacity=".42" font-family="ui-monospace, monospace" font-size="10" letter-spacing="2">{slug.toUpperCase()}</text>
+</svg>

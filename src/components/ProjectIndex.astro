@@ -1,0 +1,83 @@
+---
+import ProjectGlyph from './ProjectGlyph.astro';
+import { projects, projectUrl } from '@/data/projects';
+
+const base = import.meta.env.BASE_URL;
+const categories = ['All', 'Graphics', 'Frameworks', 'Avalonia', 'Controls', 'Tools'];
+---
+
+<section class="project-index section-shell" id="work">
+  <div class="section-heading" data-reveal>
+    <p class="section-label">Selected systems · 01—{String(projects.length).padStart(2, '0')}</p>
+    <h2>Work that compounds.</h2>
+    <p>Frameworks, graphics, controls, and tools maintained as parts of a larger open-source ecosystem.</p>
+  </div>
+
+  <div class="project-tools" data-reveal>
+    <div class="project-filters" role="group" aria-label="Filter projects by category">
+      {categories.map((category) => (
+        <button type="button" class="filter-button" data-filter={category} aria-pressed={category === 'All' ? 'true' : 'false'}>
+          {category}
+        </button>
+      ))}
+    </div>
+    <label class="project-search">
+      <span class="sr-only">Search projects</span>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 5 5"></path></svg>
+      <input type="search" placeholder="Search the archive" autocomplete="off" data-project-search />
+    </label>
+  </div>
+
+  <div class="project-list" data-project-list>
+    {projects.map((project, index) => (
+      <a
+        class="project-row"
+        href={projectUrl(project, base)}
+        data-project
+        data-category={project.category}
+        data-search={`${project.name} ${project.description} ${project.category}`.toLowerCase()}
+        data-reveal
+        style={`--project-accent:${project.accent};--delay:${Math.min(index * 28, 240)}ms`}
+      >
+        <span class="project-number">{String(index + 1).padStart(2, '0')}</span>
+        <span class="project-primary">
+          <strong>{project.name}</strong>
+          <small>{project.eyebrow}</small>
+        </span>
+        <span class="project-category">{project.category}</span>
+        <span class="project-description">{project.description}</span>
+        <span class="project-arrow" aria-hidden="true">↗</span>
+        <span class="project-preview" aria-hidden="true"><ProjectGlyph slug={project.slug} accent={project.accent} /></span>
+      </a>
+    ))}
+  </div>
+  <p class="empty-projects" hidden data-empty>No projects match that search.</p>
+</section>
+
+<script>
+  const buttons = [...document.querySelectorAll<HTMLButtonElement>('[data-filter]')];
+  const search = document.querySelector<HTMLInputElement>('[data-project-search]');
+  const items = [...document.querySelectorAll<HTMLElement>('[data-project]')];
+  const empty = document.querySelector<HTMLElement>('[data-empty]');
+  let selected = 'All';
+
+  function filterProjects() {
+    const query = search?.value.trim().toLowerCase() ?? '';
+    let visible = 0;
+    items.forEach((item) => {
+      const categoryMatch = selected === 'All' || item.dataset.category === selected;
+      const searchMatch = !query || item.dataset.search?.includes(query);
+      const show = categoryMatch && searchMatch;
+      item.hidden = !show;
+      if (show) visible++;
+    });
+    if (empty) empty.hidden = visible !== 0;
+  }
+
+  buttons.forEach((button) => button.addEventListener('click', () => {
+    selected = button.dataset.filter ?? 'All';
+    buttons.forEach((candidate) => candidate.setAttribute('aria-pressed', String(candidate === button)));
+    filterProjects();
+  }));
+  search?.addEventListener('input', filterProjects);
+</script>

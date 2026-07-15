@@ -1,0 +1,117 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import ProjectGlyph from '@/components/ProjectGlyph.astro';
+import { projects, githubUrl, nugetUrl, projectUrl, type Project } from '@/data/projects';
+
+export function getStaticPaths() {
+  return projects.map((project) => ({ params: { slug: project.slug }, props: { project } }));
+}
+
+interface Props {
+  project: Project;
+}
+
+const { project } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const currentIndex = projects.findIndex((candidate) => candidate.slug === project.slug);
+const next = projects[(currentIndex + 1) % projects.length];
+const codeId = `install-${project.slug}`;
+const usageId = `usage-${project.slug}`;
+const packageHref = (name: string) => name === project.name && project.install.startsWith('git clone')
+  ? githubUrl(project)
+  : nugetUrl(name);
+---
+
+<BaseLayout title={project.name} description={project.description}>
+  <article class="project-page" style={`--project-accent:${project.accent}`}>
+    <header class="project-hero">
+      <div class="project-hero-backdrop" aria-hidden="true">
+        <ProjectGlyph slug={project.slug} accent={project.accent} large />
+      </div>
+      <div class="project-hero-inner section-shell">
+        <a class="project-back" href={`${base}#work`}><span>←</span> All projects</a>
+        <div class="project-hero-copy">
+          <div class="project-title-line">
+            <p class="project-kicker">{project.eyebrow}</p>
+            <h1>{project.name}</h1>
+          </div>
+          <div class="project-hero-summary">
+            <p>{project.statement}</p>
+            <div class="project-actions">
+              <a class="button-primary" href={githubUrl(project)} target="_blank" rel="noreferrer">View on GitHub <span>↗</span></a>
+              {project.packages[0] && project.packages[0].name !== project.name && (
+                <a class="text-link" href={nugetUrl(project.packages[0].name)} target="_blank" rel="noreferrer">NuGet <span>↗</span></a>
+              )}
+            </div>
+          </div>
+        </div>
+        <div class="project-meta-strip">
+          <div><span>Status</span><strong><i class="status-dot"></i>{project.status}</strong></div>
+          <div><span>Domain</span><strong>{project.category}</strong></div>
+          <div><span>Repository</span><strong>wieslawsoltes/{project.repo}</strong></div>
+          <div data-repo-stats={project.repo}><span>Public</span><strong>MIT / Open source</strong></div>
+        </div>
+      </div>
+    </header>
+
+    <section class="project-overview section-shell">
+      <div class="project-overview-heading" data-reveal>
+        <p class="section-label">Overview</p>
+        <h2>{project.description}</h2>
+      </div>
+      <div class="project-highlights" data-reveal>
+        {project.highlights.map((highlight, index) => (
+          <div><span>0{index + 1}</span><p>{highlight}</p></div>
+        ))}
+      </div>
+    </section>
+
+    <section class="quickstart section-shell">
+      <div class="section-heading" data-reveal>
+        <p class="section-label">Quick start</p>
+        <h2>From package<br />to first frame.</h2>
+        <p>Start with the primary package or SDK. The repository contains the full samples, compatibility notes, and advanced configuration.</p>
+      </div>
+      <div class="code-stack">
+        <article class="code-panel" data-reveal>
+          <header><span>01 · Install</span><button type="button" data-copy={codeId}>Copy</button></header>
+          <pre><code id={codeId}>{project.install}</code></pre>
+        </article>
+        <article class="code-panel" data-reveal>
+          <header><span>02 · Use · {project.usageLanguage}</span><button type="button" data-copy={usageId}>Copy</button></header>
+          <pre><code id={usageId}>{project.usage}</code></pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="packages section-shell">
+      <div class="section-heading compact" data-reveal>
+        <p class="section-label">Package surface</p>
+        <h2>Start focused.<br />Compose as needed.</h2>
+      </div>
+      <div class="package-list">
+        {project.packages.map((item, index) => (
+          <a href={packageHref(item.name)} target="_blank" rel="noreferrer" data-reveal>
+            <span class="package-number">{String(index + 1).padStart(2, '0')}</span>
+            <strong>{item.name}</strong>
+            <p>{item.note}</p>
+            <span class="package-arrow">↗</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="source-cta section-shell" data-reveal>
+      <p class="section-label">Source, issues, and releases</p>
+      <h2>The repository is the source of truth.</h2>
+      <p>Explore complete samples, track current compatibility, report issues, or contribute a change.</p>
+      <a class="button-primary" href={githubUrl(project)} target="_blank" rel="noreferrer">Open {project.repo} on GitHub <span>↗</span></a>
+    </section>
+
+    <a class="next-project" href={projectUrl(next, base)} style={`--next-accent:${next.accent}`}>
+      <span class="section-label">Next project</span>
+      <strong>{next.name}</strong>
+      <span class="next-arrow">→</span>
+    </a>
+  </article>
+</BaseLayout>
