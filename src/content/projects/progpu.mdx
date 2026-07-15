@@ -6,6 +6,10 @@ category: Graphics
 repo: ProGPU
 description: Cross-platform rendering, composition, vector, text, compute, and framework interop built directly on WebGPU and Silk.NET.
 statement: A lightweight GPU foundation for the next generation of .NET interfaces.
+story:
+  label: Engineering story
+  title: The frame is a chain of contracts.
+  intro: ProGPU treats device creation, retained composition, geometry, text, and presentation as explicit boundaries. Frameworks can replace one layer without inheriting an opaque renderer.
 accent: "#8ea2ff"
 featured: true
 status: Preview
@@ -88,4 +92,41 @@ related:
   - librewinforms
 ---
 
-ProGPU owns the path from device creation to presentation. Its layers separate platform services, retained composition, vector geometry, text, and compute so framework integrations can adopt only the pieces they need.
+import StoryFlow from '../../components/story/StoryFlow.astro';
+import StoryDecision from '../../components/story/StoryDecision.astro';
+
+The useful unit is not a drawing API. It is the **whole route from application intent to a presented frame**, with enough separation that a framework, editor, or experiment can enter at the right level.
+
+<StoryFlow
+  label="Follow one frame"
+  steps={[
+    {
+      signal: 'Platform',
+      label: 'Meet the device',
+      detail: 'Window, surface, adapter, queue, and swapchain setup stay behind one backend boundary.',
+      href: './backend/'
+    },
+    {
+      signal: 'Primitives',
+      label: 'Prepare the work',
+      detail: 'Vector paths, glyphs, images, and compute data become explicit GPU-ready resources.',
+      href: './vector-text/'
+    },
+    {
+      signal: 'Composition',
+      label: 'Retain the intent',
+      detail: 'A scene records visual structure and effects so presentation is not rebuilt as ad-hoc draw calls.',
+      href: './scene/'
+    },
+    {
+      signal: 'Interop',
+      label: 'Bridge the framework',
+      detail: 'Avalonia, Uno, WPF, and WinForms integrations translate existing UI contracts into the same frame path.',
+      href: './framework-bridges/'
+    }
+  ]}
+/>
+
+<StoryDecision label="Design constraint" title="Own the frame without owning the application.">
+  ProGPU keeps the low-level route visible, but it does not require every consumer to become a renderer. **Each package is a replaceable seam**: use the backend alone, compose a retained scene, or connect an established UI framework.
+</StoryDecision>

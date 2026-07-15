@@ -6,6 +6,10 @@ category: Controls
 repo: ProDataGrid
 description: A high-performance Avalonia DataGrid family with charting, formulas, diagnostics, virtualization, and production-grade editing.
 statement: Dense data workflows without compromising interaction or speed.
+story:
+  label: Product architecture
+  title: Speed only matters when interaction survives it.
+  intro: ProDataGrid treats virtualization, editing, formulas, charting, and diagnostics as one data-workbench problem. Performance cannot erase selection, keyboard flow, validation, or the ability to inspect a live control.
 accent: "#5ce1b9"
 featured: true
 status: Active
@@ -79,4 +83,41 @@ related:
   - protext
 ---
 
-ProDataGrid is an expanded data-workbench family rather than a single table. Its packages cover the grid, formulas, charting, diagnostics, themes, data sources, and editing workflows while retaining a familiar Avalonia API.
+import StoryFlow from '../../components/story/StoryFlow.astro';
+import StoryDecision from '../../components/story/StoryDecision.astro';
+
+A serious grid is a coordination surface. It must keep a large data set moving while edits, calculations, visual summaries, and debugging tools all observe the same state without fighting for ownership.
+
+<StoryFlow
+  label="From data to decision"
+  steps={[
+    {
+      signal: 'Viewport',
+      label: 'Render what matters',
+      detail: 'Two-axis virtualization keeps rows and columns bounded while navigation and editing remain stable.',
+      href: './data-grid/'
+    },
+    {
+      signal: 'Calculation',
+      label: 'Recompute with intent',
+      detail: 'Formula parsing, dependency tracking, and recalculation form an explicit engine rather than cell-side magic.',
+      href: './formula-engine/'
+    },
+    {
+      signal: 'Analysis',
+      label: 'Turn values into shape',
+      detail: 'Charting and pivot-oriented workflows reuse the grid surface instead of exporting users to another tool.',
+      href: './charting/'
+    },
+    {
+      signal: 'Runtime',
+      label: 'Inspect the live system',
+      detail: 'ProDiagnostics exposes trees, properties, and transport seams when a complex control needs evidence.',
+      href: './diagnostics/'
+    }
+  ]}
+/>
+
+<StoryDecision label="Operating principle" title="Complex controls need an explanation surface.">
+  Performance work is incomplete when a team cannot see why a row recycled, a formula recalculated, or a property changed. ProDataGrid keeps diagnostics beside the product surface so **behavior can be measured in the running application**.
+</StoryDecision>

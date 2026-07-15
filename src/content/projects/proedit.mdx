@@ -6,6 +6,10 @@ category: Uno Platform
 repo: ProEdit
 description: A modular .NET 10 platform for document editing, layout, rendering, reporting, printing, conversion, automation, and real-time collaboration.
 statement: Build complete document workflows from one composable, cross-platform stack.
+story:
+  label: Platform story
+  title: A document is a system, not a text box.
+  intro: ProEdit starts with a portable document model, then composes layout, rendering, editing, formats, reporting, printing, collaboration, and automation around it. Product shells share the engine without becoming the engine.
 accent: "#ee8fff"
 featured: true
 tier: Flagship
@@ -92,4 +96,41 @@ related:
   - protranslate
 ---
 
-ProEdit is a package-oriented document platform rather than a single editor. Applications can adopt the document model, layout and Skia renderer, FlowDocument and rich-text controls, Word-style shell, reporting stack, printing services, format converters, collaboration engine, or automation integrations independently.
+import StoryFlow from '../../components/story/StoryFlow.astro';
+import StoryDecision from '../../components/story/StoryDecision.astro';
+
+The document model is the long-lived contract. Editors, viewers, converters, report designers, collaboration services, and framework controls can evolve around it without forcing every product to adopt the entire platform.
+
+<StoryFlow
+  label="From model to workflow"
+  steps={[
+    {
+      signal: 'Authoring',
+      label: 'Edit structured content',
+      detail: 'Selections, commands, formatting, tables, lists, fields, revisions, and proofing operate on one model.',
+      href: './document-editor/'
+    },
+    {
+      signal: 'Exchange',
+      label: 'Cross format boundaries',
+      detail: 'DOCX, RTF, HTML, Markdown, PDF, PS, and XPS connect through focused import and export packages.',
+      href: './document-formats/'
+    },
+    {
+      signal: 'Output',
+      label: 'Compose reports',
+      detail: 'Reporting, pagination, print preview, and platform adapters reuse the same layout and rendering core.',
+      href: './reporting/'
+    },
+    {
+      signal: 'Shared state',
+      label: 'Coordinate change',
+      detail: 'Operations, synchronization, persistence, snapshots, and automation turn a document into a workflow.',
+      href: './collaboration/'
+    }
+  ]}
+/>
+
+<StoryDecision label="Composition rule" title="Adopt the smallest complete slice.">
+  A viewer should not need collaboration packages, and an automation service should not need a desktop shell. ProEdit keeps capabilities package-oriented so teams can **compose a coherent product without importing an unrelated platform surface**.
+</StoryDecision>

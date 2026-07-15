@@ -3,6 +3,7 @@ import { Code } from 'astro-expressive-code/components';
 import { render } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import ProjectGlyph from '@/components/ProjectGlyph.astro';
+import ProjectStory from '@/components/story/ProjectStory.astro';
 import {
   capabilityUrl,
   getCapabilities,
@@ -146,7 +147,9 @@ const resourceLinks = [
         <p class="section-label">Overview</p>
         <div>
           <h2>{project.description}</h2>
-          <div class="project-introduction"><Content /></div>
+          <div class="project-introduction">
+            {project.story ? <p>{project.story.intro}</p> : <Content />}
+          </div>
         </div>
       </div>
       <div class="project-highlights" data-reveal>
@@ -155,6 +158,16 @@ const resourceLinks = [
         ))}
       </div>
     </section>
+
+    {project.story && (
+      <ProjectStory
+        id={`story-${project.slug}`}
+        label={project.story.label}
+        title={project.story.title}
+      >
+        <Content />
+      </ProjectStory>
+    )}
 
     <section class="project-evidence section-shell">
       <div class="project-audience" data-reveal>

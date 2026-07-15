@@ -1,0 +1,95 @@
+---
+interface Props {
+  id: string;
+  label: string;
+  title: string;
+}
+
+const { id, label, title } = Astro.props;
+---
+
+<section class="project-story section-shell" aria-labelledby={id}>
+  <header class="project-story-heading" data-reveal>
+    <p class="section-label">{label}</p>
+    <h2 id={id}>{title}</h2>
+  </header>
+  <div class="project-story-body">
+    <slot />
+  </div>
+</section>
+
+<style>
+  .project-story {
+    padding: 140px 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .project-story-heading {
+    display: grid;
+    grid-template-columns: .5fr 2fr;
+    gap: 7%;
+    align-items: start;
+    margin-bottom: 76px;
+  }
+
+  .project-story-heading h2 {
+    max-width: 1040px;
+    margin: 0;
+    font-size: clamp(48px, 6.2vw, 92px);
+    font-weight: 560;
+    line-height: .98;
+    letter-spacing: -.055em;
+  }
+
+  .project-story-body {
+    display: grid;
+    gap: 70px;
+  }
+
+  .project-story-body :global(> p) {
+    max-width: 830px;
+    margin: 0 0 0 calc(27% + 7%);
+    color: #c8ccd5;
+    font-size: clamp(19px, 2vw, 28px);
+    line-height: 1.55;
+    letter-spacing: -.02em;
+  }
+
+  .project-story-body :global(> p strong) {
+    color: var(--text);
+    font-weight: 560;
+  }
+
+  @media (max-width: 980px) {
+    .project-story-heading {
+      grid-template-columns: 1fr;
+      gap: 30px;
+    }
+
+    .project-story-body :global(> p) {
+      margin-left: 0;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .project-story {
+      padding: 100px 0;
+    }
+
+    .project-story-heading {
+      margin-bottom: 54px;
+    }
+
+    .project-story-heading h2 {
+      font-size: 48px;
+    }
+
+    .project-story-body {
+      gap: 48px;
+    }
+
+    .project-story-body :global(> p) {
+      font-size: 19px;
+    }
+  }
+</style>

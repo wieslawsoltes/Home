@@ -1,4 +1,5 @@
 import { defineConfig } from 'astro/config';
+import mdx from '@astrojs/mdx';
 import astroExpressiveCode from 'astro-expressive-code';
 
 const repository = process.env.GITHUB_REPOSITORY?.split('/')[1] ?? '';
@@ -12,7 +13,7 @@ export default defineConfig({
   base,
   output: 'static',
   trailingSlash: 'always',
-  integrations: [astroExpressiveCode()],
+  integrations: [astroExpressiveCode(), mdx()],
   build: {
     format: 'directory'
   },

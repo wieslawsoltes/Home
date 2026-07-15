@@ -25,7 +25,7 @@ const usageExample = {
 };
 
 const projects = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/projects' }),
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/projects' }),
   schema: z.object({
     order: z.number().int().nonnegative(),
     name: z.string(),
@@ -35,6 +35,11 @@ const projects = defineCollection({
     branch: z.string().optional(),
     description: z.string(),
     statement: z.string(),
+    story: z.object({
+      label: z.string(),
+      title: z.string(),
+      intro: z.string()
+    }).optional(),
     accent: z.string().regex(/^#[0-9a-f]{6}$/i),
     featured: z.boolean().default(false),
     showInIndex: z.boolean().default(true),

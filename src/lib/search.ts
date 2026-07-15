@@ -33,6 +33,7 @@ export type SearchIndex = {
 };
 
 const plainText = (value: string | undefined) => (value ?? '')
+  .replace(/^(?:import|export)\s+.*?;\s*$/gm, ' ')
   .replace(/```[\s\S]*?```/g, ' ')
   .replace(/`([^`]+)`/g, '$1')
   .replace(/!?(?:\[([^\]]*)\])(?:\([^)]*\))/g, '$1')
@@ -96,6 +97,9 @@ export async function buildSearchIndex(base = '/'): Promise<SearchIndex> {
       order: project.order,
       keywords: compact([
         entry.body,
+        project.story?.label,
+        project.story?.title,
+        project.story?.intro,
         project.statement,
         project.install,
         project.usage,

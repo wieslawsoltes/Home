@@ -6,6 +6,10 @@ category: Graphics
 repo: Svg.Skia
 description: A robust SVG 1.1 and static SVG 2 rendering library for SkiaSharp, with Avalonia controls and source-generation support.
 statement: Standards-minded SVG rendering across the .NET ecosystem.
+story:
+  label: Rendering story
+  title: One SVG model, several delivery paths.
+  intro: Svg.Skia separates document interpretation from Skia drawing, framework controls, source generation, animation, and editing. The same asset can move from runtime content to compiled application resources without changing meaning.
 accent: "#ffb45f"
 featured: true
 status: Active
@@ -78,4 +82,41 @@ related:
   - protext
 ---
 
-Svg.Skia parses SVG into a reusable drawing model and renders through SkiaSharp. Avalonia controls, source generators, converters, and extensive parity testing make it useful from runtime UI to asset pipelines.
+import StoryFlow from '../../components/story/StoryFlow.astro';
+import StoryDecision from '../../components/story/StoryDecision.astro';
+
+SVG is both a document format and a rendering contract. The library keeps those concerns close enough for fidelity, yet separate enough that UI controls, build tools, and editors can share the same interpretation.
+
+<StoryFlow
+  label="One document, four routes"
+  steps={[
+    {
+      signal: 'Document',
+      label: 'Parse the meaning',
+      detail: 'Elements, paint, transforms, text, images, clipping, and filters become a reusable drawing model.',
+      href: './renderer/'
+    },
+    {
+      signal: 'Application',
+      label: 'Host it in UI',
+      detail: 'Avalonia controls turn the same renderer into scalable icons, content, and application artwork.',
+      href: './avalonia-controls/'
+    },
+    {
+      signal: 'Build',
+      label: 'Compile the asset',
+      detail: 'Source generation moves known SVG resources out of runtime parsing and into deterministic code.',
+      href: './source-generation/'
+    },
+    {
+      signal: 'Motion',
+      label: 'Keep the scene alive',
+      detail: 'Scene and animation layers preserve the document model while adding controlled temporal behavior.',
+      href: './scene-animation/'
+    }
+  ]}
+/>
+
+<StoryDecision label="Fidelity rule" title="Test the picture, not only the parser.">
+  A valid DOM is not proof of a correct image. Svg.Skia uses W3C coverage and resvg comparison lanes to keep rendering behavior visible, because **the final pixels are part of the public API**.
+</StoryDecision>

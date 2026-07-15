@@ -26,7 +26,9 @@ The build performs Astro/TypeScript checks first and writes the static site to `
 
 ## Updating projects
 
-Project content lives in schema-validated Markdown files under `src/content/projects/`. The filename becomes the project slug, frontmatter defines its repository, packages, install and usage samples, media, architecture, compatibility, relationships, and archive placement, while the Markdown body provides the project introduction. Adding an entry automatically creates its `/projects/<slug>/` route and includes it in the appropriate indexes. Set `featured: true` to make a project eligible for the landing-page spotlight.
+Project content lives in schema-validated Markdown and MDX files under `src/content/projects/`. The filename becomes the project slug, frontmatter defines its repository, packages, install and usage samples, media, architecture, compatibility, relationships, and archive placement. Adding an entry automatically creates its `/projects/<slug>/` route and includes it in the appropriate indexes. Set `featured: true` to make a project eligible for the landing-page spotlight.
+
+Use ordinary Markdown for the default project introduction. Reserve MDX for a flagship with a genuine engineering narrative: add the validated `story` object (`label`, `title`, and `intro`), rename the entry to `.mdx`, and compose its body with the static editorial components in `src/components/story/`. The shared page renders that body as a dedicated story between overview and evidence; it does not replace structured architecture, packages, capabilities, or compatibility data. ProGPU, ProDataGrid, Svg.Skia, and ProEdit are the reference implementations.
 
 Focused subsystem pages live under `src/content/capabilities/<project>/`. Their project and related-capability fields are validated content references, and each file creates `/projects/<project>/<capability>/`. Collection schemas are defined in `src/content.config.ts`; shared queries and URL helpers live in `src/lib/content.ts`.
 
