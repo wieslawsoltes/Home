@@ -1,5 +1,6 @@
 import type { SearchIndex, SearchIndexItem } from '@/lib/search';
-import { featuredSearchItems, searchItems } from '@/lib/search-ranking';
+import { preparePagefind, searchPagefind, type FullTextSearchMatch } from '@/lib/pagefind-search';
+import { featuredSearchItems, scoreSearchItem, searchItems } from '@/lib/search-ranking';
 import type { TransitionBeforePreparationEvent, TransitionBeforeSwapEvent } from 'astro:transitions/client';
 
 interface SiteMetadata {
@@ -278,7 +279,27 @@ function searchItemTransitionTitle(item: SearchIndexItem) {
   return undefined;
 }
 
-function createSearchResult(item: SearchIndexItem, index: number) {
+type DisplaySearchResult = {
+  item: SearchIndexItem;
+  excerpt?: string;
+};
+
+function setSearchExcerpt(target: HTMLElement, excerpt: string) {
+  const template = document.createElement('template');
+  template.innerHTML = excerpt;
+  const nodes = [...template.content.childNodes].map((node) => {
+    if (node instanceof HTMLElement && node.tagName === 'MARK') {
+      const mark = document.createElement('mark');
+      mark.textContent = node.textContent;
+      return mark;
+    }
+    return document.createTextNode(node.textContent ?? '');
+  });
+  target.replaceChildren(...nodes);
+}
+
+function createSearchResult(result: DisplaySearchResult, index: number) {
+  const { item, excerpt } = result;
   const row = document.createElement('li');
   const link = document.createElement('a');
   const number = document.createElement('span');
@@ -296,12 +317,38 @@ function createSearchResult(item: SearchIndexItem, index: number) {
   title.textContent = item.title;
   const transitionTitle = searchItemTransitionTitle(item);
   if (transitionTitle) title.dataset.transitionTitle = transitionTitle;
-  description.textContent = item.description;
+  if (excerpt) {
+    description.className = 'site-search-excerpt';
+    setSearchExcerpt(description, excerpt);
+  } else {
+    description.textContent = item.description;
+  }
   arrow.textContent = '→';
   copy.append(kind, title, description);
   link.append(number, copy, arrow);
   row.append(link);
   return row;
+}
+
+function mergeSearchResults(query: string, fullTextMatches: FullTextSearchMatch[], limit = 12) {
+  const ranked = new Map<string, DisplaySearchResult & { score: number }>();
+  searchIndexItems.forEach((item) => {
+    const score = scoreSearchItem(item, query);
+    if (score > 0) ranked.set(item.id, { item, score });
+  });
+  fullTextMatches.forEach((match) => {
+    const fullTextScore = Math.max(24, 84 - match.rank * 4);
+    const existing = ranked.get(match.item.id);
+    if (existing) {
+      existing.score += fullTextScore;
+      existing.excerpt = match.excerpt;
+    } else {
+      ranked.set(match.item.id, { item: match.item, excerpt: match.excerpt, score: fullTextScore });
+    }
+  });
+  return [...ranked.values()]
+    .sort((left, right) => right.score - left.score)
+    .slice(0, limit);
 }
 
 function initSiteSearch(signal: AbortSignal) {
@@ -315,28 +362,61 @@ function initSiteSearch(signal: AbortSignal) {
   const summary = dialog.querySelector<HTMLElement>('[data-search-summary]');
   const message = dialog.querySelector<HTMLElement>('[data-search-message]');
   let lastOpener: HTMLElement | null = null;
+  let searchRequest = 0;
 
-  const render = (query = '') => {
+  const showResults = (matches: DisplaySearchResult[], query: string, pending = false) => {
     if (!results || !summary || !message) return;
-    const matches = query.trim()
-      ? searchItems(searchIndexItems, query)
-      : featuredSearchItems(searchIndexItems);
     results.replaceChildren(...matches.map(createSearchResult));
     message.hidden = matches.length > 0;
-    if (!matches.length) {
+    results.setAttribute('aria-busy', String(pending));
+    if (pending) {
+      summary.textContent = matches.length
+        ? `${matches.length} metadata ${matches.length === 1 ? 'match' : 'matches'} · searching full page text`
+        : 'Searching full page text';
+      message.textContent = 'Searching full page text…';
+    } else if (!matches.length) {
       message.textContent = `No result for “${query.trim()}”. Try a project, capability, package, or technology.`;
       summary.textContent = 'No matching destinations';
-    } else if (query.trim()) {
-      summary.textContent = `${matches.length} best ${matches.length === 1 ? 'result' : 'results'} from ${searchIndexItems.length} destinations`;
-    } else {
-      summary.textContent = `Featured projects · ${searchIndexItems.length} destinations indexed`;
     }
+  };
+
+  const render = async (query = '') => {
+    if (!results || !summary || !message) return;
+    const request = ++searchRequest;
+    const trimmedQuery = query.trim();
+    if (!trimmedQuery) {
+      const featured = featuredSearchItems(searchIndexItems).map((item) => ({ item }));
+      showResults(featured, '');
+      summary.textContent = `Featured projects · ${searchIndexItems.length} destinations indexed`;
+      return;
+    }
+
+    const curated = searchItems(searchIndexItems, trimmedQuery).map((item) => ({ item }));
+    if (trimmedQuery.length < 2) {
+      showResults(curated, trimmedQuery);
+      summary.textContent = curated.length
+        ? `${curated.length} metadata ${curated.length === 1 ? 'match' : 'matches'} · type another character for full text`
+        : 'Type another character for full-text search';
+      return;
+    }
+
+    showResults(curated, trimmedQuery, true);
+    const fullText = await searchPagefind(trimmedQuery, searchIndexItems, siteBase());
+    if (request !== searchRequest || signal.aborted) return;
+    const merged = fullText.available
+      ? mergeSearchResults(trimmedQuery, fullText.matches)
+      : curated;
+    showResults(merged, trimmedQuery);
+    summary.textContent = fullText.available
+      ? `${merged.length} best ${merged.length === 1 ? 'result' : 'results'} · metadata + full page text`
+      : `${merged.length} best ${merged.length === 1 ? 'result' : 'results'} · metadata index`;
   };
 
   const openSearch = async (opener?: HTMLElement | null) => {
     if (!input || dialog.open || signal.aborted) return;
     lastOpener = opener ?? document.activeElement as HTMLElement;
     dialog.showModal();
+    void preparePagefind(siteBase());
     requestAnimationFrame(() => {
       if (!signal.aborted) input.focus();
     });
@@ -344,7 +424,7 @@ function initSiteSearch(signal: AbortSignal) {
       const index = await loadSearchIndex();
       if (signal.aborted) return;
       searchIndexItems = index.items;
-      render(input.value);
+      void render(input.value);
     } catch {
       if (signal.aborted) return;
       if (summary) summary.textContent = 'Search unavailable';
@@ -355,18 +435,19 @@ function initSiteSearch(signal: AbortSignal) {
     }
   };
 
-  if (searchIndexItems.length) render();
+  if (searchIndexItems.length) void render();
   openers.forEach((opener) => opener.addEventListener('click', () => void openSearch(opener), { signal }));
   closeButton?.addEventListener('click', () => dialog.close(), { signal });
   form?.addEventListener('submit', (event) => {
     event.preventDefault();
     dialog.querySelector<HTMLAnchorElement>('[data-search-result]')?.click();
   }, { signal });
-  input?.addEventListener('input', () => render(input.value), { signal });
+  input?.addEventListener('input', () => void render(input.value), { signal });
   dialog.addEventListener('click', (event) => {
     if (event.target === dialog) dialog.close();
   }, { signal });
   dialog.addEventListener('close', () => {
+    searchRequest += 1;
     if (input) input.value = '';
     if (!signal.aborted && lastOpener?.isConnected) lastOpener.focus();
     lastOpener = null;

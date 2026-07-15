@@ -214,6 +214,8 @@ html[data-navigating] .site-header::after {
 .site-search-result-copy small { grid-column: 1 / -1; margin-bottom: 7px; overflow: hidden; color: var(--accent); font: 8px/1 ui-monospace, monospace; letter-spacing: .09em; text-transform: uppercase; text-overflow: ellipsis; white-space: nowrap; }
 .site-search-result-copy strong { overflow: hidden; font-size: clamp(19px, 2.1vw, 28px); line-height: 1.05; letter-spacing: -.035em; font-weight: 540; text-overflow: ellipsis; white-space: nowrap; }
 .site-search-result-copy p { display: -webkit-box; margin: 0; overflow: hidden; color: var(--muted); font-size: 12px; line-height: 1.45; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.site-search-result-copy p mark { padding: 0 .08em; background: color-mix(in srgb, var(--accent) 20%, transparent); color: #fff; }
+.site-search-results[aria-busy="true"] { opacity: .72; transition: opacity .18s ease; }
 .site-search-results a > i { color: var(--accent); font-size: 18px; font-style: normal; opacity: .55; transition: transform .18s ease, opacity .18s ease; }
 .site-search-results a:hover > i, .site-search-results a:focus-visible > i { opacity: 1; transform: translateX(4px); }
 .site-search-footer { display: flex; align-items: center; justify-content: center; gap: 12px; padding-top: 24px; color: var(--faint); font: 8px/1 ui-monospace, monospace; letter-spacing: .1em; text-transform: uppercase; }
