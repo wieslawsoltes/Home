@@ -15,7 +15,7 @@ export type Capability = {
   status: 'Stable' | 'Active' | 'Preview';
   packages: PackageLink[];
   install: string;
-  usageLanguage: 'csharp' | 'xml' | 'bash';
+  usageLanguage: 'csharp' | 'xml' | 'bash' | 'javascript';
   usage: string;
   highlights: string[];
   layers: CapabilityLayer[];
@@ -380,6 +380,186 @@ serializer.Save(stream, Layout);
   }),
 
   capability({
+    projectSlug: 'htmlml', slug: 'native-markup', name: 'Native HTML Markup', eyebrow: 'HTML semantics mapped to Avalonia', status: 'Preview',
+    description: 'HtmlML provides HTML-shaped XAML elements for headings, text, lists, navigation, sections, media, links, scripts, styles, and Canvas while creating normal native Avalonia controls.',
+    statement: 'Use familiar document semantics without putting a browser inside the application.',
+    packages: [{ name: 'HtmlML', note: 'HTML-like Avalonia elements, document structure, styling, scripts, and Canvas.', url: 'https://github.com/wieslawsoltes/HtmlML/tree/main/src/HtmlML' }],
+    install: 'git clone https://github.com/wieslawsoltes/HtmlML.git\n# Add a ProjectReference to src/HtmlML/HtmlML.csproj.',
+    usageLanguage: 'xml',
+    usage: `<html xmlns="https://github.com/avaloniaui"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <body class="app-body">
+    <nav><a href="#work">Work</a></nav>
+    <section class="hero">
+      <h1>Native Avalonia. Familiar markup.</h1>
+      <p>No embedded browser required.</p>
+    </section>
+  </body>
+</html>`,
+    highlights: ['30+ HTML-shaped elements', 'Native Avalonia control output', 'Document, semantic, and media tags', 'Extensible element base classes'],
+    layers: [{ label: 'Declare', detail: 'HTML-shaped tags express document and application structure in XAML.' }, { label: 'Create', detail: 'Each element maps to an Avalonia control with normal properties and layout.' }, { label: 'Compose', detail: 'Elements participate in native trees, resources, input, and lifecycle.' }, { label: 'Extend', detail: 'Applications derive new elements or register domain-specific tags.' }],
+    sourcePath: 'src/HtmlML', docsPath: 'src/HtmlML/README.md', related: ['css-styling', 'javascript-runtime', 'canvas-playground']
+  }),
+  capability({
+    projectSlug: 'htmlml', slug: 'css-styling', name: 'CSS-inspired Styling', eyebrow: 'Web-shaped values, Avalonia properties', status: 'Preview',
+    description: 'Stylesheet links, style elements, classes, inline declarations, selectors, and value converters translate familiar CSS-oriented authoring into Avalonia styling and properties.',
+    statement: 'Keep the vocabulary familiar while preserving the native styling system underneath.',
+    packages: [{ name: 'HtmlML', note: 'CSS converter, runtime style applier, classes, links, style tags, and inline declarations.', url: 'https://github.com/wieslawsoltes/HtmlML/tree/main/src/HtmlML/Css' }],
+    install: 'git clone https://github.com/wieslawsoltes/HtmlML.git\n# Reference src/HtmlML/HtmlML.csproj and add a stylesheet asset.',
+    usageLanguage: 'xml',
+    usage: `<head>
+  <link rel="stylesheet"
+        href="avares://Demo/Assets/site.css"
+        type="text/css" />
+</head>
+<body class="app-body">
+  <section class="card" style="padding: 24px">
+    <h2>Styled through familiar values</h2>
+  </section>
+</body>`,
+    highlights: ['Stylesheet and style elements', 'Classes and inline declarations', 'CSS-to-Avalonia value conversion', 'Runtime style application'],
+    layers: [{ label: 'Load', detail: 'Link and style elements resolve external or inline declarations.' }, { label: 'Match', detail: 'Element names, classes, and document structure determine applicable rules.' }, { label: 'Convert', detail: 'CSS-inspired values map into Avalonia property types.' }, { label: 'Apply', detail: 'The runtime updates native control classes and properties.' }],
+    sourcePath: 'src/HtmlML/Css', related: ['native-markup', 'javascript-runtime']
+  }),
+  capability({
+    projectSlug: 'htmlml', slug: 'javascript-runtime', name: 'JavaScript.Avalonia', eyebrow: 'Script native UI without a WebView', status: 'Preview',
+    description: 'A standalone Jint-powered runtime exposes window, document, DOM queries and mutation, routed events, timers, animation frames, CommonJS modules, HTTP/assets, and embedded TypeScript transpilation to any Avalonia TopLevel.',
+    statement: 'Give native Avalonia controls a browser-like scripting model while keeping the host fully managed.',
+    packages: [{ name: 'JavaScript.Avalonia', note: 'Jint host, DOM bridge, event propagation, modules, TypeScript, timers, animation, and Canvas.', url: 'https://github.com/wieslawsoltes/HtmlML/tree/main/src/JavaScript.Avalonia' }],
+    install: 'git clone https://github.com/wieslawsoltes/HtmlML.git\n# Add a ProjectReference to src/JavaScript.Avalonia/JavaScript.Avalonia.csproj.',
+    usageLanguage: 'csharp',
+    usage: `var host = new JintAvaloniaHost(this);
+host.ExecuteScriptText("""
+const button = document.getElementById('RunButton');
+const output = document.getElementById('OutputText');
+
+button.addEventListener('click', () => {
+  output.textContent = 'Handled from JavaScript';
+});
+""");`,
+    highlights: ['DOM queries and native tree mutation', 'Capture, target, and bubble event phases', 'TypeScript and CommonJS modules', 'Timers and requestAnimationFrame'],
+    layers: [{ label: 'Host', detail: 'JintAvaloniaHost owns engine lifetime and binds an Avalonia TopLevel.' }, { label: 'Document', detail: 'DOM wrappers traverse, create, mutate, and identify native controls.' }, { label: 'Events', detail: 'Avalonia routed events become DOM-style capture, target, and bubble callbacks.' }, { label: 'Runtime', detail: 'Modules, assets, TypeScript, timers, animation, and host functions support complete scripts.' }],
+    sourcePath: 'src/JavaScript.Avalonia', docsPath: 'src/JavaScript.Avalonia/README.md', related: ['native-markup', 'canvas-playground', 'css-styling']
+  }),
+  capability({
+    projectSlug: 'htmlml', slug: 'canvas-playground', name: 'Canvas & Playground', eyebrow: 'Scriptable drawing and live experiments', status: 'Preview',
+    description: 'Canvas 2D, WebGL-oriented rendering, pointer events, animation frames, editable scripts, XAML preview, file bridges, console output, and TypeScript demos form an immediate native scripting laboratory.',
+    statement: 'Sketch, animate, and iterate on native scripted UI in one feedback loop.',
+    packages: [{ name: 'HtmlML Canvas', note: 'HTML-shaped canvas element and scripting bridge.', url: 'https://github.com/wieslawsoltes/HtmlML/tree/main/src/HtmlML/Html/canvas.cs' }, { name: 'JavaScript Playground', note: 'Interactive Avalonia host with source, preview, scripts, and console.', url: 'https://github.com/wieslawsoltes/HtmlML/tree/main/samples/JavaScriptPlayground' }],
+    install: 'git clone https://github.com/wieslawsoltes/HtmlML.git\ncd HtmlML\ndotnet run --project samples/JavaScriptPlayground/JavaScriptPlayground.csproj',
+    usageLanguage: 'javascript',
+    usage: `const canvas = document.getElementById('draw');
+const ctx = canvas.getContext('2d');
+
+ctx.strokeStyle = '#ff8f72';
+canvas.addEventListener('pointermove', event => {
+  ctx.lineTo(event.x, event.y);
+  ctx.stroke();
+});`,
+    highlights: ['Canvas 2D drawing surface', 'WebGL-oriented rendering context', 'Live JavaScript and TypeScript demos', 'XAML preview, files, and console bridges'],
+    layers: [{ label: 'Edit', detail: 'The playground loads JavaScript, TypeScript, XAML, and supporting assets.' }, { label: 'Execute', detail: 'The embedded runtime transpiles modules and runs them against the live TopLevel.' }, { label: 'Draw', detail: 'Canvas contexts record paths, paint, text, transforms, or GPU-oriented frames.' }, { label: 'Inspect', detail: 'Preview and console surfaces expose visible output and runtime diagnostics.' }],
+    sourcePath: 'samples/JavaScriptPlayground', related: ['javascript-runtime', 'native-markup']
+  }),
+
+  capability({
+    projectSlug: 'dxf-parser', slug: 'parser-tree', name: 'DXF Parser & Tree', eyebrow: 'Group codes into stable structure', status: 'Active',
+    description: 'An iterative parser converts DXF code/value pairs into a hierarchical entity tree with handles, parent metadata, container boundaries, preserved ordering, synthetic end markers, and round-trip serialization.',
+    statement: 'See the drawing as explicit, navigable file structure.',
+    packages: [{ name: 'DxfParser', note: 'Standalone parser, tree grouping, lookup, and serialization component.', url: 'https://github.com/wieslawsoltes/DxfParser/blob/main/components/dxf-parser.js' }],
+    install: 'git clone https://github.com/wieslawsoltes/DxfParser.git\n# Load components/utils.js and components/dxf-parser.js.',
+    usageLanguage: 'javascript',
+    usage: `const parser = new DxfParser();
+const nodes = parser.parse(dxfText);
+
+const layerTable = parser.findNodeByIdIterative(nodes, nodeId);
+const roundTrip = parser.serializeTree(nodes);`,
+    highlights: ['Iterative O(n) grouping', 'Handles and parent metadata', 'Malformed-container recovery', 'Round-trip DXF serialization'],
+    layers: [{ label: 'Tokenize', detail: 'Alternating code and value lines become ordered DXF tags.' }, { label: 'Group', detail: 'An explicit stack builds sections, tables, blocks, objects, and entity children.' }, { label: 'Repair', detail: 'Missing container terminators produce traceable synthetic end nodes.' }, { label: 'Serialize', detail: 'The stored order and hierarchy emit back into DXF text.' }],
+    sourcePath: 'components/dxf-parser.js', docsPath: 'docs/dxf-parser.md', related: ['inspection-diff', 'rendering', 'editor-export']
+  }),
+  capability({
+    projectSlug: 'dxf-parser', slug: 'inspection-diff', name: 'Inspection, Diagnostics & Diff', eyebrow: 'Understand and compare drawings', status: 'Active',
+    description: 'Virtualized tree and batch grids expose tags, codes, sizes, handles, classes, blocks, materials, fonts, proxy objects, diagnostics, statistics, filters, history, and side-by-side structural differences.',
+    statement: 'Turn opaque CAD files into inspectable engineering evidence.',
+    packages: [{ name: 'DXF Inspection Workbench', note: 'Tree grids, diagnostics, statistics, navigation, batch data, and comparison UI.', url: 'https://github.com/wieslawsoltes/DxfParser/tree/main/components' }],
+    install: 'git clone https://github.com/wieslawsoltes/DxfParser.git\ncd DxfParser\n# Serve index.html from a local static web server.',
+    usageLanguage: 'javascript',
+    usage: `const left = parser.parse(leftDxf);
+const right = parser.parse(rightDxf);
+
+const diff = TreeDiffEngine.compare(left, right);
+renderTreeDiff(diff, leftPanel, rightPanel);`,
+    highlights: ['Virtualized hierarchical tree grids', 'Handle, dependency, and object diagnostics', 'Side-by-side structural diff', 'Batch processing and exports'],
+    layers: [{ label: 'Index', detail: 'Handles, types, tables, objects, and dependencies become searchable indexes.' }, { label: 'Diagnose', detail: 'Rules surface malformed structure, unsupported content, and drawing metadata.' }, { label: 'Compare', detail: 'Two trees align additions, removals, and changed values.' }, { label: 'Present', detail: 'Virtualized grids, overlays, navigation, and exports make results actionable.' }],
+    sourcePath: 'components/tree-diff-engine.js', related: ['parser-tree', 'rendering', 'editor-export']
+  }),
+  capability({
+    projectSlug: 'dxf-parser', slug: 'rendering', name: 'DXF Rendering', eyebrow: 'Scene graph to Canvas and WebGL', status: 'Preview',
+    description: 'Document builders, entity adapters, tessellation, text layout, materials, plot styles, layers, blocks, hatches, dimensions, overlays, and retained scene nodes drive Canvas and WebGL-oriented rendering surfaces.',
+    statement: 'Connect file structure to deterministic visible geometry.',
+    packages: [{ name: 'DxfRendering', note: 'Document builder, scene graph, entities, renderer, text, tessellation, overlays, Canvas, and WebGL surfaces.', url: 'https://github.com/wieslawsoltes/DxfParser/tree/main/components' }],
+    install: 'git clone https://github.com/wieslawsoltes/DxfParser.git\n# Load dist/dxf-rendering.global.js after the parser.',
+    usageLanguage: 'javascript',
+    usage: `const document = DxfRendering.buildDocument(nodes);
+const scene = DxfRendering.buildScene(document);
+
+const renderer = new DxfRendering.Renderer(canvas);
+renderer.setScene(scene);
+renderer.render();`,
+    highlights: ['Retained rendering scene graph', 'Canvas and WebGL-oriented surfaces', 'Text, hatches, dimensions, blocks, and layers', 'SVG and JSON frame regression baselines'],
+    layers: [{ label: 'Build', detail: 'Parsed sections, tables, blocks, and entities become a normalized rendering document.' }, { label: 'Scene', detail: 'Retained nodes carry geometry, styles, text, materials, ordering, and pick metadata.' }, { label: 'Surface', detail: 'Canvas or WebGL-oriented adapters draw the resolved scene.' }, { label: 'Verify', detail: 'Frame JSON and SVG outputs compare against checked-in baselines.' }],
+    sourcePath: 'components/rendering-renderer.js', docsPath: 'docs/dxf-rendering-plan.md', related: ['parser-tree', 'inspection-diff', 'editor-export']
+  }),
+  capability({
+    projectSlug: 'dxf-parser', slug: 'editor-export', name: 'Editor & Export', eyebrow: 'Change and round-trip drawings', status: 'Preview',
+    description: 'A lightweight browser editor composes selection, geometry mutation, viewport tools, property editing, file opening, drag/drop, history, save, and DXF serialization around the shared parser and rendering stack.',
+    statement: 'Move from forensic inspection into controlled drawing changes.',
+    packages: [{ name: 'DxfEditor', note: 'Browser-native editing adapter, application shell, and export workflow.', url: 'https://github.com/wieslawsoltes/DxfParser/tree/main/editor' }],
+    install: 'git clone https://github.com/wieslawsoltes/DxfParser.git\ncd DxfParser\n# Serve editor/index.html from a local static web server.',
+    usageLanguage: 'javascript',
+    usage: `const editor = await DxfEditor.open(file);
+editor.selection.set(activeEntity);
+editor.commands.move(activeEntity, { x: 20, y: -8 });
+
+const output = editor.serialize();
+download('edited.dxf', output);`,
+    highlights: ['Shared parser and renderer', 'Selection and geometry commands', 'Properties, history, and file workflows', 'DXF serialization and download'],
+    layers: [{ label: 'Open', detail: 'Files and drag/drop feed the shared parse and render pipeline.' }, { label: 'Select', detail: 'Scene hit testing resolves visible geometry back to document entities.' }, { label: 'Edit', detail: 'Commands mutate geometry and properties with history tracking.' }, { label: 'Export', detail: 'Scene changes reconcile with the document tree and serialize to DXF.' }],
+    sourcePath: 'editor', related: ['parser-tree', 'rendering', 'inspection-diff']
+  }),
+
+  capability({
+    projectSlug: 'cdp', slug: 'test-studio', name: 'Test Studio', eyebrow: 'Visual native UI test authoring', status: 'Preview',
+    description: 'A complete test-design workspace records interactions, synchronizes step lists with YAML, offers live selector IntelliSense and assertion inference, composes visual node flows, launches apps, runs suites, and presents screenshots, logs, telemetry, and reports.',
+    statement: 'Author serious native UI tests visually, declaratively, or both.',
+    packages: [{ name: 'Chrome.DevTools.Inspector', note: 'Desktop inspector and integrated Test Studio global tool.' }, { name: 'Chrome.DevTools.Inspector.Shared', note: 'Test Studio models, flow execution, recorder, telemetry, and workspace composition.' }, { name: 'Chrome.DevTools.Inspector.Controls', note: 'Reusable editor, chart, diff, overlay, and diagnostics controls.' }],
+    install: 'dotnet tool install --global Chrome.DevTools.Inspector --prerelease\ncdp-inspector',
+    usageLanguage: 'bash',
+    usage: `# Connect Test Studio to the target CDP endpoint.
+cdp-inspector --url http://127.0.0.1:9222
+
+# Record a flow, infer assertions, then run it
+# interactively or export the .flow.yaml file.`,
+    highlights: ['Recording and visual node flows', 'Synchronized YAML with 50+ commands', 'Live selectors and assertion inference', 'Screenshots, telemetry, suites, and reports'],
+    layers: [{ label: 'Record', detail: 'Pointer and focus events become stable selector-driven steps.' }, { label: 'Author', detail: 'Step list, YAML editor, IntelliSense, environments, and node graph stay synchronized.' }, { label: 'Execute', detail: 'Play, pause, stop, step, reusable flows, loops, scripts, and app launch drive the target.' }, { label: 'Evidence', detail: 'Assertions, screenshots, logs, CPU, memory, FPS, network, timing, and reports explain every result.' }],
+    sourcePath: 'samples/CdpInspectorApp', docsPath: 'docs/articles/test-studio.md', related: ['testing-ci', 'automation', 'inspector']
+  }),
+  capability({
+    projectSlug: 'cdp', slug: 'testing-ci', name: 'Testing & CI', eyebrow: 'Headless and repeatable native UI tests', status: 'Preview',
+    description: 'Headless Avalonia execution, a global flow runner, Playwright and Puppeteer compatibility, Selenium and Appium orchestration, OS accessibility automation, screenshots, selectors, waits, assertions, and GitHub Actions support cover local through CI test lanes.',
+    statement: 'Run the same native UI intent interactively, headlessly, or through established automation ecosystems.',
+    packages: [{ name: 'Chrome.DevTools.Automation.Headless', note: 'Avalonia.Headless driver and test helpers.' }, { name: 'Chrome.DevTools.Runner', note: 'Global .flow.yaml headless runner.' }, { name: 'Chrome.DevTools.Automation.Selenium', note: 'Selenium fixture and orchestration.' }, { name: 'Chrome.DevTools.Automation.Appium', note: 'Appium fixture and orchestration.' }, { name: 'Chrome.DevTools.Automation.OS', note: 'macOS, Windows, and Linux accessibility automation.' }],
+    install: 'dotnet tool install --global Chrome.DevTools.Runner --prerelease\ndotnet add package Chrome.DevTools.Automation.Headless --prerelease',
+    usageLanguage: 'bash',
+    usage: `# Execute a Test Studio flow without the desktop editor.
+cdp-runner tests/login.flow.yaml \
+  --app "dotnet run --project src/MyApp -- --headless" \
+  --report artifacts/test-report.html`,
+    highlights: ['Zero-display Avalonia.Headless execution', 'Test Studio flow runner', 'Playwright, Selenium, Appium, and Puppeteer', 'CI screenshots, telemetry, and reports'],
+    layers: [{ label: 'Launch', detail: 'The runner starts a headless or visible application and waits for CDP discovery.' }, { label: 'Drive', detail: 'Flows or external clients query selectors and dispatch input through protocol domains.' }, { label: 'Assert', detail: 'Visibility, text, state, properties, scripts, waits, and screenshots verify behavior.' }, { label: 'Publish', detail: 'CI retains logs, images, telemetry, and machine- or human-readable reports.' }],
+    sourcePath: 'src/CDP.Automation.Headless', docsPath: 'docs/articles/headless-cdp-testing.md', related: ['test-studio', 'automation', 'framework-adapters']
+  }),
+  capability({
     projectSlug: 'cdp', slug: 'protocol-server', name: 'Protocol Server', eyebrow: 'Chrome DevTools Protocol core', status: 'Preview',
     description: 'A framework-neutral CDP server, session router, domain model, HTTP discovery endpoint, and WebSocket transport for exposing native application targets.',
     statement: 'Speak a standard diagnostics protocol before choosing a UI framework.',
@@ -394,7 +574,7 @@ serializer.Save(stream, Layout);
 await server.StartAsync(cancellationToken);`,
     highlights: ['HTTP target discovery', 'WebSocket sessions', 'Commands and domain events', 'Framework-neutral server core'],
     layers: [{ label: 'Target', detail: 'Applications publish inspectable runtime targets.' }, { label: 'Session', detail: 'WebSocket connections isolate command and event streams.' }, { label: 'Domain', detail: 'Handlers implement DOM, Runtime, CSS, Input, Page, and related protocol areas.' }, { label: 'Adapter', detail: 'Framework packages translate domain operations into native UI behavior.' }],
-    sourcePath: 'src/Chrome.DevTools.Protocol', related: ['framework-adapters', 'automation', 'inspector']
+    sourcePath: 'src/Chrome.DevTools.Protocol', related: ['test-studio', 'testing-ci', 'framework-adapters']
   }),
   capability({
     projectSlug: 'cdp', slug: 'framework-adapters', name: 'Framework Adapters', eyebrow: 'Native UI inspection', status: 'Preview',
@@ -408,7 +588,7 @@ await server.StartAsync(cancellationToken);`,
     .UseCdpDiagnostics(options => options.Port = 9222);`,
     highlights: ['Avalonia visual and logical trees', 'Uno, WPF, and WinUI adapters', 'Property and style inspection', 'Input, overlays, and screenshots'],
     layers: [{ label: 'Tree', detail: 'Native elements receive stable protocol identities and hierarchy.' }, { label: 'Property', detail: 'Framework properties, bindings, styles, and resources map to inspectable data.' }, { label: 'Action', detail: 'Input, highlighting, edits, and captures call native services.' }, { label: 'Protocol', detail: 'Results return through standard CDP commands and events.' }],
-    sourcePath: 'src/Avalonia.Diagnostics.Cdp', related: ['protocol-server', 'inspector', 'automation']
+    sourcePath: 'src/Avalonia.Diagnostics.Cdp', related: ['testing-ci', 'test-studio', 'protocol-server']
   }),
   capability({
     projectSlug: 'cdp', slug: 'automation', name: 'Automation Drivers', eyebrow: 'Headless, Selenium, and Appium', status: 'Preview',
@@ -424,7 +604,7 @@ await page.ClickAsync("button[name=Save]");
 await page.ScreenshotAsync("saved.png");`,
     highlights: ['Headless application runner', 'Selenium integration', 'Appium integration', 'OS accessibility automation'],
     layers: [{ label: 'Launch', detail: 'A driver starts or attaches to the application under test.' }, { label: 'Discover', detail: 'The CDP target describes available sessions and UI state.' }, { label: 'Drive', detail: 'Selectors, input, evaluation, and waits express test intent.' }, { label: 'Assert', detail: 'Snapshots, properties, screenshots, and events provide evidence.' }],
-    sourcePath: 'src/CDP.Automation.Headless', related: ['protocol-server', 'framework-adapters', 'inspector']
+    sourcePath: 'src/CDP.Automation.Headless', related: ['test-studio', 'testing-ci', 'framework-adapters']
   }),
   capability({
     projectSlug: 'cdp', slug: 'inspector', name: 'Inspector & CLI', eyebrow: 'Human and scripted diagnostics', status: 'Preview',
@@ -438,7 +618,7 @@ cdp-inspector tree --target 0
 cdp-inspector screenshot --target 0 --output app.png`,
     highlights: ['Desktop inspector composition', 'WYSIWYG overlays and editing', 'In-process diagnostic tools', 'Scriptable CLI client'],
     layers: [{ label: 'Connect', detail: 'Clients discover targets and create a protocol session.' }, { label: 'Model', detail: 'Shared view models normalize trees, properties, events, and commands.' }, { label: 'Present', detail: 'Controls and WYSIWYG packages compose a visual inspector.' }, { label: 'Script', detail: 'CLI commands expose the same session to terminals and agents.' }],
-    sourcePath: 'src/CDP.Inspector.Shared', related: ['protocol-server', 'framework-adapters', 'authoring-tools']
+    sourcePath: 'src/CDP.Inspector.Shared', related: ['test-studio', 'testing-ci', 'authoring-tools']
   }),
   capability({
     projectSlug: 'cdp', slug: 'authoring-tools', name: 'Authoring Toolkits', eyebrow: 'Editors, language services, and layout', status: 'Preview',
@@ -452,7 +632,7 @@ cdp-inspector screenshot --target 0 --output app.png`,
     Selection="{Binding Selection}" />`,
     highlights: ['Markdown parser, renderer, and editor', 'Office document renderer and editor', 'Node editor and split layouts', 'XAML and C# language tooling'],
     layers: [{ label: 'Model', detail: 'Purpose-built ASTs preserve document or language structure.' }, { label: 'Engine', detail: 'Layout, render, parse, or graph services remain UI-independent.' }, { label: 'Control', detail: 'Avalonia surfaces add selection, caret, navigation, and editing.' }, { label: 'Workspace', detail: 'Split, minimap, and language services compose full tools.' }],
-    sourcePath: 'src/CDP.Markdown.Editor', related: ['inspector', 'automation']
+    sourcePath: 'src/CDP.Markdown.Editor', related: ['test-studio', 'inspector', 'automation']
   }),
 
   capability({

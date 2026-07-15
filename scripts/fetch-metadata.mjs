@@ -8,7 +8,10 @@ const outputPath = resolve(root, 'public/data/metadata.json');
 const source = await readFile(sourcePath, 'utf8');
 const capabilitySource = await readFile(capabilitySourcePath, 'utf8');
 const repositories = [...new Set([...source.matchAll(/repo:\s*'([^']+)'/g)].map((match) => match[1]))];
-const packages = [...new Set([...`${source}\n${capabilitySource}`.matchAll(/\{\s*name:\s*'([^']+)'\s*,\s*note:/g)].map((match) => match[1]))];
+const packageObjects = [...`${source}\n${capabilitySource}`.matchAll(/\{\s*name:\s*'([^']+)'\s*,\s*note:[^}]*\}/g)];
+const packages = [...new Set(packageObjects
+  .filter((match) => !/\burl:\s*'/.test(match[0]))
+  .map((match) => match[1]))];
 const token = process.env.GITHUB_TOKEN ?? process.env.GH_TOKEN;
 
 async function fetchJson(url, headers = {}) {

@@ -19,7 +19,7 @@ export type Project = {
   status: 'Active' | 'Preview' | 'Maintained';
   packages: PackageLink[];
   install: string;
-  usageLanguage: 'csharp' | 'xml' | 'bash';
+  usageLanguage: 'csharp' | 'xml' | 'bash' | 'javascript';
   usage: string;
   highlights: string[];
 };
@@ -246,6 +246,23 @@ export const projects: Project[] = [
     highlights: ['Data-driven diagrams', 'Multiple rendering backends', 'Extensible editor tools', 'Cross-platform architecture']
   },
   {
+    slug: 'dxf-parser',
+    name: 'DxfParser',
+    eyebrow: 'DXF inspection and rendering workbench',
+    category: 'Tools',
+    repo: 'DxfParser',
+    description: 'A browser-native DXF parser, tree inspector, comparison workspace, diagnostics engine, renderer, and lightweight editor for detailed AutoCAD drawing analysis.',
+    statement: 'Open the DXF structure, inspect every code, compare drawings, and render the geometry.',
+    accent: '#72d6ff',
+    tier: 'Maintained',
+    status: 'Maintained',
+    packages: [{ name: 'DxfParser', note: 'Standalone JavaScript parser, inspector, rendering stack, diagnostics, diff, and editor.', url: 'https://github.com/wieslawsoltes/DxfParser' }],
+    install: 'git clone https://github.com/wieslawsoltes/DxfParser.git\ncd DxfParser\n# Serve this directory with any static web server.',
+    usageLanguage: 'javascript',
+    usage: 'const parser = new DxfParser();\nconst document = parser.parse(dxfText);\n\nconst serialized = parser.serializeTree(document);',
+    highlights: ['Hierarchical DXF tag and entity tree', 'Canvas and WebGL rendering', 'Drawing comparison and diagnostics', 'Round-trip editing and DXF export']
+  },
+  {
     slug: 'proedit',
     name: 'ProEdit',
     eyebrow: 'Document engineering platform',
@@ -435,13 +452,34 @@ export const projects: Project[] = [
     highlights: ['Spectrum and channel editing', 'Palette workflows', 'Alpha support', 'Reusable Avalonia styles']
   },
   {
+    slug: 'htmlml',
+    name: 'HtmlML',
+    eyebrow: 'HTML semantics for native Avalonia UI',
+    category: 'Avalonia',
+    repo: 'HtmlML',
+    description: 'An HTML-inspired markup system for native Avalonia controls, paired with a reusable JavaScript and TypeScript runtime, DOM-style APIs, events, styling, and Canvas rendering.',
+    statement: 'Write familiar HTML-shaped markup and script native Avalonia controls—without embedding a browser.',
+    accent: '#ff8f72',
+    featured: true,
+    tier: 'Flagship',
+    status: 'Preview',
+    packages: [
+      { name: 'HtmlML', note: 'HTML-like Avalonia elements, styling, document structure, scripts, and Canvas.', url: 'https://github.com/wieslawsoltes/HtmlML/tree/main/src/HtmlML' },
+      { name: 'JavaScript.Avalonia', note: 'Standalone Jint host, DOM bridge, events, TypeScript, timers, modules, and Canvas APIs.', url: 'https://github.com/wieslawsoltes/HtmlML/tree/main/src/JavaScript.Avalonia' }
+    ],
+    install: 'git clone https://github.com/wieslawsoltes/HtmlML.git\n# Reference src/HtmlML and, optionally, src/JavaScript.Avalonia.',
+    usageLanguage: 'xml',
+    usage: '<html xmlns="https://github.com/avaloniaui"\n      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">\n  <body class="app-body">\n    <section class="card">\n      <h1>Hello HtmlML</h1>\n      <canvas id="draw" width="400" height="200" />\n    </section>\n  </body>\n</html>',
+    highlights: ['Native HTML-like Avalonia elements', 'CSS-inspired classes and inline styles', 'JavaScript, TypeScript, DOM, and events', 'Canvas 2D and WebGL-oriented scripting']
+  },
+  {
     slug: 'cdp',
     name: 'CDP',
     eyebrow: 'DevTools protocol for native UI',
     category: 'Tools',
     repo: 'CDP',
-    description: 'A Chrome DevTools Protocol server that makes Avalonia and other native .NET UI frameworks inspectable and automatable by DevTools, Playwright, Puppeteer, and AI agents.',
-    statement: 'Bring web-grade inspection and automation to native .NET interfaces.',
+    description: 'A native UI testing and diagnostics platform built on Chrome DevTools Protocol, with Test Studio, YAML flows, recording, headless CI, Playwright, Selenium, Appium, inspectors, and framework adapters.',
+    statement: 'Design, record, run, and diagnose serious native UI tests through one open protocol.',
     accent: '#5ee1c0',
     featured: true,
     tier: 'Flagship',
@@ -449,12 +487,14 @@ export const projects: Project[] = [
     packages: [
       { name: 'Chrome.DevTools.Protocol', note: 'Protocol server, sessions, transports, and domain dispatch.' },
       { name: 'Chrome.DevTools.Avalonia', note: 'Avalonia DOM, CSS, input, page, overlay, and runtime domains.' },
-      { name: 'Chrome.DevTools.Controls', note: 'Reusable inspector UI controls.' }
+      { name: 'Chrome.DevTools.Inspector', note: 'Desktop inspector and Test Studio global tool.' },
+      { name: 'Chrome.DevTools.Automation.Headless', note: 'Headless test driver and CI helpers.' },
+      { name: 'Chrome.DevTools.Runner', note: 'Headless .flow.yaml test runner global tool.' }
     ],
     install: 'dotnet add package Chrome.DevTools.Avalonia --prerelease',
     usageLanguage: 'csharp',
     usage: '// Register the Avalonia adapter and start the CDP endpoint.\n// Connect Chrome DevTools, Playwright, or Puppeteer\n// to the exposed HTTP/WebSocket discovery URL.',
-    highlights: ['Chrome DevTools inspection', 'Playwright and Puppeteer', 'Live CSS and overlay tools', 'Avalonia, WPF, WinUI, and Uno adapters']
+    highlights: ['Visual Test Studio and YAML flows', 'Recorder, assertions, telemetry, and reports', 'Headless CI, Playwright, Selenium, and Appium', 'Avalonia, WPF, WinUI, Uno, and OS adapters']
   },
   {
     slug: 'nativewebview',

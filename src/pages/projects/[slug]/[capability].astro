@@ -30,10 +30,11 @@ const related = (capability.related ?? [])
   .filter((item): item is Capability => Boolean(item));
 const primaryPackage = capability.packages[0];
 const isToolInstall = capability.install.startsWith('dotnet tool');
+const isSourceInstall = capability.install.startsWith('git clone');
 const packageReference = `<PackageReference Include="${primaryPackage.name}" Version="VERSION" />`;
 const centralPackage = `<PackageVersion Include="${primaryPackage.name}" Version="VERSION" />`;
-const installVariants = isToolInstall
-  ? [{ label: 'CLI', language: 'bash', code: capability.install }]
+const installVariants = isToolInstall || isSourceInstall
+  ? [{ label: isSourceInstall ? 'Source' : 'CLI', language: 'bash', code: capability.install }]
   : [
       { label: 'CLI', language: 'bash', code: capability.install },
       { label: 'PackageReference', language: 'xml', code: packageReference },

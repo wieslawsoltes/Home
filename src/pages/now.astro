@@ -3,7 +3,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import { projects, projectUrl } from '@/data/projects';
 
 const base = import.meta.env.BASE_URL;
-const focus = ['progpu', 'proedit', 'cdp', 'nativewebview', 'devtools-uno', 'xaml-playground', 'procad', 'codexgui']
+const focus = ['progpu', 'proedit', 'cdp', 'htmlml', 'nativewebview', 'devtools-uno', 'xaml-playground', 'procad', 'dxf-parser', 'codexgui']
   .map((slug) => projects.find((project) => project.slug === slug))
   .filter((project): project is (typeof projects)[number] => Boolean(project));
 ---
