@@ -1,3 +1,5 @@
+import { longTailProjects } from './longTailProjects';
+
 export type PackageLink = {
   name: string;
   note: string;
@@ -15,6 +17,7 @@ export type Project = {
   statement: string;
   accent: string;
   featured?: boolean;
+  showInIndex?: boolean;
   tier?: 'Flagship' | 'Maintained' | 'Experimental';
   status: 'Active' | 'Preview' | 'Maintained';
   packages: PackageLink[];
@@ -497,6 +500,30 @@ export const projects: Project[] = [
     highlights: ['Visual Test Studio and YAML flows', 'Recorder, assertions, telemetry, and reports', 'Headless CI, Playwright, Selenium, and Appium', 'Avalonia, WPF, WinUI, Uno, and OS adapters']
   },
   {
+    slug: 'inspector',
+    name: 'Inspector',
+    eyebrow: 'Agent-ready Avalonia inspection',
+    category: 'Tools',
+    repo: 'Inspector',
+    description: 'A .NET CLI and runtime infrastructure for inspecting and manipulating live Avalonia visual and logical trees through host, process, and deterministic automation workflows.',
+    statement: 'Inspect, understand, and reshape a running Avalonia interface from the terminal or an agent.',
+    accent: '#72d6ff',
+    featured: true,
+    tier: 'Flagship',
+    status: 'Active',
+    packages: [
+      { name: 'Inspector.Cli.Tool', note: 'Global .NET tool with deterministic text and JSON commands.' },
+      { name: 'Inspector.AvaloniaAdapter', note: 'Visual and logical tree, property, and mutation adapters for Avalonia.' },
+      { name: 'Inspector.Host', note: 'In-process host runtime and mutation services.' },
+      { name: 'Inspector.Transport', note: 'Local transport, sessions, and authorization models.' },
+      { name: 'Inspector.Contracts', note: 'Shared tree, property, mutation, schema, and diagnostic contracts.' }
+    ],
+    install: 'dotnet tool install --global Inspector.Cli.Tool',
+    usageLanguage: 'bash',
+    usage: 'inspector connect --mode process --name MyAvaloniaApp --json\ninspector tree get --session-id <session-id> --kind visual --json\ninspector node get-properties --session-id <session-id> --node-id <node-id> --json',
+    highlights: ['Visual and logical tree inspection', 'Live properties and structural mutation', 'Host, process, and deterministic stub modes', 'Stable JSON for tools and coding agents']
+  },
+  {
     slug: 'nativewebview',
     name: 'NativeWebView',
     eyebrow: 'Native browser embedding',
@@ -618,7 +645,8 @@ export const projects: Project[] = [
     usageLanguage: 'xml',
     usage: '<playground:XamlEditor\n    Xaml="{Binding Document}"\n    IsDesignMode="True" />',
     highlights: ['Live XAML preview', 'WYSIWYG canvas editing', 'Toolbox, structure, and properties', 'Headless designer coverage']
-  }
+  },
+  ...longTailProjects
 ];
 
 for (const project of projects) {

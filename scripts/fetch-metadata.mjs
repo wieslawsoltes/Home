@@ -2,11 +2,17 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
-const sourcePath = resolve(root, 'src/data/projects.ts');
-const capabilitySourcePath = resolve(root, 'src/data/capabilities.ts');
+const sourcePaths = [
+  resolve(root, 'src/data/projects.ts'),
+  resolve(root, 'src/data/longTailProjects.ts')
+];
+const capabilitySourcePaths = [
+  resolve(root, 'src/data/capabilities.ts'),
+  resolve(root, 'src/data/longTailCapabilities.ts')
+];
 const outputPath = resolve(root, 'public/data/metadata.json');
-const source = await readFile(sourcePath, 'utf8');
-const capabilitySource = await readFile(capabilitySourcePath, 'utf8');
+const source = (await Promise.all(sourcePaths.map((path) => readFile(path, 'utf8')))).join('\n');
+const capabilitySource = (await Promise.all(capabilitySourcePaths.map((path) => readFile(path, 'utf8')))).join('\n');
 const repositories = [...new Set([...source.matchAll(/repo:\s*'([^']+)'/g)].map((match) => match[1]))];
 const packageObjects = [...`${source}\n${capabilitySource}`.matchAll(/\{\s*name:\s*'([^']+)'\s*,\s*note:[^}]*\}/g)];
 const packages = [...new Set(packageObjects

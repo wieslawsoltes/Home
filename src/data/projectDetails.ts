@@ -1,4 +1,5 @@
 import type { Project } from './projects';
+import { longTailProjectDetails } from './longTailProjectDetails';
 
 export type ProjectMedia = {
   src: string;
@@ -36,6 +37,7 @@ const docs = (repo: string) => `https://wieslawsoltes.github.io/${repo}/`;
 const repo = (name: string, path = '') => `https://github.com/wieslawsoltes/${name}${path}`;
 
 const overrides: Record<string, Partial<ProjectDetail>> = {
+  ...longTailProjectDetails,
   progpu: {
     introduction: 'ProGPU owns the path from device creation to presentation. Its layers separate platform services, retained composition, vector geometry, text, and compute so framework integrations can adopt only the pieces they need.',
     audience: ['UI framework authors replacing a renderer', 'Graphics tools that need WebGPU-native primitives', 'Teams exploring portable GPU composition in .NET'],
@@ -243,6 +245,17 @@ const overrides: Record<string, Partial<ProjectDetail>> = {
     links: [{ label: 'Test Studio guide', href: repo('CDP', '/blob/main/docs/articles/test-studio.md') }, { label: 'Headless testing', href: repo('CDP', '/blob/main/docs/articles/headless-cdp-testing.md') }, { label: 'Test scripting', href: repo('CDP', '/blob/main/docs/articles/test-studio-scripting.md') }, { label: 'Documentation', href: docs('CDP') }],
     limitations: 'CDP and Test Studio are active previews. Framework-domain coverage and OS automation permissions vary by target; pin prerelease versions and validate flows in the intended CI environment.',
     related: ['avalonia-development-plugin', 'codexgui', 'xaml-playground']
+  },
+  inspector: {
+    introduction: 'Inspector makes a running Avalonia interface available as a stable, session-based engineering surface. Its contracts, transport, host runtime, Avalonia adapter, and CLI expose visual and logical trees, property metadata, live edits, structural mutations, diagnostics, and deterministic JSON for both developers and coding agents.',
+    audience: ['Avalonia developers debugging live tree and property state', 'Tool authors building inspection or preview workflows', 'Coding agents that need deterministic, scriptable UI feedback'],
+    architecture: [{ label: 'Contracts', detail: 'Shared DTOs describe capabilities, sessions, visual and logical trees, properties, mutations, errors, and diagnostics.' }, { label: 'Host + transport', detail: 'An in-process runtime exposes authorized, session-based inspection through a local endpoint.' }, { label: 'Avalonia adapter', detail: 'Tree traversal, property normalization, and mutation services translate runtime controls into portable contracts.' }, { label: 'CLI', detail: 'Human-readable and deterministic JSON commands connect, inspect, edit, validate, and report stable exit codes.' }],
+    compatibility: [{ label: '.NET', value: '10.0', state: 'ready' }, { label: 'Avalonia', value: 'Host and adapter', state: 'ready' }, { label: 'Host / process', value: 'Connection modes', state: 'ready' }, { label: 'Agent automation', value: 'Deterministic JSON', state: 'ready' }],
+    proof: [{ value: '2 trees', label: 'visual and logical topology' }, { value: '3 modes', label: 'stub, host, and process' }, { value: '5 operations', label: 'set, insert, remove, move, reparent' }],
+    media: [{ src: 'https://opengraph.githubassets.com/portfolio-inspector/wieslawsoltes/Inspector', alt: 'Inspector GitHub repository preview', caption: 'Inspector combines Avalonia runtime adapters, session infrastructure, a command-line tool, tests, and an instrumented sample application.' }],
+    links: [{ label: 'CLI guide', href: repo('Inspector', '/blob/main/README.md#cli-usage-examples') }, { label: 'Sample application', href: repo('Inspector', '/tree/main/samples/Inspector.SampleApp') }, { label: 'Agent skill', href: repo('Inspector', '/blob/main/SKILL/inspector-avalonia-cli/SKILL.md') }, { label: 'Repository', href: repo('Inspector') }],
+    limitations: 'Full process-mode UI inspection requires the target application to publish live Inspector snapshots. Without that integration, process mode deliberately falls back to process metadata rather than claiming a live Avalonia tree.',
+    related: ['cdp', 'avalonia-development-plugin', 'xaml-playground', 'devtools-uno']
   },
   nativewebview: {
     introduction: 'NativeWebView normalizes browser hosting without normalizing away platform capabilities. A common control selects a registered backend, while platform packages bind WebView2, WKWebView, WebKitGTK, mobile views, or browser hosting.',

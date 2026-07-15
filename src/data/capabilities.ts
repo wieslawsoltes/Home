@@ -1,4 +1,5 @@
 import { nugetUrl, projects, type PackageLink, type Project } from './projects';
+import { longTailCapabilities } from './longTailCapabilities';
 
 export type CapabilityLayer = {
   label: string;
@@ -12,7 +13,7 @@ export type Capability = {
   eyebrow: string;
   description: string;
   statement: string;
-  status: 'Stable' | 'Active' | 'Preview';
+  status: 'Stable' | 'Active' | 'Preview' | 'Maintained';
   packages: PackageLink[];
   install: string;
   usageLanguage: 'csharp' | 'xml' | 'bash' | 'javascript';
@@ -636,6 +637,95 @@ cdp-inspector screenshot --target 0 --output app.png`,
   }),
 
   capability({
+    projectSlug: 'inspector', slug: 'runtime-trees', name: 'Runtime Trees', eyebrow: 'Live Avalonia topology', status: 'Active',
+    description: 'Inspector enumerates both visual and logical Avalonia trees with stable node identities, hierarchy, type, name, classes, bounds, visibility, and schema-aware metadata.',
+    statement: 'Turn the running interface into explicit, queryable structure.',
+    packages: [{ name: 'Inspector.AvaloniaAdapter', note: 'Avalonia visual and logical tree traversal and node adapters.' }, { name: 'Inspector.Contracts', note: 'Portable tree, node, and schema contracts.' }],
+    install: 'dotnet add package Inspector.AvaloniaAdapter\ndotnet add package Inspector.Contracts',
+    usageLanguage: 'bash',
+    usage: `inspector connect --mode process --pid 12345 --json
+# Capture data.sessionId from the response.
+inspector tree get --session-id sess-123 --kind visual --json
+inspector tree get --session-id sess-123 --kind logical --json`,
+    highlights: ['Visual and logical tree snapshots', 'Stable node identifiers', 'Type, name, classes, bounds, and visibility', 'Portable contracts for custom clients'],
+    layers: [{ label: 'Connect', detail: 'A host or process target creates a reusable Inspector session.' }, { label: 'Traverse', detail: 'Avalonia adapters walk visual or logical children from the active root.' }, { label: 'Normalize', detail: 'Runtime controls become stable node DTOs with portable metadata.' }, { label: 'Query', detail: 'CLI and custom clients retrieve complete trees as text or deterministic JSON.' }],
+    sourcePath: 'src/Inspector.AvaloniaAdapter/TreeIntrospection', related: ['properties', 'sessions', 'agent-cli']
+  }),
+  capability({
+    projectSlug: 'inspector', slug: 'properties', name: 'Properties & Value Sources', eyebrow: 'Explain live control state', status: 'Active',
+    description: 'Property inspection reports names, owners, types, values, writability, and value sources for a selected Avalonia node, then exposes focused property changes through the same session.',
+    statement: 'See the values that actually shape a control—and change them deliberately.',
+    packages: [{ name: 'Inspector.AvaloniaAdapter', note: 'Property discovery, normalization, metadata, and Avalonia mutation adapters.' }],
+    install: 'dotnet add package Inspector.AvaloniaAdapter',
+    usageLanguage: 'bash',
+    usage: `inspector node get-properties \
+  --session-id sess-123 \
+  --node-id visual-button --json
+
+inspector node set-property \
+  --session-id sess-123 \
+  --node-id visual-button \
+  --property Width --value 320 --json`,
+    highlights: ['Property names, owners, types, and values', 'Local and normalized value-source metadata', 'Writable property discovery', 'Session-aware live updates'],
+    layers: [{ label: 'Select', detail: 'A stable tree node identifies the runtime object.' }, { label: 'Inspect', detail: 'The Avalonia adapter discovers framework and reflected properties.' }, { label: 'Normalize', detail: 'Values and sources become deterministic contract data.' }, { label: 'Edit', detail: 'Validated property changes flow back through the current session.' }],
+    sourcePath: 'src/Inspector.AvaloniaAdapter', related: ['runtime-trees', 'mutations', 'agent-cli']
+  }),
+  capability({
+    projectSlug: 'inspector', slug: 'mutations', name: 'Live Tree Mutation', eyebrow: 'Edit the running interface', status: 'Active',
+    description: 'Property and structural mutations can set values, insert controls, remove nodes, move siblings, reparent branches, or batch several changes, with dry-run validation available before applying edits.',
+    statement: 'Move from observing the interface to safely reshaping it in place.',
+    packages: [{ name: 'Inspector.Host', note: 'Mutation engine, validation, diagnostics, and runtime orchestration.' }, { name: 'Inspector.Contracts', note: 'Portable mutation commands and results.' }],
+    install: 'dotnet add package Inspector.Host\ndotnet add package Inspector.Contracts',
+    usageLanguage: 'bash',
+    usage: `inspector tree mutate \
+  --session-id sess-123 \
+  --target-node-id visual-root \
+  --operation insert \
+  --payload '{"typeName":"Avalonia.Controls.TextBox","name":"EmailInput","properties":{"Watermark":"Email"}}' \
+  --dry-run --json`,
+    highlights: ['Set, insert, remove, move, and reparent', 'Dry-run validation', 'Batch mutation in one command', 'Structured diagnostics and operation identifiers'],
+    layers: [{ label: 'Describe', detail: 'A command identifies the target, operation, payload, and operation id.' }, { label: 'Validate', detail: 'Dry-run and schema checks reject unsupported nodes, properties, or structure.' }, { label: 'Apply', detail: 'The host or live process mutation lane updates Avalonia state.' }, { label: 'Verify', detail: 'A fresh tree or property query proves the resulting runtime shape.' }],
+    sourcePath: 'src/Inspector.Host/Mutation', related: ['properties', 'runtime-trees', 'agent-cli']
+  }),
+  capability({
+    projectSlug: 'inspector', slug: 'agent-cli', name: 'CLI & Agent Automation', eyebrow: 'Deterministic UI feedback loops', status: 'Active',
+    description: 'The global .NET tool provides stub, host, and process connection modes, persistent sessions, deterministic JSON, explicit diagnostics, and stable exit codes for terminals, scripts, tests, and coding agents.',
+    statement: 'Give automation a precise read–act–verify loop over Avalonia UI.',
+    packages: [{ name: 'Inspector.Cli.Tool', note: 'Command-line client and global .NET tool.' }, { name: 'Inspector.Transport', note: 'Local sessions, authorization, and request transport.' }],
+    install: 'dotnet tool install --global Inspector.Cli.Tool',
+    usageLanguage: 'bash',
+    usage: `inspector capabilities --json
+inspector connect --mode host \
+  --address local://inspector \
+  --client-id coding-agent --json
+
+# Reuse the returned session for tree, property,
+# mutation, and verification commands.`,
+    highlights: ['Stub, host, and process modes', 'Persistent session identifiers', 'Deterministic JSON and explicit exit codes', 'Codex skill for repeatable workflows'],
+    layers: [{ label: 'Discover', detail: 'Capabilities and schema metadata tell clients what the runtime supports.' }, { label: 'Connect', detail: 'Stub, host, or process targeting creates a persistent session.' }, { label: 'Operate', detail: 'Tree, property, and mutation commands share one predictable interface.' }, { label: 'Diagnose', detail: 'Structured errors, diagnostics, and exit codes make failures actionable.' }],
+    sourcePath: 'src/Inspector.Cli', docsPath: 'README.md', related: ['sessions', 'runtime-trees', 'mutations']
+  }),
+  capability({
+    projectSlug: 'inspector', slug: 'sessions', name: 'Host & Process Sessions', eyebrow: 'Choose the right attachment model', status: 'Active',
+    description: 'Host mode targets an instrumented local runtime; process mode resolves an existing application by PID or name and consumes published live snapshots; stub mode supplies deterministic fixtures for workflow validation.',
+    statement: 'Use one session model from isolated command testing to a running Avalonia process.',
+    packages: [{ name: 'Inspector.Host', note: 'In-process runtime and endpoint abstractions.' }, { name: 'Inspector.Transport', note: 'Session state, local transport, authorization, and connection contracts.' }],
+    install: 'dotnet add package Inspector.Host\ndotnet add package Inspector.Transport',
+    usageLanguage: 'bash',
+    usage: `# Instrumented application endpoint
+inspector connect --mode host --address local://inspector --json
+
+# Already-running application
+inspector connect --mode process --name Inspector.SampleApp --json
+
+# Deterministic command-flow fixture
+inspector connect --mode stub --client-id tests --json`,
+    highlights: ['Instrumented host endpoints', 'PID or process-name targeting', 'Live snapshot availability signal', 'Deterministic stub fixtures'],
+    layers: [{ label: 'Resolve', detail: 'Mode-specific arguments select a host endpoint, running process, or fixture.' }, { label: 'Authorize', detail: 'Client identity, version, secret, and requested scopes establish boundaries.' }, { label: 'Persist', detail: 'The returned session id survives across CLI invocations.' }, { label: 'Fallback', detail: 'Process mode reports whether live UI snapshots exist and otherwise exposes process metadata honestly.' }],
+    sourcePath: 'src/Inspector.Transport', related: ['agent-cli', 'runtime-trees', 'mutations']
+  }),
+
+  capability({
     projectSlug: 'protranslate', slug: 'globalization-core', name: 'Globalization Core', eyebrow: 'Framework-neutral localization', status: 'Active',
     description: 'Translation lookup, culture switching, fallback, formatting, regions, measurements, and flow direction live in a portable service layer.',
     statement: 'Keep globalization policy independent from any one UI framework.',
@@ -816,7 +906,8 @@ canvas.DrawRoundRect(new SKRect(20, 20, 220, 100), 16, 16, paint);`,
     highlights: ['SkiaSharp-shaped API', 'System.Drawing-shaped API', 'ProGPU-backed implementation', 'Migration and portability bridge'],
     layers: [{ label: 'Call site', detail: 'Application code uses a familiar drawing API.' }, { label: 'Shim', detail: 'Compatibility types preserve the expected object model.' }, { label: 'Translate', detail: 'Operations map into ProGPU geometry, paint, text, and resources.' }, { label: 'GPU', detail: 'The backend executes through WebGPU rather than the original native stack.' }],
     sourcePath: 'src/SkiaSharp', related: ['vector-text', 'backend', 'framework-bridges']
-  })
+  }),
+  ...longTailCapabilities
 ];
 
 export function capabilitiesForProject(projectSlug: string) {
