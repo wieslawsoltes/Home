@@ -38,12 +38,36 @@ const requireUrl = (value, key) => {
 const outputFile = (dir, pathname) => new URL(pathname.replace(/^\/+/, ''), dir);
 
 async function auditOutput({ dir, pages, options, logger }) {
-  const requiredArtifacts = ['portfolio.json', 'llms.txt', 'search.json', 'sitemap.xml', 'robots.txt'];
+  const requiredArtifacts = ['portfolio.json', 'llms.txt', 'data/metadata.json', 'search.json', 'sitemap.xml', 'robots.txt'];
   await Promise.all(requiredArtifacts.map((artifact) => access(outputFile(dir, artifact))));
 
   const manifest = JSON.parse(await readFile(outputFile(dir, 'portfolio.json'), 'utf8'));
   if (manifest.version !== 1 || !Array.isArray(manifest.projects)) {
     throw new Error('portfolio.json does not match the expected version 1 manifest shape.');
+  }
+  const metadata = JSON.parse(await readFile(outputFile(dir, 'data/metadata.json'), 'utf8'));
+  if (metadata.version !== 1 || !metadata.repositories || !metadata.packages) {
+    throw new Error('data/metadata.json does not match the expected version 1 metadata shape.');
+  }
+
+  const expectedRepositories = new Set(manifest.projects.map((project) => project.repository.name.split('/').at(-1)));
+  const expectedPackages = new Set(manifest.projects.flatMap((project) =>
+    [...project.packages, ...project.capabilities.flatMap((capability) => capability.packages)]
+      .filter((item) => new URL(item.url).hostname.toLowerCase().endsWith('nuget.org'))
+      .map((item) => item.name)
+  ));
+  const missingRepositories = [...expectedRepositories].filter((name) => !metadata.repositories[name]);
+  const missingPackages = [...expectedPackages].filter((name) => !metadata.packages[name]);
+  if (missingRepositories.length || missingPackages.length) {
+    throw new Error(
+      `Metadata collection is incomplete: ${missingRepositories.length} repositories and ${missingPackages.length} packages missing.`
+    );
+  }
+  if (
+    metadata.counts.repositories !== Object.keys(metadata.repositories).length
+    || metadata.counts.packages !== Object.keys(metadata.packages).length
+  ) {
+    throw new Error('data/metadata.json count fields do not match its records.');
   }
 
   const projectSlugs = manifest.projects.map((project) => project.slug);

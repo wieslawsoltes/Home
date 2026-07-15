@@ -1,6 +1,7 @@
 import { defineCollection, reference } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
+import { githubNugetLoader } from './loaders/github-nuget';
 
 const packageLink = z.object({
   name: z.string(),
@@ -94,4 +95,12 @@ const capabilities = defineCollection({
   })
 });
 
-export const collections = { projects, capabilities };
+const portfolioMetadata = defineCollection({
+  loader: githubNugetLoader({
+    owner: 'wieslawsoltes',
+    sources: ['./src/content/projects', './src/content/capabilities'],
+    githubToken: process.env.GITHUB_TOKEN ?? process.env.GH_TOKEN
+  })
+});
+
+export const collections = { projects, capabilities, portfolioMetadata };

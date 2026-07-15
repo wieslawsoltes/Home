@@ -13,7 +13,7 @@ npm run dev
 
 Astro prints the local URL, normally [http://localhost:4321](http://localhost:4321).
 
-The `predev` hook refreshes GitHub and NuGet metadata into a generated local JSON file. If either service is unavailable, the site still runs with static content and any previously fetched values.
+Astro's portfolio metadata content loader refreshes GitHub and NuGet data during content synchronization. If either service is unavailable, the site still runs with static content and any values cached by Astro's persistent content data store.
 
 ## Production preview
 
@@ -67,10 +67,12 @@ Integration identity and the intentional MDX story allowlist are configured in `
 ## Metadata refresh
 
 ```bash
-npm run metadata
+npx astro sync
 ```
 
-The script fetches repository activity from GitHub and current package versions from NuGet. GitHub Actions supplies its built-in `GITHUB_TOKEN`; no custom secret is required.
+The `portfolioMetadata` collection uses the custom loader in `src/loaders/github-nuget.ts`. It discovers repositories and NuGet package IDs from project and capability frontmatter, fetches repository activity and current package versions, validates every remote record, and writes the records to Astro's persistent content data store. The loader uses conditional requests, a 15-minute refresh window, bounded request batches, and stale cached values when a service is temporarily unavailable. Content-file changes trigger a resync in development.
+
+The prerendered `src/pages/data/metadata.json.ts` endpoint serializes the collection at the existing `/data/metadata.json` URL, so browser hydration keeps working without committing generated metadata. GitHub Actions supplies its built-in `GITHUB_TOKEN`; no custom secret is required.
 
 ## Search metadata
 
