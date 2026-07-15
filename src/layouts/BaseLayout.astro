@@ -166,11 +166,13 @@ const pageTitle = title.includes('Wiesław') ? title : `${title} — Wiesław Š
         const project = document.querySelector<HTMLElement>('[data-primary-package]');
         const version = metadata.packages?.[project?.dataset.primaryPackage ?? '']?.version;
         if (version && project) {
-          const walker = document.createTreeWalker(project, NodeFilter.SHOW_TEXT);
-          while (walker.nextNode()) {
-            const node = walker.currentNode;
-            if (node.nodeValue?.includes('VERSION')) node.nodeValue = node.nodeValue.replaceAll('VERSION', version);
-          }
+          project.querySelectorAll<HTMLElement>('.code-panel').forEach((panel) => {
+            const walker = document.createTreeWalker(panel, NodeFilter.SHOW_TEXT);
+            while (walker.nextNode()) {
+              const node = walker.currentNode;
+              if (node.nodeValue?.includes('VERSION')) node.nodeValue = node.nodeValue.replaceAll('VERSION', version);
+            }
+          });
         }
       } catch { /* The static page remains complete when metadata is unavailable. */ }
     </script>
