@@ -3,7 +3,7 @@ import ProjectGlyph from './ProjectGlyph.astro';
 import { projects, projectUrl } from '@/data/projects';
 
 const base = import.meta.env.BASE_URL;
-const categories = ['All', 'Graphics', 'Frameworks', 'Avalonia', 'Controls', 'Tools'];
+const categories = ['All', 'Graphics', 'Frameworks', 'Avalonia', 'Uno Platform', 'Controls', 'Tools'];
 ---
 
 <section class="project-index section-shell" id="work">
@@ -42,7 +42,7 @@ const categories = ['All', 'Graphics', 'Frameworks', 'Avalonia', 'Controls', 'To
         <span class="project-number">{String(index + 1).padStart(2, '0')}</span>
         <span class="project-primary">
           <strong>{project.name}</strong>
-          <small>{project.eyebrow}</small>
+          <small>{project.tier} · {project.eyebrow}</small>
         </span>
         <span class="project-category">{project.category}</span>
         <span class="project-description">{project.description}</span>

@@ -1,0 +1,31 @@
+---
+import { archiveProjects } from '@/data/archiveProjects';
+
+const groups = [
+  { kind: 'Maintained', title: 'Maintained building blocks', note: 'Focused libraries and controls that remain useful parts of the wider portfolio.' },
+  { kind: 'Earlier work', title: 'Earlier work', note: 'Projects that mark an important chapter, without implying the same current focus.' }
+] as const;
+---
+
+<section class="archive-index section-shell" id="archive">
+  <div class="section-heading" data-reveal>
+    <p class="section-label">Extended archive</p>
+    <h2>The useful<br />long tail.</h2>
+    <p>Not every maintained repository needs a full feature page. This compact archive preserves discoverability and makes current commitment explicit.</p>
+  </div>
+  {groups.map((group) => (
+    <section class="archive-group" data-reveal>
+      <header><h3>{group.title}</h3><p>{group.note}</p></header>
+      <div class="archive-rows">
+        {archiveProjects.filter((project) => project.kind === group.kind).map((project) => (
+          <a href={`https://github.com/wieslawsoltes/${project.repo}`} target="_blank" rel="noreferrer">
+            <strong>{project.name}</strong>
+            <p>{project.description}</p>
+            <span>{project.tags.join(' · ')}</span>
+            <i>↗</i>
+          </a>
+        ))}
+      </div>
+    </section>
+  ))}
+</section>

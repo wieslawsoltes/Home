@@ -18,7 +18,7 @@ const pageTitle = title.includes('Wiesław') ? title : `${title} — Wiesław Š
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-base={base}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -48,7 +48,9 @@ const pageTitle = title.includes('Wiesław') ? title : `${title} — Wiesław Š
       </button>
       <nav class="site-nav" id="site-nav" aria-label="Primary navigation">
         <a href={`${base}#work`}>Work</a>
-        <a href={`${base}#about`}>About</a>
+        <a href={`${base}ecosystem/`}>Ecosystem</a>
+        <a href={`${base}now/`}>Now</a>
+        <a href={`${base}about/`}>About</a>
         <a href={`${base}#contact`}>Contact</a>
         <a class="nav-github" href="https://github.com/wieslawsoltes" target="_blank" rel="noreferrer">
           GitHub <span aria-hidden="true">↗</span>
@@ -119,20 +121,58 @@ const pageTitle = title.includes('Wiesław') ? title : `${title} — Wiesław Š
         });
       });
 
+      document.querySelectorAll<HTMLElement>('[data-code-tabs]').forEach((group) => {
+        const tabs = [...group.querySelectorAll<HTMLButtonElement>('[data-code-tab]')];
+        const panes = [...group.querySelectorAll<HTMLElement>('[data-code-pane]')];
+        tabs.forEach((tab) => tab.addEventListener('click', () => {
+          const selected = tab.dataset.codeTab;
+          tabs.forEach((candidate) => candidate.setAttribute('aria-selected', String(candidate === tab)));
+          panes.forEach((pane) => { pane.hidden = pane.dataset.codePane !== selected; });
+        }));
+      });
+
+      document.querySelectorAll<HTMLButtonElement>('[data-copy-panel]').forEach((button) => {
+        button.addEventListener('click', async () => {
+          const panel = button.closest('.code-panel');
+          const source = panel?.querySelector<HTMLElement>('[data-code-pane]:not([hidden]) pre, :scope > pre');
+          if (!source) return;
+          await navigator.clipboard.writeText(source.textContent ?? '');
+          const previous = button.textContent;
+          button.textContent = 'Copied';
+          setTimeout(() => { button.textContent = previous; }, 1400);
+        });
+      });
+
       const year = document.querySelector<HTMLElement>('[data-year]');
       if (year) year.textContent = String(new Date().getFullYear());
 
-      document.querySelectorAll<HTMLElement>('[data-repo-stats]').forEach(async (element) => {
-        const repo = element.dataset.repoStats;
-        if (!repo) return;
-        try {
-          const response = await fetch(`https://api.github.com/repos/wieslawsoltes/${repo}`);
-          if (!response.ok) return;
-          const data = await response.json();
-          const stars = Number(data.stargazers_count).toLocaleString();
-          element.innerHTML = `<span>★ ${stars}</span><span>${data.language ?? '.NET'}</span>`;
-        } catch { /* Static content remains complete if GitHub is unavailable. */ }
-      });
+      try {
+        const metadataUrl = `${document.documentElement.dataset.base ?? '/'}data/metadata.json`;
+        const response = await fetch(metadataUrl);
+        if (!response.ok) throw new Error('metadata unavailable');
+        const metadata = await response.json();
+        document.querySelectorAll<HTMLElement>('[data-repo-stats]').forEach((element) => {
+          const data = metadata.repositories?.[element.dataset.repoStats ?? ''];
+          if (!data) return;
+          const stars = Number(data.stars).toLocaleString();
+          const updated = new Intl.DateTimeFormat('en', { month: 'short', year: 'numeric' }).format(new Date(data.pushedAt));
+          element.innerHTML = `<span>★ ${stars}</span><span>${data.language ?? '.NET'} · ${updated}</span>`;
+        });
+        document.querySelectorAll<HTMLElement>('[data-package]').forEach((element) => {
+          const data = metadata.packages?.[element.dataset.package ?? ''];
+          const target = element.querySelector<HTMLElement>('[data-package-version]');
+          if (data?.version && target) target.textContent = `v${data.version}`;
+        });
+        const project = document.querySelector<HTMLElement>('[data-primary-package]');
+        const version = metadata.packages?.[project?.dataset.primaryPackage ?? '']?.version;
+        if (version && project) {
+          const walker = document.createTreeWalker(project, NodeFilter.SHOW_TEXT);
+          while (walker.nextNode()) {
+            const node = walker.currentNode;
+            if (node.nodeValue?.includes('VERSION')) node.nodeValue = node.nodeValue.replaceAll('VERSION', version);
+          }
+        }
+      } catch { /* The static page remains complete when metadata is unavailable. */ }
     </script>
   </body>
 </html>

@@ -1,0 +1,89 @@
+---
+import { projects, projectUrl } from '@/data/projects';
+
+const base = import.meta.env.BASE_URL;
+const layers = [
+  { name: 'Foundation', note: 'Pixels, vectors, text', slugs: ['progpu', 'svg-skia', 'pretext', 'effector'] },
+  { name: 'Frameworks', note: 'Hosts and runtime seams', slugs: ['librewpf', 'librewinforms', 'avalonia-progpu', 'avalonia-silknet', 'nxui'] },
+  { name: 'Capabilities', note: 'Controls and diagnostics', slugs: ['dock', 'xaml-behaviors', 'prodatagrid', 'treedatagrid', 'panandzoom', 'nodeeditor', 'cdp', 'devtools-uno', 'nativewebview'] },
+  { name: 'Products', note: 'Complete working tools', slugs: ['procad', 'codexgui', 'xaml-playground', 'xaml-visual-editor', 'core2d', 'protranslate'] }
+];
+const relations: Record<string, string[]> = {
+  progpu: ['avalonia-progpu', 'avalonia-silknet', 'librewpf', 'librewinforms', 'procad'],
+  'svg-skia': ['effector', 'prodatagrid', 'treedatagrid', 'core2d'],
+  pretext: ['protext', 'prodatagrid'],
+  librewpf: ['librewinforms', 'progpu'],
+  librewinforms: ['librewpf', 'progpu'],
+  'avalonia-progpu': ['progpu', 'avalonia-silknet'],
+  'avalonia-silknet': ['progpu', 'avalonia-progpu', 'nativewebview'],
+  nxui: ['xaml-behaviors', 'xaml-playground'],
+  dock: ['xaml-visual-editor', 'codexgui', 'prodatagrid'],
+  'xaml-behaviors': ['dock', 'nodeeditor', 'panandzoom'],
+  prodatagrid: ['xaml-playground', 'devtools-uno', 'dock'],
+  treedatagrid: ['prodatagrid', 'devtools-uno'],
+  panandzoom: ['nodeeditor', 'procad', 'core2d'],
+  nodeeditor: ['panandzoom', 'core2d'],
+  cdp: ['avalonia-development-plugin', 'xaml-visual-editor', 'codexgui'],
+  'devtools-uno': ['codexgui', 'prodatagrid', 'treedatagrid'],
+  nativewebview: ['avalonia-silknet', 'codexgui'],
+  procad: ['progpu', 'panandzoom', 'core2d'],
+  codexgui: ['devtools-uno', 'dock', 'cdp'],
+  'xaml-playground': ['prodatagrid', 'nxui', 'xaml-visual-editor'],
+  'xaml-visual-editor': ['dock', 'cdp', 'xaml-playground'],
+  core2d: ['panandzoom', 'nodeeditor', 'svg-skia'],
+  protranslate: ['xaml-behaviors', 'librewpf']
+};
+---
+
+<section class="systems-map section-shell" data-system-map>
+  <div class="section-heading" data-reveal>
+    <p class="section-label">Interactive ecosystem map</p>
+    <h2>Follow the path<br />from pixels to tools.</h2>
+    <p>Hover or focus a project to reveal its closest collaborators. Each layer is independently useful; the connections are where the larger system appears.</p>
+  </div>
+  <div class="map-legend" data-reveal><span><i></i> Foundation</span><span>→ feeds the next layer</span><span>Focus a node to trace relationships</span></div>
+  <div class="map-layers" data-reveal>
+    {layers.map((layer, layerIndex) => (
+      <section class="map-layer">
+        <header><span>{String(layerIndex + 1).padStart(2, '0')}</span><h3>{layer.name}</h3><p>{layer.note}</p></header>
+        <div class="map-nodes">
+          {layer.slugs.map((slug) => {
+            const project = projects.find((candidate) => candidate.slug === slug);
+            if (!project) return null;
+            return (
+              <a
+                href={projectUrl(project, base)}
+                data-map-node={slug}
+                data-relations={(relations[slug] ?? []).join(',')}
+                style={`--node-accent:${project.accent}`}
+              >
+                <i></i><strong>{project.name}</strong><span>{project.category}</span>
+              </a>
+            );
+          })}
+        </div>
+      </section>
+    ))}
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-system-map]').forEach((map) => {
+    const nodes = [...map.querySelectorAll<HTMLElement>('[data-map-node]')];
+    const reset = () => nodes.forEach((node) => node.removeAttribute('data-map-state'));
+    const activate = (source: HTMLElement) => {
+      const active = source.dataset.mapNode;
+      const related = new Set((source.dataset.relations ?? '').split(',').filter(Boolean));
+      nodes.forEach((node) => {
+        const slug = node.dataset.mapNode ?? '';
+        node.dataset.mapState = slug === active ? 'active' : related.has(slug) ? 'related' : 'dim';
+      });
+    };
+    nodes.forEach((node) => {
+      node.addEventListener('mouseenter', () => activate(node));
+      node.addEventListener('focus', () => activate(node));
+      node.addEventListener('mouseleave', reset);
+      node.addEventListener('blur', reset);
+    });
+  });
+</script>

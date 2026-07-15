@@ -1,0 +1,20 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import SystemsMap from '@/components/SystemsMap.astro';
+import { projects } from '@/data/projects';
+---
+
+<BaseLayout title="Open desktop ecosystem" description="An interactive map of Wiesław Šoltés’s open-source graphics, framework, control, diagnostics, and application projects.">
+  <header class="editorial-hero section-shell">
+    <p class="section-label">The ecosystem</p>
+    <h1>Independent parts.<br /><em>Compounding value.</em></h1>
+    <p>{projects.length} detailed projects trace a path from GPU devices and text layout to UI frameworks, controls, diagnostics, and complete authoring environments.</p>
+  </header>
+  <SystemsMap />
+  <section class="ecosystem-notes section-shell">
+    <article data-reveal><span>01</span><h2>Foundation</h2><p>ProGPU, Svg.Skia, Pretext, and Effector own the lower rendering and content-preparation layers.</p></article>
+    <article data-reveal><span>02</span><h2>Compatibility</h2><p>LibreWPF, LibreWinForms, and alternative Avalonia backends test how established UI models can move onto portable infrastructure.</p></article>
+    <article data-reveal><span>03</span><h2>Productivity</h2><p>Dock, grids, graph controls, XAML tools, CDP, and DevToolsUno make complex applications buildable and observable.</p></article>
+    <article data-reveal><span>04</span><h2>Applications</h2><p>ProCad, CodexGui, XamlPlayground, Core2D, and XamlVisualEditor prove the layers in complete working environments.</p></article>
+  </section>
+</BaseLayout>

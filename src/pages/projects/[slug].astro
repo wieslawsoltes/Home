@@ -1,29 +1,53 @@
 ---
+import { Code } from 'astro:components';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import ProjectGlyph from '@/components/ProjectGlyph.astro';
+import { projectDetail } from '@/data/projectDetails';
 import { projects, githubUrl, nugetUrl, projectUrl, type Project } from '@/data/projects';
 
 export function getStaticPaths() {
   return projects.map((project) => ({ params: { slug: project.slug }, props: { project } }));
 }
 
-interface Props {
-  project: Project;
-}
+interface Props { project: Project; }
 
 const { project } = Astro.props;
+const detail = projectDetail(project);
 const base = import.meta.env.BASE_URL;
 const currentIndex = projects.findIndex((candidate) => candidate.slug === project.slug);
 const next = projects[(currentIndex + 1) % projects.length];
-const codeId = `install-${project.slug}`;
-const usageId = `usage-${project.slug}`;
-const packageHref = (name: string) => name === project.name && project.install.startsWith('git clone')
-  ? githubUrl(project)
-  : nugetUrl(name);
+const primaryPackage = project.packages[0];
+const isSourceInstall = project.install.startsWith('git clone');
+const installLanguage = project.install.trimStart().startsWith('<') ? 'xml' : 'bash';
+const packageReference = primaryPackage && !isSourceInstall
+  ? `<PackageReference Include="${primaryPackage.name}" Version="VERSION" />`
+  : project.install;
+const centralPackage = primaryPackage && !isSourceInstall
+  ? `<PackageVersion Include="${primaryPackage.name}" Version="VERSION" />`
+  : project.install;
+const packageInstallVariants = [
+  { label: 'CLI', language: installLanguage, code: project.install },
+  { label: 'PackageReference', language: 'xml', code: packageReference },
+  { label: 'Central package', language: 'xml', code: centralPackage }
+];
+const installVariants = isSourceInstall
+  ? [{ label: 'Source', language: 'bash', code: project.install }]
+  : packageInstallVariants;
+const related = detail.related
+  .map((slug) => projects.find((candidate) => candidate.slug === slug))
+  .filter((candidate): candidate is Project => Boolean(candidate));
+const packageHref = (item: Project['packages'][number]) => item.url ?? nugetUrl(item.name);
+const repoRoot = `https://github.com/wieslawsoltes/${project.repo}`;
+const resourceLinks = [
+  ...detail.links,
+  { label: 'Issues', href: `${repoRoot}/issues` },
+  { label: 'Releases', href: `${repoRoot}/releases` },
+  { label: 'Sponsor', href: 'https://github.com/sponsors/wieslawsoltes' }
+].filter((item, index, all) => all.findIndex((candidate) => candidate.href === item.href) === index);
 ---
 
-<BaseLayout title={project.name} description={project.description}>
-  <article class="project-page" style={`--project-accent:${project.accent}`}>
+<BaseLayout title={project.name} description={project.description} image={detail.media[0]?.src}>
+  <article class="project-page" style={`--project-accent:${project.accent}`} data-primary-package={primaryPackage?.name}>
     <header class="project-hero">
       <div class="project-hero-backdrop" aria-hidden="true">
         <ProjectGlyph slug={project.slug} accent={project.accent} large />
@@ -39,17 +63,17 @@ const packageHref = (name: string) => name === project.name && project.install.s
             <p>{project.statement}</p>
             <div class="project-actions">
               <a class="button-primary" href={githubUrl(project)} target="_blank" rel="noreferrer">View on GitHub <span>↗</span></a>
-              {project.packages[0] && project.packages[0].name !== project.name && (
-                <a class="text-link" href={nugetUrl(project.packages[0].name)} target="_blank" rel="noreferrer">NuGet <span>↗</span></a>
+              {primaryPackage && !isSourceInstall && (
+                <a class="text-link" href={packageHref(primaryPackage)} target="_blank" rel="noreferrer">Package <span>↗</span></a>
               )}
             </div>
           </div>
         </div>
         <div class="project-meta-strip">
           <div><span>Status</span><strong><i class="status-dot"></i>{project.status}</strong></div>
+          <div><span>Tier</span><strong>{project.tier}</strong></div>
           <div><span>Domain</span><strong>{project.category}</strong></div>
-          <div><span>Repository</span><strong>wieslawsoltes/{project.repo}</strong></div>
-          <div data-repo-stats={project.repo}><span>Public</span><strong>MIT / Open source</strong></div>
+          <div data-repo-stats={project.repo}><span>Repository</span><strong>wieslawsoltes/{project.repo}</strong></div>
         </div>
       </div>
     </header>
@@ -57,12 +81,70 @@ const packageHref = (name: string) => name === project.name && project.install.s
     <section class="project-overview section-shell">
       <div class="project-overview-heading" data-reveal>
         <p class="section-label">Overview</p>
-        <h2>{project.description}</h2>
+        <div>
+          <h2>{project.description}</h2>
+          <p class="project-introduction">{detail.introduction}</p>
+        </div>
       </div>
       <div class="project-highlights" data-reveal>
         {project.highlights.map((highlight, index) => (
-          <div><span>0{index + 1}</span><p>{highlight}</p></div>
+          <div><span>{String(index + 1).padStart(2, '0')}</span><p>{highlight}</p></div>
         ))}
+      </div>
+    </section>
+
+    <section class="project-evidence section-shell">
+      <div class="project-audience" data-reveal>
+        <p class="section-label">Built for</p>
+        <h2>Where it fits.</h2>
+        <ul>{detail.audience.map((item) => <li>{item}</li>)}</ul>
+      </div>
+      <div class="compatibility" data-reveal>
+        <p class="section-label">Compatibility & status</p>
+        <div class="compatibility-list">
+          {detail.compatibility.map((item) => (
+            <div>
+              <span class:list={['compatibility-state', item.state ?? 'ready']}></span>
+              <strong>{item.label}</strong>
+              <p>{item.value}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="project-media section-shell" aria-labelledby={`media-${project.slug}`}>
+      <div class="media-heading" data-reveal>
+        <p class="section-label">In the work</p>
+        <h2 id={`media-${project.slug}`}>Real output,<br />not a mockup.</h2>
+      </div>
+      <div class:list={['media-grid', { single: detail.media.length === 1 }]}>
+        {detail.media.map((media) => (
+          <figure data-reveal>
+            <div class="media-frame"><img src={media.src} alt={media.alt} loading="lazy" decoding="async" /></div>
+            <figcaption>{media.caption}</figcaption>
+          </figure>
+        ))}
+      </div>
+    </section>
+
+    <section class="architecture section-shell">
+      <div class="section-heading compact" data-reveal>
+        <p class="section-label">Architecture</p>
+        <h2>Clear layers.<br />Replaceable seams.</h2>
+      </div>
+      <div class="architecture-flow">
+        {detail.architecture.map((item, index) => (
+          <article data-reveal>
+            <span>{String(index + 1).padStart(2, '0')}</span>
+            <h3>{item.label}</h3>
+            <p>{item.detail}</p>
+          </article>
+        ))}
+      </div>
+      <div class="proof-strip" data-reveal>
+        {detail.proof.map((item) => <div><strong>{item.value}</strong><span>{item.label}</span></div>)}
+        <div data-repo-stats={project.repo}><strong>Live</strong><span>GitHub metadata</span></div>
       </div>
     </section>
 
@@ -70,16 +152,27 @@ const packageHref = (name: string) => name === project.name && project.install.s
       <div class="section-heading" data-reveal>
         <p class="section-label">Quick start</p>
         <h2>From package<br />to first frame.</h2>
-        <p>Start with the primary package or SDK. The repository contains the full samples, compatibility notes, and advanced configuration.</p>
+        <p>Choose the package workflow used by your repository, then start from the smallest working example. Replace <code>VERSION</code> with the current stable or prerelease version shown on NuGet.</p>
       </div>
       <div class="code-stack">
-        <article class="code-panel" data-reveal>
-          <header><span>01 · Install</span><button type="button" data-copy={codeId}>Copy</button></header>
-          <pre><code id={codeId}>{project.install}</code></pre>
+        <article class="code-panel install-panel" data-reveal data-code-tabs>
+          <header>
+            <div class="code-tabs" role="tablist" aria-label="Installation format">
+              {installVariants.map((variant, index) => (
+                <button type="button" role="tab" aria-selected={index === 0 ? 'true' : 'false'} data-code-tab={index}>{variant.label}</button>
+              ))}
+            </div>
+            <button type="button" data-copy-panel>Copy</button>
+          </header>
+          {installVariants.map((variant, index) => (
+            <div role="tabpanel" data-code-pane={index} hidden={index !== 0}>
+              <Code code={variant.code} lang={variant.language as 'bash' | 'xml'} theme="github-dark" />
+            </div>
+          ))}
         </article>
         <article class="code-panel" data-reveal>
-          <header><span>02 · Use · {project.usageLanguage}</span><button type="button" data-copy={usageId}>Copy</button></header>
-          <pre><code id={usageId}>{project.usage}</code></pre>
+          <header><span>02 · Use · {project.usageLanguage}</span><button type="button" data-copy-panel>Copy</button></header>
+          <Code code={project.usage} lang={project.usageLanguage} theme="github-dark" />
         </article>
       </div>
     </section>
@@ -91,21 +184,47 @@ const packageHref = (name: string) => name === project.name && project.install.s
       </div>
       <div class="package-list">
         {project.packages.map((item, index) => (
-          <a href={packageHref(item.name)} target="_blank" rel="noreferrer" data-reveal>
+          <a href={packageHref(item)} target="_blank" rel="noreferrer" data-package={item.name} data-reveal>
             <span class="package-number">{String(index + 1).padStart(2, '0')}</span>
             <strong>{item.name}</strong>
             <p>{item.note}</p>
+            <small data-package-version></small>
             <span class="package-arrow">↗</span>
           </a>
         ))}
       </div>
     </section>
 
+    {detail.limitations && (
+      <aside class="limitations section-shell" data-reveal>
+        <p class="section-label">Adoption note</p>
+        <p>{detail.limitations}</p>
+      </aside>
+    )}
+
+    {related.length > 0 && (
+      <section class="related-projects section-shell">
+        <div class="section-heading compact" data-reveal>
+          <p class="section-label">Related systems</p>
+          <h2>Continue through<br />the stack.</h2>
+        </div>
+        <div class="related-grid">
+          {related.map((item) => (
+            <a href={projectUrl(item, base)} style={`--related-accent:${item.accent}`} data-reveal>
+              <span>{item.category}</span><strong>{item.name}</strong><p>{item.eyebrow}</p><i>↗</i>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
     <section class="source-cta section-shell" data-reveal>
-      <p class="section-label">Source, issues, and releases</p>
+      <p class="section-label">Source, docs, samples, and releases</p>
       <h2>The repository is the source of truth.</h2>
-      <p>Explore complete samples, track current compatibility, report issues, or contribute a change.</p>
-      <a class="button-primary" href={githubUrl(project)} target="_blank" rel="noreferrer">Open {project.repo} on GitHub <span>↗</span></a>
+      <p>Use the current documentation and samples, inspect changes, report issues, or support continued open-source maintenance.</p>
+      <div class="resource-links">
+        {resourceLinks.map((item) => <a href={item.href} target="_blank" rel="noreferrer">{item.label} <span>↗</span></a>)}
+      </div>
     </section>
 
     <a class="next-project" href={projectUrl(next, base)} style={`--next-accent:${next.accent}`}>

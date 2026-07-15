@@ -1,0 +1,32 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { projects, projectUrl } from '@/data/projects';
+
+const base = import.meta.env.BASE_URL;
+const focus = ['progpu', 'cdp', 'nativewebview', 'devtools-uno', 'xaml-playground', 'procad', 'codexgui']
+  .map((slug) => projects.find((project) => project.slug === slug))
+  .filter((project): project is (typeof projects)[number] => Boolean(project));
+---
+
+<BaseLayout title="Now" description="What Wiesław Šoltés is building and maintaining now across open-source .NET UI, graphics, diagnostics, and developer tooling.">
+  <header class="editorial-hero section-shell">
+    <p class="section-label">Now · July 2026</p>
+    <h1>Building the seams<br /><em>between systems.</em></h1>
+    <p>The current work concentrates on portable GPU foundations, native UI inspection and automation, richer authoring tools, and reusable desktop infrastructure.</p>
+  </header>
+  <section class="now-focus section-shell">
+    <div class="section-heading" data-reveal><p class="section-label">Active focus</p><h2>On the bench.</h2><p>This page is a human-readable snapshot. Repository activity and package versions elsewhere on the site are refreshed during each build.</p></div>
+    <div class="now-list">
+      {focus.map((project, index) => (
+        <a href={projectUrl(project, base)} style={`--project-accent:${project.accent}`} data-reveal>
+          <span>{String(index + 1).padStart(2, '0')}</span><strong>{project.name}</strong><p>{project.statement}</p><i>{project.status} ↗</i>
+        </a>
+      ))}
+    </div>
+  </section>
+  <section class="now-priorities section-shell">
+    <article data-reveal><p class="section-label">01 · Render</p><h2>Own the path to pixels.</h2><p>Continue proving a WebGPU-first rendering and composition stack across framework boundaries.</p></article>
+    <article data-reveal><p class="section-label">02 · Observe</p><h2>Make native UI inspectable.</h2><p>Give developers, test runners, and agents the same quality of feedback loops expected on the web.</p></article>
+    <article data-reveal><p class="section-label">03 · Author</p><h2>Build serious creative tools.</h2><p>Turn the underlying controls into complete XAML, CAD, document, and agent workspaces.</p></article>
+  </section>
+</BaseLayout>

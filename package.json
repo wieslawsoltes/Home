@@ -4,8 +4,11 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "metadata": "node scripts/fetch-metadata.mjs",
+    "predev": "npm run metadata",
     "dev": "astro dev",
     "start": "astro dev",
+    "prebuild": "npm run metadata",
     "build": "astro check && astro build",
     "preview": "astro preview",
     "check": "astro check"

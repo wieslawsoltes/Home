@@ -1,19 +1,21 @@
 export type PackageLink = {
   name: string;
   note: string;
+  url?: string;
 };
 
 export type Project = {
   slug: string;
   name: string;
   eyebrow: string;
-  category: 'Graphics' | 'Frameworks' | 'Avalonia' | 'Controls' | 'Tools';
+  category: 'Graphics' | 'Frameworks' | 'Avalonia' | 'Uno Platform' | 'Controls' | 'Tools';
   repo: string;
   branch?: string;
   description: string;
   statement: string;
   accent: string;
   featured?: boolean;
+  tier?: 'Flagship' | 'Maintained' | 'Experimental';
   status: 'Active' | 'Preview' | 'Maintained';
   packages: PackageLink[];
   install: string;
@@ -345,8 +347,242 @@ export const projects: Project[] = [
     usageLanguage: 'bash',
     usage: '# Open a XAML document, edit markup, and inspect the live preview.\ndotnet run',
     highlights: ['Live visual designer', 'Code editor', 'Language services', 'Extensible .NET tooling']
+  },
+  {
+    slug: 'panandzoom',
+    name: 'PanAndZoom',
+    eyebrow: 'Spatial navigation control',
+    category: 'Controls',
+    repo: 'PanAndZoom',
+    branch: 'master',
+    description: 'A focused Avalonia control for smooth zoom-to-point, panning, constraints, animations, and programmable viewport navigation.',
+    statement: 'A precise, reusable viewport for diagrams, maps, editors, and infinite canvases.',
+    accent: '#72d4ff',
+    tier: 'Maintained',
+    status: 'Active',
+    packages: [{ name: 'PanAndZoom', note: 'ZoomBorder, viewport state, gestures, animation, and constraints.' }],
+    install: 'dotnet add package PanAndZoom --prerelease',
+    usageLanguage: 'xml',
+    usage: '<paz:ZoomBorder ZoomSpeed="1.2"\n                MinZoom="0.1" MaxZoom="10">\n  <Canvas Width="2400" Height="1600" />\n</paz:ZoomBorder>',
+    highlights: ['Pointer-centered zoom', 'Pan and viewport constraints', 'Animated navigation', 'Double-click zoom modes']
+  },
+  {
+    slug: 'nodeeditor',
+    name: 'NodeEditor',
+    eyebrow: 'Visual graph authoring',
+    category: 'Controls',
+    repo: 'NodeEditor',
+    description: 'A templatable Avalonia node-and-connector editor with portable models, MVVM integrations, graph logic, and browser-ready samples.',
+    statement: 'Build visual programming tools without rebuilding graph interaction from scratch.',
+    accent: '#d69bff',
+    tier: 'Maintained',
+    status: 'Active',
+    packages: [
+      { name: 'NodeEditorAvalonia', note: 'Avalonia editor controls, templates, and interaction.' },
+      { name: 'NodeEditor.Model', note: 'Portable node, port, and connector model.' },
+      { name: 'NodeEditor.Mvvm', note: 'MVVM-oriented graph authoring surface.' }
+    ],
+    install: 'dotnet add package NodeEditorAvalonia',
+    usageLanguage: 'xml',
+    usage: '<nodeEditor:NodeEditor\n    Nodes="{Binding Nodes}"\n    Connectors="{Binding Connectors}" />',
+    highlights: ['Nodes, ports, and connectors', 'XAML-driven templates', 'MVVM and ReactiveUI', 'LogicLab and browser samples']
+  },
+  {
+    slug: 'nxui',
+    name: 'NXUI',
+    eyebrow: 'C# UI composition',
+    category: 'Frameworks',
+    repo: 'NXUI',
+    description: 'A fluent, code-first UI layer for Avalonia that composes applications entirely in C# and keeps iteration fast with hot reload.',
+    statement: 'Avalonia applications expressed as compact, composable C#.',
+    accent: '#8ea2ff',
+    tier: 'Experimental',
+    status: 'Active',
+    packages: [
+      { name: 'NXUI', note: 'Fluent controls, properties, bindings, and composition.' },
+      { name: 'NXUI.Desktop', note: 'Desktop host and hot-reload integration.' }
+    ],
+    install: 'dotnet add package NXUI\ndotnet add package NXUI.Desktop',
+    usageLanguage: 'csharp',
+    usage: 'object Build() =>\n  Window()\n    .Title("NXUI")\n    .Content(Label().Content("Hello from C#"));\n\nreturn HotReloadHost.Run(Build, "NXUI", args);',
+    highlights: ['Code-first Avalonia UI', 'Fluent composition', 'Hot reload host', 'No XAML required']
+  },
+  {
+    slug: 'colorpicker',
+    name: 'ColorPicker',
+    eyebrow: 'Color and theme tooling',
+    category: 'Controls',
+    repo: 'ColorPicker',
+    branch: 'master',
+    description: 'A reusable Avalonia color picker and theme editor surface with spectrum, component, palette, and alpha editing workflows.',
+    statement: 'Production-ready color selection for creative and theming tools.',
+    accent: '#ff85b6',
+    tier: 'Maintained',
+    status: 'Maintained',
+    packages: [{ name: 'ThemeEditor.Controls.ColorPicker', note: 'Color picker controls, styles, and theme editor primitives.' }],
+    install: 'dotnet add package ThemeEditor.Controls.ColorPicker',
+    usageLanguage: 'xml',
+    usage: '<Application.Styles>\n  <StyleInclude Source="avares://ThemeEditor.Controls.ColorPicker/ColorPicker.axaml" />\n</Application.Styles>\n\n<cp:ColorPicker Color="Red" />',
+    highlights: ['Spectrum and channel editing', 'Palette workflows', 'Alpha support', 'Reusable Avalonia styles']
+  },
+  {
+    slug: 'cdp',
+    name: 'CDP',
+    eyebrow: 'DevTools protocol for native UI',
+    category: 'Tools',
+    repo: 'CDP',
+    description: 'A Chrome DevTools Protocol server that makes Avalonia and other native .NET UI frameworks inspectable and automatable by DevTools, Playwright, Puppeteer, and AI agents.',
+    statement: 'Bring web-grade inspection and automation to native .NET interfaces.',
+    accent: '#5ee1c0',
+    featured: true,
+    tier: 'Flagship',
+    status: 'Preview',
+    packages: [
+      { name: 'Chrome.DevTools.Protocol', note: 'Protocol server, sessions, transports, and domain dispatch.' },
+      { name: 'Chrome.DevTools.Avalonia', note: 'Avalonia DOM, CSS, input, page, overlay, and runtime domains.' },
+      { name: 'Chrome.DevTools.Controls', note: 'Reusable inspector UI controls.' }
+    ],
+    install: 'dotnet add package Chrome.DevTools.Avalonia --prerelease',
+    usageLanguage: 'csharp',
+    usage: '// Register the Avalonia adapter and start the CDP endpoint.\n// Connect Chrome DevTools, Playwright, or Puppeteer\n// to the exposed HTTP/WebSocket discovery URL.',
+    highlights: ['Chrome DevTools inspection', 'Playwright and Puppeteer', 'Live CSS and overlay tools', 'Avalonia, WPF, WinUI, and Uno adapters']
+  },
+  {
+    slug: 'nativewebview',
+    name: 'NativeWebView',
+    eyebrow: 'Native browser embedding',
+    category: 'Controls',
+    repo: 'NativeWebView',
+    description: 'A cross-platform Avalonia WebView that uses each operating system’s browser engine, with embedded, GPU-surface, offscreen, dialog, and authentication workflows.',
+    statement: 'Embed the platform browser without shipping another Chromium runtime.',
+    accent: '#77cfff',
+    featured: true,
+    tier: 'Flagship',
+    status: 'Preview',
+    packages: [
+      { name: 'NativeWebView', note: 'Avalonia control and cross-platform public API.' },
+      { name: 'NativeWebView.Core', note: 'Backend contracts, navigation, scripting, and messaging.' },
+      { name: 'NativeWebView.Platform.Windows', note: 'Windows WebView2 platform backend.' },
+      { name: 'NativeWebView.Auth', note: 'System-browser authentication flows.' }
+    ],
+    install: 'dotnet add package NativeWebView\ndotnet add package NativeWebView.Platform.Windows',
+    usageLanguage: 'csharp',
+    usage: 'NativeWebViewRuntime.EnsureCurrentPlatformRegistered();\nvar backend = NativeWebViewRuntime.CreateBackend();\nvar webView = new NativeWebView(backend);\nawait webView.InitializeAsync();\nwebView.Navigate(new Uri("https://example.com"));',
+    highlights: ['Native platform engines', 'Embedded and offscreen modes', 'JavaScript messaging', 'Desktop, mobile, and browser targets']
+  },
+  {
+    slug: 'avalonia-development-plugin',
+    name: 'Avalonia Development Plugin',
+    eyebrow: 'Agent-ready framework expertise',
+    category: 'Tools',
+    repo: 'development-plugin-for-avalonia',
+    description: 'A Codex plugin that packages focused Avalonia implementation and migration skills for controls, rendering, XAML, accessibility, testing, performance, and platform integration.',
+    statement: 'Turn framework knowledge into repeatable, source-grounded development workflows.',
+    accent: '#b394ff',
+    featured: true,
+    tier: 'Flagship',
+    status: 'Active',
+    packages: [{ name: 'development-plugin-for-avalonia', note: 'Plugin manifest, focused skills, references, and reusable workflows.', url: 'https://github.com/wieslawsoltes/development-plugin-for-avalonia' }],
+    install: 'git clone https://github.com/wieslawsoltes/development-plugin-for-avalonia.git\n# Add the repository as a Codex plugin or copy the skills you need.',
+    usageLanguage: 'bash',
+    usage: '# Invoke a focused skill from Codex, for example:\n$avalonia-rendering-and-graphics\n$avalonia-bindings-and-xaml\n$avalonia-12-migration',
+    highlights: ['Focused Avalonia skills', 'Source-grounded guidance', 'Avalonia 12 migration lane', 'Repo-local and plugin discovery']
+  },
+  {
+    slug: 'procad',
+    name: 'ProCad',
+    eyebrow: 'Open CAD platform',
+    category: 'Tools',
+    repo: 'ProCad',
+    description: 'A modular .NET CAD platform for DWG and DXF inspection, rendering, editing, scripting, and collaboration across desktop and browser hosts.',
+    statement: 'A modern, extensible CAD stack built openly on .NET.',
+    accent: '#ffb66f',
+    tier: 'Experimental',
+    status: 'Preview',
+    packages: [
+      { name: 'ProCadSharp.Core', note: 'CAD document model and shared primitives.' },
+      { name: 'ProCadSharp.IO', note: 'DWG and DXF loading and persistence.' },
+      { name: 'ProCadSharp.Controls.Avalonia', note: 'Avalonia viewer and editing controls.' },
+      { name: 'ProCadSharp.Scripting', note: 'Programmable CAD workflows.' }
+    ],
+    install: 'dotnet add package ProCadSharp.Controls.Avalonia --prerelease',
+    usageLanguage: 'csharp',
+    usage: '// Load a CAD document, create a renderer, and host the\n// Avalonia control. See the repository samples for the current API.',
+    highlights: ['DWG and DXF workflows', 'Rendering and editing', 'Scripting and collaboration', 'Avalonia, Uno, and MAUI controls']
+  },
+  {
+    slug: 'codexgui',
+    name: 'CodexGui',
+    eyebrow: 'Native Codex workspace',
+    category: 'Uno Platform',
+    repo: 'CodexGui',
+    description: 'A native Avalonia desktop client for Codex app-server with threads, approvals, rich Markdown, stdio and WebSocket transports, and extensible plugin surfaces.',
+    statement: 'A focused native workspace for long-running Codex collaboration.',
+    accent: '#89e2bf',
+    tier: 'Experimental',
+    status: 'Preview',
+    packages: [
+      { name: 'CodexGui.App', note: 'Desktop application and global .NET tool.' },
+      { name: 'CodexGui.AppServer', note: 'Typed app-server protocol client and transports.' },
+      { name: 'CodexGui.Markdown', note: 'Rich Markdown rendering for Avalonia.' }
+    ],
+    install: 'dotnet tool install --global CodexGui.App --prerelease',
+    usageLanguage: 'bash',
+    usage: 'codexgui',
+    highlights: ['Native Avalonia client', 'Threads and approvals', 'stdio and WebSocket transports', 'Rich Markdown and plugins']
+  },
+  {
+    slug: 'devtools-uno',
+    name: 'DevToolsUno',
+    eyebrow: 'In-app Uno diagnostics',
+    category: 'Uno Platform',
+    repo: 'DevToolsUno',
+    description: 'An in-app diagnostics suite for Uno Platform applications with live tree, property, binding, resource, style, event, asset, screenshot, and memory inspection.',
+    statement: 'Inspect the running Uno interface without leaving the application.',
+    accent: '#74d7f7',
+    featured: true,
+    tier: 'Flagship',
+    status: 'Active',
+    packages: [{ name: 'DevToolsUno', note: 'Complete diagnostics surface and attachable Uno Platform runtime tooling.' }],
+    install: 'dotnet add package DevToolsUno',
+    usageLanguage: 'csharp',
+    usage: 'using DevToolsUno;\nusing DevToolsUno.Diagnostics;\n\n_devTools = window.AttachDevTools(new DevToolsOptions\n{\n    LaunchView = DevToolsViewKind.VisualTree,\n    ShowAsChildWindow = false\n});',
+    highlights: ['Logical and visual trees', 'Bindings, resources, and styles', 'Events, assets, and memory', 'Screenshots and keyboard inspection']
+  },
+  {
+    slug: 'xaml-playground',
+    name: 'XamlPlayground',
+    eyebrow: 'Interactive XAML design',
+    category: 'Tools',
+    repo: 'XamlPlayground',
+    description: 'An interactive Avalonia XAML editor, live previewer, and WYSIWYG designer with synchronized structure, properties, toolbox, diagnostics, and shareable gists.',
+    statement: 'Write, run, and visually reshape Avalonia XAML in one immediate workspace.',
+    accent: '#a98cff',
+    featured: true,
+    tier: 'Flagship',
+    status: 'Active',
+    packages: [
+      { name: 'XamlPlayground', note: 'Core Avalonia XAML editor, previewer, and visual designer.' },
+      { name: 'XamlPlayground.AvaloniaEdit.Minimap', note: 'Minimap and inline editor extension controls for AvaloniaEdit.' }
+    ],
+    install: 'dotnet add package XamlPlayground',
+    usageLanguage: 'xml',
+    usage: '<playground:XamlEditor\n    Xaml="{Binding Document}"\n    IsDesignMode="True" />',
+    highlights: ['Live XAML preview', 'WYSIWYG canvas editing', 'Toolbox, structure, and properties', 'Headless designer coverage']
   }
 ];
+
+for (const project of projects) {
+  project.tier ??= project.featured ? 'Flagship' : project.status === 'Preview' ? 'Experimental' : 'Maintained';
+}
+
+const cdpIndex = projects.findIndex((project) => project.slug === 'cdp');
+const svgIndex = projects.findIndex((project) => project.slug === 'svg-skia');
+if (cdpIndex >= 0 && svgIndex >= 0 && cdpIndex !== svgIndex + 1) {
+  const [cdp] = projects.splice(cdpIndex, 1);
+  const currentSvgIndex = projects.findIndex((project) => project.slug === 'svg-skia');
+  projects.splice(currentSvgIndex + 1, 0, cdp);
+}
 
 export const featuredProjects = projects.filter((project) => project.featured);
 
