@@ -53,6 +53,17 @@ The shared Expressive Code theme is defined in `ec.config.mjs` and follows each 
 
 The ecosystem graph is defined in `src/components/SystemsMap.astro`.
 
+## Portfolio integration
+
+The local integration at `integrations/portfolio/` gives the site a portfolio-specific build layer. It injects two static, base-path-aware discovery routes:
+
+- `portfolio.json` exposes the validated project, capability, package, category, relationship, repository, and MDX-story graph for tools and external consumers.
+- `llms.txt` provides a concise, link-rich text inventory of the same portfolio for agents and language-model tooling.
+
+Both routes are advertised from every page with `<link rel="alternate">` metadata. The integration also audits production output after Astro finishes: project slugs and ordering must be unique, configured story projects must use MDX and all other projects must remain Markdown, manifest counts must agree with the graph, every project and capability page must exist, and the portfolio, search, sitemap, and crawler artifacts must be present. A broken invariant fails the build instead of silently publishing an incomplete portfolio.
+
+Integration identity and the intentional MDX story allowlist are configured in `astro.config.mjs`. Update `storyProjects` whenever a project is deliberately promoted to or removed from the richer MDX story format.
+
 ## Metadata refresh
 
 ```bash
