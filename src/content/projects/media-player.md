@@ -63,6 +63,8 @@ proof:
     label: edit and export operations
 media:
   - src: https://github.com/user-attachments/assets/75d0bfb4-f85e-4c40-a5a1-b98e9e9e8a43
+    width: 3510
+    height: 2034
     alt: MediaPlayer QuickTime-inspired Avalonia application
     caption: The demo shows no-airspace video, floating transport controls, native menus, diagnostics, and workflow entry points.
 links:

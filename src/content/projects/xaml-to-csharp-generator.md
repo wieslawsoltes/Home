@@ -63,6 +63,8 @@ proof:
     label: shared XAML semantics
 media:
   - src: https://github.com/user-attachments/assets/74951ae9-4866-4911-be11-be890f99dc31
+    width: 3494
+    height: 1750
     alt: AXSG XAML language and preview tooling
     caption: The AXSG workspace combines source-generated XAML, diagnostics, navigation, inline C# semantics, and live preview.
 links:

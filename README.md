@@ -51,6 +51,10 @@ usageDeletions:
 
 The shared Expressive Code theme is defined in `ec.config.mjs` and follows each project page’s accent color. Range labels are limited to 18 characters so they remain readable on mobile. Use markers to explain meaningful decisions rather than decorating every line.
 
+### Project screenshots
+
+Project media URLs remain in each project's validated frontmatter so captions and canonical source images stay editorially visible. Detail pages resolve each source's intrinsic dimensions and render through `astro:assets` with source-bounded responsive widths, layout-aware `sizes`, high-quality WebP output, lazy loading, and asynchronous decoding. Small project marks remain at native resolution instead of generating duplicate upscaled candidates. Immutable GitHub attachments carry validated intrinsic dimensions; animated demonstrations retain GIF output at a bounded display size, and trusted SVG diagrams pass through without unsafe rasterization. The image configuration authorizes only the GitHub-owned remote patterns and signed attachment storage currently used by the portfolio.
+
 The ecosystem graph is defined in `src/components/SystemsMap.astro`.
 
 ## Portfolio integration

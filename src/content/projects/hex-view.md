@@ -58,6 +58,9 @@ proof:
     label: file-scale scrolling
 media:
   - src: https://github.com/user-attachments/assets/07511c4f-812d-4b35-85b0-4170881b15c5
+    width: 1650
+    height: 887
+    outputFormat: gif
     alt: HexView desktop binary editor
     caption: The desktop workbench combines virtualized bytes, text, caret, selection, editing, navigation, and diagnostics.
 links:

@@ -63,9 +63,11 @@ proof:
     label: drawing regression fixtures
 media:
   - src: https://raw.githubusercontent.com/wieslawsoltes/DxfParser/main/tests/outputs/complex-model.frame.svg
+    outputFormat: svg
     alt: DxfParser rendered complex DXF model baseline
     caption: A deterministic frame generated from the complex DXF regression fixture.
   - src: https://raw.githubusercontent.com/wieslawsoltes/DxfParser/main/tests/outputs/advanced-geometry.frame.svg
+    outputFormat: svg
     alt: DxfParser advanced geometry rendering baseline
     caption: Advanced geometry exercises the parser, scene builder, and rendering surface together.
 links:

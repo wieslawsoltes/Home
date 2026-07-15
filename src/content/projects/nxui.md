@@ -63,6 +63,8 @@ proof:
     label: control builders
 media:
   - src: https://github.com/user-attachments/assets/33f7f915-13a2-4c45-b9e3-ecd5dfdfd353
+    width: 2624
+    height: 1582
     alt: NXUI desktop application built in C#
     caption: NXUI expresses the complete Avalonia visual tree in composable C#.
 links:

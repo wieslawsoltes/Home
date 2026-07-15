@@ -652,7 +652,9 @@ html[data-navigating] .site-header::after {
 .media-grid figure { margin: 0; }
 .media-frame { display: grid; place-items: center; min-height: 380px; padding: clamp(22px, 4vw, 62px); overflow: hidden; border: 1px solid var(--line); background: radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--project-accent) 14%, transparent), transparent 55%), #0d1015; }
 .media-grid.single .media-frame { min-height: min(66vw, 720px); }
-.media-frame img { width: 100%; max-height: 650px; object-fit: contain; filter: drop-shadow(0 22px 36px rgba(0,0,0,.35)); }
+.media-frame img { width: 100%; height: auto; max-height: 650px; object-fit: contain; filter: drop-shadow(0 22px 36px rgba(0,0,0,.35)); }
+.media-frame img[data-animated-screenshot] { max-width: 768px; }
+.media-frame img[data-compact-screenshot] { width: auto; max-width: 100%; }
 .media-grid figcaption { max-width: 650px; margin-top: 18px; color: var(--muted); font-size: 12px; line-height: 1.6; }
 
 .architecture { padding: 140px 0; border-top: 1px solid var(--line); }

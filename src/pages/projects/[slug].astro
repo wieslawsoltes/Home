@@ -1,5 +1,6 @@
 ---
 import { Code } from 'astro-expressive-code/components';
+import { Image, inferRemoteSize } from 'astro:assets';
 import { render } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import ProjectGlyph from '@/components/ProjectGlyph.astro';
@@ -29,10 +30,20 @@ const { entry } = Astro.props as Props;
 const { Content } = await render(entry);
 const project = projectFromEntry(entry);
 const [projects, allCapabilities] = await Promise.all([getProjects(), getCapabilities()]);
+type ResolvedMedia = Project['media'][number] & { width: number; height: number };
+const resolvedMedia: ResolvedMedia[] = await Promise.all(project.media.map(async (media) => {
+  if (media.width && media.height) return media as ResolvedMedia;
+  const { width, height } = await inferRemoteSize(media.src);
+  return { ...media, width, height };
+}));
 const socialMedia = project.media.find((media) => !new URL(media.src).pathname.toLowerCase().endsWith('.svg')) ?? {
   src: `https://opengraph.githubassets.com/portfolio-${project.slug}/wieslawsoltes/${project.repo}`,
   alt: `${project.name} GitHub repository preview`
 };
+const screenshotSizes = project.media.length === 1
+  ? '(max-width: 760px) calc(100vw - 36px), (max-width: 1320px) calc(100vw - 96px), 1224px'
+  : '(max-width: 760px) calc(100vw - 36px), (max-width: 1320px) calc(50vw - 64px), 596px';
+const screenshotWidths = (width: number) => [480, 768, 1200, 1600].filter((candidate) => candidate < width);
 const capabilities = allCapabilities.filter((item) => item.projectSlug === project.slug);
 const base = import.meta.env.BASE_URL;
 const currentIndex = projects.findIndex((candidate) => candidate.slug === project.slug);
@@ -194,10 +205,63 @@ const resourceLinks = [
         <p class="section-label">In the work</p>
         <h2 id={`media-${project.slug}`}>Real output,<br />not a mockup.</h2>
       </div>
-      <div class:list={['media-grid', { single: project.media.length === 1 }]}>
-        {project.media.map((media) => (
+      <div class:list={['media-grid', { single: resolvedMedia.length === 1 }]}>
+        {resolvedMedia.map((media) => (
           <figure data-reveal>
-            <div class="media-frame"><img src={media.src} alt={media.alt} loading="lazy" decoding="async" /></div>
+            <div class="media-frame">
+              {media.outputFormat === 'gif' ? (
+                <Image
+                  src={media.src}
+                  alt={media.alt}
+                  width={768}
+                  height={Math.round(media.height * 768 / media.width)}
+                  layout="none"
+                  format="gif"
+                  quality="high"
+                  loading="lazy"
+                  decoding="async"
+                  data-animated-screenshot
+                />
+              ) : media.outputFormat === 'svg' ? (
+                <Image
+                  src={media.src}
+                  alt={media.alt}
+                  width={media.width}
+                  height={media.height}
+                  layout="none"
+                  format="svg"
+                  loading="lazy"
+                  decoding="async"
+                />
+              ) : media.width > 480 ? (
+                <Image
+                  src={media.src}
+                  alt={media.alt}
+                  width={media.width}
+                  height={media.height}
+                  layout="constrained"
+                  widths={screenshotWidths(media.width)}
+                  sizes={screenshotSizes}
+                  format={media.outputFormat}
+                  quality="high"
+                  loading="lazy"
+                  decoding="async"
+                />
+              ) : (
+                <Image
+                  src={media.src}
+                  alt={media.alt}
+                  width={media.width}
+                  height={media.height}
+                  layout="none"
+                  format={media.outputFormat}
+                  quality="high"
+                  loading="lazy"
+                  decoding="async"
+                  data-compact-screenshot
+                />
+              )}
+            </div>
             <figcaption>{media.caption}</figcaption>
           </figure>
         ))}

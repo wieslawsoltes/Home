@@ -25,6 +25,30 @@ const usageExample = {
   usageDeletions: z.array(codeMarker).default([])
 };
 
+const projectMediaHosts = new Set([
+  'github.com',
+  'opengraph.githubassets.com',
+  'raw.githubusercontent.com',
+  'user-images.githubusercontent.com'
+]);
+
+const projectMediaUrl = z.url().refine(
+  (value) => projectMediaHosts.has(new URL(value).hostname.toLowerCase()),
+  'Project media must use an authorized GitHub image host.'
+);
+
+const projectMedia = z.object({
+  src: projectMediaUrl,
+  alt: z.string(),
+  caption: z.string(),
+  width: z.number().int().positive().optional(),
+  height: z.number().int().positive().optional(),
+  outputFormat: z.enum(['webp', 'gif', 'svg']).default('webp')
+}).refine(
+  (value) => (value.width === undefined) === (value.height === undefined),
+  'Project media width and height must be provided together.'
+);
+
 const projects = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/projects' }),
   schema: z.object({
@@ -60,7 +84,7 @@ const projects = defineCollection({
       state: z.enum(['ready', 'partial', 'planned']).default('ready')
     })).min(1),
     proof: z.array(z.object({ value: z.string(), label: z.string() })).min(1),
-    media: z.array(z.object({ src: z.url(), alt: z.string(), caption: z.string() })).min(1),
+    media: z.array(projectMedia).min(1),
     links: z.array(z.object({ label: z.string(), href: z.url() })),
     limitations: z.string().optional(),
     related: z.array(reference('projects')).default([]),

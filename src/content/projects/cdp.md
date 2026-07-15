@@ -67,6 +67,8 @@ proof:
     label: screenshots and telemetry
 media:
   - src: https://github.com/user-attachments/assets/3b9d860d-fc57-421c-b947-742c0f9f70e9
+    width: 3824
+    height: 2318
     alt: Chrome DevTools inspecting an Avalonia application through CDP
     caption: A native Avalonia visual tree exposed inside familiar Chrome DevTools.
 links:

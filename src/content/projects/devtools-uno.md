@@ -64,6 +64,8 @@ proof:
     label: no external inspector required
 media:
   - src: https://github.com/user-attachments/assets/eb8ef241-79fb-4b1f-81f2-cdd3b0694b97
+    width: 3596
+    height: 1994
     alt: DevToolsUno inspecting a running Uno Platform application
     caption: The diagnostics shell inspects the live Uno tree, properties, bindings, resources, events, and memory.
 links:

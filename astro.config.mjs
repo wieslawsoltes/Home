@@ -14,6 +14,15 @@ export default defineConfig({
   base,
   output: 'static',
   trailingSlash: 'always',
+  image: {
+    remotePatterns: [
+      { protocol: 'https', hostname: 'raw.githubusercontent.com', pathname: '/wieslawsoltes/**' },
+      { protocol: 'https', hostname: 'user-images.githubusercontent.com', pathname: '/2297442/**' },
+      { protocol: 'https', hostname: 'github.com', pathname: '/user-attachments/assets/**' },
+      { protocol: 'https', hostname: 'github-production-user-asset-6210df.s3.amazonaws.com', pathname: '/**' },
+      { protocol: 'https', hostname: 'opengraph.githubassets.com', pathname: '/**' }
+    ]
+  },
   integrations: [
     astroExpressiveCode(),
     mdx(),

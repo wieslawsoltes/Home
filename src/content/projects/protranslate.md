@@ -62,6 +62,8 @@ proof:
     label: issues and implementation
 media:
   - src: https://github.com/user-attachments/assets/ef612d49-4a2f-4001-a6c0-544197f9fd65
+    width: 3824
+    height: 2316
     alt: ProTranslate localization workflow
     caption: Generated keys and live culture switching connect resources to XAML applications.
 links:
