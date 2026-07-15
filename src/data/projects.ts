@@ -248,18 +248,27 @@ export const projects: Project[] = [
   {
     slug: 'proedit',
     name: 'ProEdit',
-    eyebrow: 'Document platform',
-    category: 'Tools',
+    eyebrow: 'Document engineering platform',
+    category: 'Uno Platform',
     repo: 'ProEdit',
-    description: 'A modular .NET document editing, rendering, reporting, and collaboration platform for desktop and embedded scenarios.',
-    statement: 'Structured documents, editing, and collaboration in one modular system.',
+    description: 'A modular .NET 10 platform for document editing, layout, rendering, reporting, printing, conversion, automation, and real-time collaboration.',
+    statement: 'Build complete document workflows from one composable, cross-platform stack.',
     accent: '#ee8fff',
+    featured: true,
+    tier: 'Flagship',
     status: 'Active',
-    packages: [{ name: 'ProEdit', note: 'Modular document platform packages are published from the repository.' }],
-    install: 'git clone https://github.com/wieslawsoltes/ProEdit.git\ncd ProEdit && dotnet build',
-    usageLanguage: 'csharp',
-    usage: '// Explore the sample hosts for document creation, editing,\n// rendering, reporting, and collaboration workflows.',
-    highlights: ['Document editing', 'Rendering and reporting', 'Collaboration primitives', 'Desktop and embedded hosts']
+    packages: [
+      { name: 'ProEdit.Controls.Skia.Avalonia', note: 'Avalonia document viewer and editable control backed by the shared Skia host.' },
+      { name: 'ProEdit.Controls.Skia.Uno', note: 'Uno Platform document viewer and editable control backed by the same shared Skia host.' },
+      { name: 'ProEdit.RichText.Avalonia', note: 'Editable Avalonia rich-text control with selection, formatting, and command infrastructure.' },
+      { name: 'ProEdit.OpenXml', note: 'Open XML and DOCX import and export for the core document model.' },
+      { name: 'ProEdit.Reporting.Avalonia.Designer', note: 'Avalonia report authoring surface for the modular reporting stack.' },
+      { name: 'ProEdit.Collaboration', note: 'Operation model, synchronization engine, persistence, and snapshots.' }
+    ],
+    install: 'dotnet add package ProEdit.Controls.Skia.Avalonia',
+    usageLanguage: 'xml',
+    usage: '<controls:ProEditDocumentEditor\n    Document="{Binding Document}"\n    Zoom="{Binding Zoom, Mode=TwoWay}"\n    UsePagination="True"\n    AcceptsReturn="True" />',
+    highlights: ['Rich document editing and pagination', 'DOCX, RTF, HTML, Markdown, PDF, PS, and XPS', 'Avalonia, Uno Platform, and .NET MAUI controls', 'Reporting, printing, collaboration, macros, and MCP']
   },
   {
     slug: 'protext',

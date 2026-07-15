@@ -138,6 +138,39 @@ const overrides: Record<string, Partial<ProjectDetail>> = {
     media: [{ src: 'https://user-images.githubusercontent.com/2297442/131457859-94a2c5c3-f85c-4ac0-a7b0-ec07e86595b7.png', alt: 'Core2D diagram editor interface', caption: 'Core2D’s data-driven editor hosts technical diagrams across multiple front ends.' }],
     related: ['procad', 'nodeeditor', 'panandzoom']
   },
+  proedit: {
+    introduction: 'ProEdit is a package-oriented document platform rather than a single editor. Applications can adopt the document model, layout and Skia renderer, FlowDocument and rich-text controls, Word-style shell, reporting stack, printing services, format converters, collaboration engine, or automation integrations independently.',
+    audience: ['Teams building word processors, document viewers, or reporting products', 'Desktop and embedded applications that need reusable document infrastructure', 'Avalonia, Uno Platform, and .NET MAUI developers sharing one document engine'],
+    architecture: [
+      { label: 'Document', detail: 'Sections, paragraphs, runs, tables, lists, styles, shapes, fields, comments, citations, metadata, and revisions form the portable model.' },
+      { label: 'Layout + render', detail: 'Pagination, line breaking, tables, floating objects, shapes, and proofing decorations feed renderer-neutral records and Skia output.' },
+      { label: 'Workflows', detail: 'Editing, reporting, printing, conversion, collaboration, proofing, macros, and MCP compose around the same document core.' },
+      { label: 'Controls', detail: 'Avalonia, Uno Platform, and .NET MAUI packages host shared read-only and editable document surfaces.' }
+    ],
+    compatibility: [
+      { label: '.NET', value: '10.0', state: 'ready' },
+      { label: 'Avalonia', value: 'Editor, viewer, reporting, print UI', state: 'ready' },
+      { label: 'Uno Platform', value: 'Shared Skia controls + compatibility', state: 'ready' },
+      { label: '.NET MAUI', value: 'Shared control package', state: 'partial' }
+    ],
+    proof: [
+      { value: '8+ formats', label: 'document import and export' },
+      { value: '3 UI stacks', label: 'Avalonia, Uno, and MAUI' },
+      { value: 'Tests + benchmarks', label: 'headless UI and layout lanes' }
+    ],
+    media: [
+      { src: raw('ProEdit', 'main', 'build/Assets/Icon.png'), alt: 'ProEdit document platform mark', caption: 'ProEdit brings the document model, rendering, editing, reporting, and collaboration layers under one package-oriented identity.' },
+      { src: 'https://opengraph.githubassets.com/portfolio-v3/wieslawsoltes/ProEdit', alt: 'ProEdit GitHub repository preview', caption: 'The active repository contains the complete source, cross-framework samples, tests, benchmarks, documentation, and release automation.' }
+    ],
+    links: [
+      { label: 'Documentation', href: docs('ProEdit') },
+      { label: 'Samples', href: repo('ProEdit', '/tree/main/samples') },
+      { label: 'Architecture', href: repo('ProEdit', '/blob/main/docfx/articles/architecture.md') },
+      { label: 'Benchmarks', href: repo('ProEdit', '/tree/main/benchmarks') }
+    ],
+    limitations: 'ProEdit is broad and actively evolving. Adopt the smallest package set that matches the workflow, pin package versions, and use the current samples as the integration contract for advanced editing, conversion, and collaboration features.',
+    related: ['protext', 'prodatagrid', 'protranslate']
+  },
   protranslate: {
     media: [{ src: 'https://github.com/user-attachments/assets/ef612d49-4a2f-4001-a6c0-544197f9fd65', alt: 'ProTranslate localization workflow', caption: 'Generated keys and live culture switching connect resources to XAML applications.' }],
     compatibility: [{ label: 'Avalonia', value: 'Supported', state: 'ready' }, { label: 'WPF / WinUI', value: 'Supported', state: 'ready' }, { label: 'Uno / MAUI', value: 'Supported', state: 'ready' }, { label: 'Resource formats', value: 'XLIFF, PO, RESX, ARB+', state: 'ready' }],

@@ -7,7 +7,8 @@ import ArchiveIndex from '@/components/ArchiveIndex.astro';
 import { featuredProjects, projectUrl } from '@/data/projects';
 
 const base = import.meta.env.BASE_URL;
-const spotlights = featuredProjects.slice(0, 4);
+const proEdit = featuredProjects.find((project) => project.slug === 'proedit');
+const spotlights = [...featuredProjects.slice(0, 4), ...(proEdit ? [proEdit] : [])];
 ---
 
 <BaseLayout>
@@ -80,7 +81,7 @@ const spotlights = featuredProjects.slice(0, 4);
   <section class="spotlight" id="spotlight">
     <div class="spotlight-intro section-shell" data-reveal>
       <p class="section-label">Current focus</p>
-      <p>Four projects pushing the portable .NET desktop forward.</p>
+      <p>Five projects pushing the portable .NET desktop forward.</p>
     </div>
     {spotlights.map((project, index) => (
       <article class="spotlight-project" style={`--project-accent:${project.accent}`}>
