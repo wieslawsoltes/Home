@@ -55,6 +55,10 @@ The shared Expressive Code theme is defined in `ec.config.mjs` and follows each 
 
 Project media URLs remain in each project's validated frontmatter so captions and canonical source images stay editorially visible. Detail pages resolve each source's intrinsic dimensions and render through `astro:assets` with source-bounded responsive widths, layout-aware `sizes`, high-quality WebP output, lazy loading, and asynchronous decoding. Small project marks remain at native resolution instead of generating duplicate upscaled candidates. Immutable GitHub attachments carry validated intrinsic dimensions; animated demonstrations retain GIF output at a bounded display size, and trusted SVG diagrams pass through without unsafe rasterization. The image configuration authorizes only the GitHub-owned remote patterns and signed attachment storage currently used by the portfolio.
 
+### Social previews
+
+Static Astro endpoints generate 1200×630 PNG social previews for the portfolio, every project, and every capability page. The shared renderer in `src/lib/social-preview.ts` keeps typography, project accents, technical geometry, repository identity, and status information consistent. `BaseLayout.astro` publishes the absolute Open Graph and Twitter image URL together with PNG type, dimensions, and accessible alternative text.
+
 The ecosystem graph is defined in `src/components/SystemsMap.astro`.
 
 ## Portfolio integration

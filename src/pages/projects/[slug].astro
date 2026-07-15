@@ -36,10 +36,7 @@ const resolvedMedia: ResolvedMedia[] = await Promise.all(project.media.map(async
   const { width, height } = await inferRemoteSize(media.src);
   return { ...media, width, height };
 }));
-const socialMedia = project.media.find((media) => !new URL(media.src).pathname.toLowerCase().endsWith('.svg')) ?? {
-  src: `https://opengraph.githubassets.com/portfolio-${project.slug}/wieslawsoltes/${project.repo}`,
-  alt: `${project.name} GitHub repository preview`
-};
+const socialPreview = `social/projects/${project.slug}.png`;
 const screenshotSizes = project.media.length === 1
   ? '(max-width: 760px) calc(100vw - 36px), (max-width: 1320px) calc(100vw - 96px), 1224px'
   : '(max-width: 760px) calc(100vw - 36px), (max-width: 1320px) calc(50vw - 64px), 596px';
@@ -118,8 +115,8 @@ const resourceLinks = [
 <BaseLayout
   title={project.name}
   description={project.description}
-  image={socialMedia.src}
-  imageAlt={socialMedia.alt}
+  image={socialPreview}
+  imageAlt={`${project.name} — ${project.statement}`}
   structuredData={structuredData}
 >
   <article class="project-page" style={`--project-accent:${project.accent}`} data-primary-package={primaryPackage?.name}>

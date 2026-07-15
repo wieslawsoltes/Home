@@ -63,10 +63,7 @@ const repoRoot = githubUrl(project);
 const branch = project.branch ?? 'main';
 const sourceUrl = `${repoRoot}/tree/${branch}/${capability.sourcePath}`;
 const docsUrl = capability.docsPath ? `${repoRoot}/blob/${branch}/${capability.docsPath}` : `${repoRoot}#readme`;
-const projectMedia = project.media.find((media) => !new URL(media.src).pathname.toLowerCase().endsWith('.svg')) ?? {
-  src: `https://opengraph.githubassets.com/portfolio-${project.slug}/wieslawsoltes/${project.repo}`,
-  alt: `${project.name} GitHub repository preview`
-};
+const socialPreview = `social/projects/${project.slug}/${capability.slug}.png`;
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
 const siteHome = new URL(base, Astro.site);
 const projectUrlAbsolute = new URL(`projects/${project.slug}/`, siteHome);
@@ -104,8 +101,8 @@ const structuredData = [
 <BaseLayout
   title={`${capability.name} · ${project.name}`}
   description={capability.description}
-  image={projectMedia?.src}
-  imageAlt={projectMedia?.alt}
+  image={socialPreview}
+  imageAlt={`${capability.name} in ${project.name} — ${capability.statement}`}
   structuredData={structuredData}
 >
   <article class="capability-page" style={`--project-accent:${project.accent}`} data-primary-package={primaryPackage.name}>
