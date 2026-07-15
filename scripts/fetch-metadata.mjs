@@ -3,10 +3,12 @@ import { dirname, resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
 const sourcePath = resolve(root, 'src/data/projects.ts');
+const capabilitySourcePath = resolve(root, 'src/data/capabilities.ts');
 const outputPath = resolve(root, 'public/data/metadata.json');
 const source = await readFile(sourcePath, 'utf8');
+const capabilitySource = await readFile(capabilitySourcePath, 'utf8');
 const repositories = [...new Set([...source.matchAll(/repo:\s*'([^']+)'/g)].map((match) => match[1]))];
-const packages = [...new Set([...source.matchAll(/\{\s*name:\s*'([^']+)'\s*,\s*note:/g)].map((match) => match[1]))];
+const packages = [...new Set([...`${source}\n${capabilitySource}`.matchAll(/\{\s*name:\s*'([^']+)'\s*,\s*note:/g)].map((match) => match[1]))];
 const token = process.env.GITHUB_TOKEN ?? process.env.GH_TOKEN;
 
 async function fetchJson(url, headers = {}) {

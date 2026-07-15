@@ -1,0 +1,188 @@
+---
+import { Code } from 'astro:components';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import ProjectGlyph from '@/components/ProjectGlyph.astro';
+import {
+  capabilities,
+  capabilitiesForProject,
+  capabilityPackageUrl,
+  capabilityProject,
+  capabilityUrl,
+  type Capability
+} from '@/data/capabilities';
+import { githubUrl, projectUrl } from '@/data/projects';
+
+export function getStaticPaths() {
+  return capabilities.map((capability) => ({
+    params: { slug: capability.projectSlug, capability: capability.slug },
+    props: { capability }
+  }));
+}
+
+interface Props { capability: Capability; }
+
+const { capability } = Astro.props;
+const project = capabilityProject(capability);
+const base = import.meta.env.BASE_URL;
+const siblings = capabilitiesForProject(project.slug);
+const related = (capability.related ?? [])
+  .map((slug) => siblings.find((item) => item.slug === slug))
+  .filter((item): item is Capability => Boolean(item));
+const primaryPackage = capability.packages[0];
+const isToolInstall = capability.install.startsWith('dotnet tool');
+const packageReference = `<PackageReference Include="${primaryPackage.name}" Version="VERSION" />`;
+const centralPackage = `<PackageVersion Include="${primaryPackage.name}" Version="VERSION" />`;
+const installVariants = isToolInstall
+  ? [{ label: 'CLI', language: 'bash', code: capability.install }]
+  : [
+      { label: 'CLI', language: 'bash', code: capability.install },
+      { label: 'PackageReference', language: 'xml', code: packageReference },
+      { label: 'Central package', language: 'xml', code: centralPackage }
+    ];
+const repoRoot = githubUrl(project);
+const branch = project.branch ?? 'main';
+const sourceUrl = `${repoRoot}/tree/${branch}/${capability.sourcePath}`;
+const docsUrl = capability.docsPath ? `${repoRoot}/blob/${branch}/${capability.docsPath}` : `${repoRoot}#readme`;
+---
+
+<BaseLayout title={`${capability.name} · ${project.name}`} description={capability.description}>
+  <article class="capability-page" style={`--project-accent:${project.accent}`} data-primary-package={primaryPackage.name}>
+    <header class="capability-hero">
+      <div class="capability-hero-mark" aria-hidden="true">
+        <ProjectGlyph slug={project.slug} accent={project.accent} large />
+      </div>
+      <div class="section-shell capability-hero-inner">
+        <nav class="capability-breadcrumb" aria-label="Breadcrumb">
+          <a href={`${base}#work`}>Projects</a><span>/</span>
+          <a href={projectUrl(project, base)}>{project.name}</a><span>/</span>
+          <strong>{capability.name}</strong>
+        </nav>
+        <div class="capability-title-grid">
+          <div>
+            <p class="project-kicker">{capability.eyebrow}</p>
+            <h1>{capability.name}</h1>
+          </div>
+          <div class="capability-lede">
+            <p>{capability.statement}</p>
+            <a class="button-primary" href={sourceUrl} target="_blank" rel="noreferrer">Explore source <span>↗</span></a>
+          </div>
+        </div>
+        <div class="capability-meta">
+          <div><span>Parent system</span><strong>{project.name}</strong></div>
+          <div><span>Status</span><strong><i class="status-dot"></i>{capability.status}</strong></div>
+          <div><span>Modules</span><strong>{capability.packages.length}</strong></div>
+          <div><span>Repository</span><strong>{project.repo}/{capability.sourcePath.split('/').at(-1)}</strong></div>
+        </div>
+      </div>
+    </header>
+
+    <section class="capability-overview section-shell">
+      <div data-reveal>
+        <p class="section-label">Capability</p>
+        <h2>{capability.description}</h2>
+      </div>
+      <ol data-reveal>
+        {capability.highlights.map((highlight, index) => (
+          <li><span>{String(index + 1).padStart(2, '0')}</span><p>{highlight}</p></li>
+        ))}
+      </ol>
+    </section>
+
+    <section class="architecture capability-architecture section-shell">
+      <div class="section-heading compact" data-reveal>
+        <p class="section-label">How it composes</p>
+        <h2>From intent<br />to working system.</h2>
+      </div>
+      <div class="architecture-flow">
+        {capability.layers.map((item, index) => (
+          <article data-reveal>
+            <span>{String(index + 1).padStart(2, '0')}</span>
+            <h3>{item.label}</h3>
+            <p>{item.detail}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="quickstart section-shell">
+      <div class="section-heading" data-reveal>
+        <p class="section-label">Quick start</p>
+        <h2>Adopt this<br />capability.</h2>
+        <p>Start with the primary module, then add the related packages only when the application needs those layers. Replace <code>VERSION</code> with the current NuGet version.</p>
+      </div>
+      <div class="code-stack">
+        <article class="code-panel install-panel" data-reveal data-code-tabs>
+          <header>
+            <div class="code-tabs" role="tablist" aria-label="Installation format">
+              {installVariants.map((variant, index) => (
+                <button type="button" role="tab" aria-selected={index === 0 ? 'true' : 'false'} data-code-tab={index}>{variant.label}</button>
+              ))}
+            </div>
+            <button type="button" data-copy-panel>Copy</button>
+          </header>
+          {installVariants.map((variant, index) => (
+            <div role="tabpanel" data-code-pane={index} hidden={index !== 0}>
+              <Code code={variant.code} lang={variant.language as 'bash' | 'xml'} theme="github-dark" />
+            </div>
+          ))}
+        </article>
+        <article class="code-panel" data-reveal>
+          <header><span>02 · Use · {capability.usageLanguage}</span><button type="button" data-copy-panel>Copy</button></header>
+          <Code code={capability.usage} lang={capability.usageLanguage} theme="github-dark" />
+        </article>
+      </div>
+    </section>
+
+    <section class="packages capability-packages section-shell">
+      <div class="section-heading compact" data-reveal>
+        <p class="section-label">Modules in this capability</p>
+        <h2>Use one layer.<br />Compose the rest.</h2>
+      </div>
+      <div class="package-list">
+        {capability.packages.map((item, index) => (
+          <a href={capabilityPackageUrl(item)} target="_blank" rel="noreferrer" data-package={item.name} data-reveal>
+            <span class="package-number">{String(index + 1).padStart(2, '0')}</span>
+            <strong>{item.name}</strong>
+            <p>{item.note}</p>
+            <small data-package-version></small>
+            <span class="package-arrow">↗</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    {related.length > 0 && (
+      <section class="capability-related section-shell">
+        <div class="section-heading compact" data-reveal>
+          <p class="section-label">Inside {project.name}</p>
+          <h2>Continue through<br />the product family.</h2>
+        </div>
+        <div class="capability-card-grid">
+          {related.map((item) => (
+            <a href={capabilityUrl(item, base)} data-reveal>
+              <span>{item.eyebrow}</span><strong>{item.name}</strong><p>{item.description}</p><i>→</i>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <section class="source-cta section-shell" data-reveal>
+      <p class="section-label">Source of truth</p>
+      <h2>Read the module beside the complete system.</h2>
+      <p>The implementation, samples, issues, and release notes stay in the parent repository so module details remain connected to the product architecture.</p>
+      <div class="resource-links">
+        <a href={projectUrl(project, base)}>Project overview <span>←</span></a>
+        <a href={sourceUrl} target="_blank" rel="noreferrer">Module source <span>↗</span></a>
+        <a href={docsUrl} target="_blank" rel="noreferrer">Documentation <span>↗</span></a>
+        <a href={`${repoRoot}/issues`} target="_blank" rel="noreferrer">Issues <span>↗</span></a>
+      </div>
+    </section>
+
+    <a class="next-project capability-parent-return" href={projectUrl(project, base)} style={`--next-accent:${project.accent}`}>
+      <span class="section-label">Return to product family</span>
+      <strong>{project.name}</strong>
+      <span class="next-arrow">←</span>
+    </a>
+  </article>
+</BaseLayout>

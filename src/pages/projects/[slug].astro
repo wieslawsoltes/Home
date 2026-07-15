@@ -2,6 +2,7 @@
 import { Code } from 'astro:components';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import ProjectGlyph from '@/components/ProjectGlyph.astro';
+import { capabilitiesForProject, capabilityUrl } from '@/data/capabilities';
 import { projectDetail } from '@/data/projectDetails';
 import { projects, githubUrl, nugetUrl, projectUrl, type Project } from '@/data/projects';
 
@@ -13,6 +14,7 @@ interface Props { project: Project; }
 
 const { project } = Astro.props;
 const detail = projectDetail(project);
+const capabilities = capabilitiesForProject(project.slug);
 const base = import.meta.env.BASE_URL;
 const currentIndex = projects.findIndex((candidate) => candidate.slug === project.slug);
 const next = projects[(currentIndex + 1) % projects.length];
@@ -147,6 +149,29 @@ const resourceLinks = [
         <div data-repo-stats={project.repo}><strong>Live</strong><span>GitHub metadata</span></div>
       </div>
     </section>
+
+    {capabilities.length > 0 && (
+      <section class="capability-index section-shell">
+        <div class="capability-index-heading" data-reveal>
+          <div>
+            <p class="section-label">Inside {project.name}</p>
+            <h2>One repository.<br />Multiple serious systems.</h2>
+          </div>
+          <p>Explore the focused capabilities, their package boundaries, architecture, installation, and smallest useful example.</p>
+        </div>
+        <div class="capability-card-grid">
+          {capabilities.map((item, index) => (
+            <a href={capabilityUrl(item, base)} data-reveal>
+              <span>{String(index + 1).padStart(2, '0')} · {item.eyebrow}</span>
+              <strong>{item.name}</strong>
+              <p>{item.description}</p>
+              <small>{item.packages.length} {item.packages.length === 1 ? 'module' : 'modules'}</small>
+              <i>→</i>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
 
     <section class="quickstart section-shell">
       <div class="section-heading" data-reveal>
