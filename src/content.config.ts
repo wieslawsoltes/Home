@@ -8,6 +8,22 @@ const packageLink = z.object({
   url: z.url().optional()
 });
 
+const codeMarker = z.union([
+  z.string(),
+  z.number().int().positive(),
+  z.object({
+    range: z.string().regex(/^\d+(?:-\d+)?$/),
+    label: z.string().max(18).optional()
+  })
+]);
+
+const usageExample = {
+  usageTitle: z.string().optional(),
+  usageMark: z.array(codeMarker).default([]),
+  usageInsertions: z.array(codeMarker).default([]),
+  usageDeletions: z.array(codeMarker).default([])
+};
+
 const projects = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/projects' }),
   schema: z.object({
@@ -28,6 +44,7 @@ const projects = defineCollection({
     install: z.string(),
     usageLanguage: z.enum(['csharp', 'xml', 'bash', 'javascript']),
     usage: z.string(),
+    ...usageExample,
     highlights: z.array(z.string()).min(1),
     audience: z.array(z.string()).min(1),
     architecture: z.array(z.object({ label: z.string(), detail: z.string() })).min(1),
@@ -63,6 +80,7 @@ const capabilities = defineCollection({
     install: z.string(),
     usageLanguage: z.enum(['csharp', 'xml', 'bash', 'javascript']),
     usage: z.string(),
+    ...usageExample,
     highlights: z.array(z.string()).min(1),
     layers: z.array(z.object({ label: z.string(), detail: z.string() })).min(1),
     sourcePath: z.string(),

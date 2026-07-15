@@ -107,21 +107,34 @@ function initCodeControls(signal: AbortSignal) {
   document.querySelectorAll<HTMLElement>('[data-code-tabs]').forEach((group) => {
     const tabs = [...group.querySelectorAll<HTMLButtonElement>('[data-code-tab]')];
     const panes = [...group.querySelectorAll<HTMLElement>('[data-code-pane]')];
+    const activateTab = (tab: HTMLButtonElement, focus = false) => {
+      const selected = tab.dataset.codeTab;
+      tabs.forEach((candidate) => {
+        const active = candidate === tab;
+        candidate.setAttribute('aria-selected', String(active));
+        candidate.tabIndex = active ? 0 : -1;
+      });
+      panes.forEach((pane) => { pane.hidden = pane.dataset.codePane !== selected; });
+      if (focus) tab.focus();
+    };
     tabs.forEach((tab) => {
-      tab.addEventListener('click', () => {
-        const selected = tab.dataset.codeTab;
-        tabs.forEach((candidate) => candidate.setAttribute('aria-selected', String(candidate === tab)));
-        panes.forEach((pane) => { pane.hidden = pane.dataset.codePane !== selected; });
+      tab.addEventListener('click', () => activateTab(tab), { signal });
+      tab.addEventListener('keydown', (event) => {
+        const current = tabs.indexOf(tab);
+        const next = event.key === 'ArrowRight'
+          ? (current + 1) % tabs.length
+          : event.key === 'ArrowLeft'
+            ? (current - 1 + tabs.length) % tabs.length
+            : event.key === 'Home'
+              ? 0
+              : event.key === 'End'
+                ? tabs.length - 1
+                : -1;
+        if (next < 0) return;
+        event.preventDefault();
+        activateTab(tabs[next], true);
       }, { signal });
     });
-  });
-
-  document.querySelectorAll<HTMLButtonElement>('[data-copy-panel]').forEach((button) => {
-    button.addEventListener('click', () => {
-      const panel = button.closest('.code-panel');
-      const source = panel?.querySelector<HTMLElement>('[data-code-pane]:not([hidden]) pre, :scope > pre');
-      if (source) void copyText(button, source.textContent ?? '', signal);
-    }, { signal });
   });
 }
 
@@ -168,12 +181,17 @@ async function hydrateMetadata(signal: AbortSignal) {
     const project = document.querySelector<HTMLElement>('[data-primary-package]');
     const version = metadata.packages?.[project?.dataset.primaryPackage ?? '']?.version;
     if (!version || !project) return;
-    project.querySelectorAll<HTMLElement>('.code-panel').forEach((panel) => {
-      const walker = document.createTreeWalker(panel, NodeFilter.SHOW_TEXT);
+    project.querySelectorAll<HTMLElement>('.code-example').forEach((example) => {
+      const walker = document.createTreeWalker(example, NodeFilter.SHOW_TEXT);
       while (walker.nextNode()) {
         const node = walker.currentNode;
         if (node.nodeValue?.includes('VERSION')) node.nodeValue = node.nodeValue.replaceAll('VERSION', version);
       }
+      example.querySelectorAll<HTMLButtonElement>('.expressive-code .copy button[data-code]').forEach((button) => {
+        if (button.dataset.code?.includes('VERSION')) {
+          button.dataset.code = button.dataset.code.replaceAll('VERSION', version);
+        }
+      });
     });
   } catch {
     // Every page remains complete when live metadata is temporarily unavailable.

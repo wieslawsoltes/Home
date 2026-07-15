@@ -1,5 +1,5 @@
 ---
-import { Code } from 'astro:components';
+import { Code } from 'astro-expressive-code/components';
 import { render } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import ProjectGlyph from '@/components/ProjectGlyph.astro';
@@ -46,13 +46,21 @@ const centralPackage = primaryPackage && !isSourceInstall
   ? `<PackageVersion Include="${primaryPackage.name}" Version="VERSION" />`
   : project.install;
 const packageInstallVariants = [
-  { label: 'CLI', language: installLanguage, code: project.install },
-  { label: 'PackageReference', language: 'xml', code: packageReference },
-  { label: 'Central package', language: 'xml', code: centralPackage }
+  { label: 'CLI', language: installLanguage, code: project.install, title: 'Terminal', frame: 'terminal' },
+  { label: 'PackageReference', language: 'xml', code: packageReference, title: 'Project.csproj', frame: 'code' },
+  { label: 'Central package', language: 'xml', code: centralPackage, title: 'Directory.Packages.props', frame: 'code' }
 ];
 const installVariants = isSourceInstall
-  ? [{ label: 'Source', language: 'bash', code: project.install }]
+  ? [{ label: 'Source', language: 'bash', code: project.install, title: 'Terminal', frame: 'terminal' }]
   : packageInstallVariants;
+const usageTitles = {
+  csharp: 'QuickStart.cs',
+  xml: 'MainWindow.axaml',
+  bash: 'Terminal',
+  javascript: 'quick-start.js'
+} as const;
+const usageTitle = project.usageTitle ?? usageTitles[project.usageLanguage];
+const usageFrame = project.usageLanguage === 'bash' ? 'terminal' : 'code';
 const related = project.related
   .map(referenceId)
   .map((slug) => projects.find((candidate) => candidate.slug === slug))
@@ -233,24 +241,53 @@ const resourceLinks = [
         <p>Choose the package workflow used by your repository, then start from the smallest working example. Replace <code>VERSION</code> with the current stable or prerelease version shown on NuGet.</p>
       </div>
       <div class="code-stack">
-        <article class="code-panel install-panel" data-reveal data-code-tabs>
-          <header>
+        <article class="code-example install-example" data-reveal data-code-tabs>
+          <header class="code-example-toolbar">
+            <span>01 · Install</span>
             <div class="code-tabs" role="tablist" aria-label="Installation format">
               {installVariants.map((variant, index) => (
-                <button type="button" role="tab" aria-selected={index === 0 ? 'true' : 'false'} data-code-tab={index}>{variant.label}</button>
+                <button
+                  id={`install-tab-${project.slug}-${index}`}
+                  type="button"
+                  role="tab"
+                  aria-controls={`install-pane-${project.slug}-${index}`}
+                  aria-selected={index === 0 ? 'true' : 'false'}
+                  tabindex={index === 0 ? 0 : -1}
+                  data-code-tab={index}
+                >{variant.label}</button>
               ))}
             </div>
-            <button type="button" data-copy-panel>Copy</button>
           </header>
           {installVariants.map((variant, index) => (
-            <div role="tabpanel" data-code-pane={index} hidden={index !== 0}>
-              <Code code={variant.code} lang={variant.language as 'bash' | 'xml'} theme="github-dark" />
+            <div
+              id={`install-pane-${project.slug}-${index}`}
+              role="tabpanel"
+              aria-labelledby={`install-tab-${project.slug}-${index}`}
+              data-code-pane={index}
+              hidden={index !== 0}
+            >
+              <Code
+                code={variant.code}
+                lang={variant.language}
+                title={variant.title}
+                frame={variant.frame as 'code' | 'terminal'}
+                class="portfolio-code"
+              />
             </div>
           ))}
         </article>
-        <article class="code-panel" data-reveal>
-          <header><span>02 · Use · {project.usageLanguage}</span><button type="button" data-copy-panel>Copy</button></header>
-          <Code code={project.usage} lang={project.usageLanguage} theme="github-dark" />
+        <article class="code-example" data-reveal>
+          <div class="code-example-toolbar"><span>02 · Use · {project.usageLanguage}</span></div>
+          <Code
+            code={project.usage}
+            lang={project.usageLanguage}
+            title={usageTitle}
+            frame={usageFrame}
+            mark={project.usageMark}
+            ins={project.usageInsertions}
+            del={project.usageDeletions}
+            class="portfolio-code"
+          />
         </article>
       </div>
     </section>

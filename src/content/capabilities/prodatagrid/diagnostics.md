@@ -13,6 +13,10 @@ packages:
     note: Transport contracts for remote and embedded diagnostic clients.
 install: dotnet add package ProDiagnostics --prerelease
 usageLanguage: csharp
+usageTitle: Program.cs
+usageMark:
+  - range: "1-3"
+    label: Enable diagnostics
 usage: |-
   AppBuilder.Configure<App>()
       .UsePlatformDetect()

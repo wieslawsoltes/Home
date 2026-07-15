@@ -1,5 +1,5 @@
 ---
-import { Code } from 'astro:components';
+import { Code } from 'astro-expressive-code/components';
 import { render } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import ProjectGlyph from '@/components/ProjectGlyph.astro';
@@ -45,12 +45,20 @@ const isSourceInstall = capability.install.startsWith('git clone');
 const packageReference = `<PackageReference Include="${primaryPackage.name}" Version="VERSION" />`;
 const centralPackage = `<PackageVersion Include="${primaryPackage.name}" Version="VERSION" />`;
 const installVariants = isToolInstall || isSourceInstall
-  ? [{ label: isSourceInstall ? 'Source' : 'CLI', language: 'bash', code: capability.install }]
+  ? [{ label: isSourceInstall ? 'Source' : 'CLI', language: 'bash', code: capability.install, title: 'Terminal', frame: 'terminal' }]
   : [
-      { label: 'CLI', language: 'bash', code: capability.install },
-      { label: 'PackageReference', language: 'xml', code: packageReference },
-      { label: 'Central package', language: 'xml', code: centralPackage }
+      { label: 'CLI', language: 'bash', code: capability.install, title: 'Terminal', frame: 'terminal' },
+      { label: 'PackageReference', language: 'xml', code: packageReference, title: 'Project.csproj', frame: 'code' },
+      { label: 'Central package', language: 'xml', code: centralPackage, title: 'Directory.Packages.props', frame: 'code' }
     ];
+const usageTitles = {
+  csharp: 'QuickStart.cs',
+  xml: 'MainWindow.axaml',
+  bash: 'Terminal',
+  javascript: 'quick-start.js'
+} as const;
+const usageTitle = capability.usageTitle ?? usageTitles[capability.usageLanguage];
+const usageFrame = capability.usageLanguage === 'bash' ? 'terminal' : 'code';
 const repoRoot = githubUrl(project);
 const branch = project.branch ?? 'main';
 const sourceUrl = `${repoRoot}/tree/${branch}/${capability.sourcePath}`;
@@ -165,24 +173,53 @@ const structuredData = [
         <p>Start with the primary module, then add the related packages only when the application needs those layers. Replace <code>VERSION</code> with the current NuGet version.</p>
       </div>
       <div class="code-stack">
-        <article class="code-panel install-panel" data-reveal data-code-tabs>
-          <header>
+        <article class="code-example install-example" data-reveal data-code-tabs>
+          <header class="code-example-toolbar">
+            <span>01 · Install</span>
             <div class="code-tabs" role="tablist" aria-label="Installation format">
               {installVariants.map((variant, index) => (
-                <button type="button" role="tab" aria-selected={index === 0 ? 'true' : 'false'} data-code-tab={index}>{variant.label}</button>
+                <button
+                  id={`install-tab-${capability.projectSlug}-${capability.slug}-${index}`}
+                  type="button"
+                  role="tab"
+                  aria-controls={`install-pane-${capability.projectSlug}-${capability.slug}-${index}`}
+                  aria-selected={index === 0 ? 'true' : 'false'}
+                  tabindex={index === 0 ? 0 : -1}
+                  data-code-tab={index}
+                >{variant.label}</button>
               ))}
             </div>
-            <button type="button" data-copy-panel>Copy</button>
           </header>
           {installVariants.map((variant, index) => (
-            <div role="tabpanel" data-code-pane={index} hidden={index !== 0}>
-              <Code code={variant.code} lang={variant.language as 'bash' | 'xml'} theme="github-dark" />
+            <div
+              id={`install-pane-${capability.projectSlug}-${capability.slug}-${index}`}
+              role="tabpanel"
+              aria-labelledby={`install-tab-${capability.projectSlug}-${capability.slug}-${index}`}
+              data-code-pane={index}
+              hidden={index !== 0}
+            >
+              <Code
+                code={variant.code}
+                lang={variant.language}
+                title={variant.title}
+                frame={variant.frame as 'code' | 'terminal'}
+                class="portfolio-code"
+              />
             </div>
           ))}
         </article>
-        <article class="code-panel" data-reveal>
-          <header><span>02 · Use · {capability.usageLanguage}</span><button type="button" data-copy-panel>Copy</button></header>
-          <Code code={capability.usage} lang={capability.usageLanguage} theme="github-dark" />
+        <article class="code-example" data-reveal>
+          <div class="code-example-toolbar"><span>02 · Use · {capability.usageLanguage}</span></div>
+          <Code
+            code={capability.usage}
+            lang={capability.usageLanguage}
+            title={usageTitle}
+            frame={usageFrame}
+            mark={capability.usageMark}
+            ins={capability.usageInsertions}
+            del={capability.usageDeletions}
+            class="portfolio-code"
+          />
         </article>
       </div>
     </section>

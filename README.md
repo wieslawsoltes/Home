@@ -30,6 +30,25 @@ Project content lives in schema-validated Markdown files under `src/content/proj
 
 Focused subsystem pages live under `src/content/capabilities/<project>/`. Their project and related-capability fields are validated content references, and each file creates `/projects/<project>/<capability>/`. Collection schemas are defined in `src/content.config.ts`; shared queries and URL helpers live in `src/lib/content.ts`.
 
+### Enhanced code examples
+
+Quick-start samples are rendered with Expressive Code, including syntax highlighting, editor or terminal frames, accessible copy feedback, and optional line or text markers. Installation examples choose the appropriate terminal, project-file, or central-package frame automatically.
+
+Project and capability frontmatter can customize the usage example with `usageTitle`, `usageMark`, `usageInsertions`, and `usageDeletions`. Marker entries accept exact text, a positive line number, or a labeled range:
+
+```yaml
+usageTitle: GalleryWindow.cs
+usageMark:
+  - range: "3-5"
+    label: GPU setup
+usageInsertions:
+  - 7
+usageDeletions:
+  - LegacyRenderer
+```
+
+The shared Expressive Code theme is defined in `ec.config.mjs` and follows each project page’s accent color. Range labels are limited to 18 characters so they remain readable on mobile. Use markers to explain meaningful decisions rather than decorating every line.
+
 The ecosystem graph is defined in `src/components/SystemsMap.astro`.
 
 ## Metadata refresh

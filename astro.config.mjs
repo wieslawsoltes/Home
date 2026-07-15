@@ -1,4 +1,5 @@
 import { defineConfig } from 'astro/config';
+import astroExpressiveCode from 'astro-expressive-code';
 
 const repository = process.env.GITHUB_REPOSITORY?.split('/')[1] ?? '';
 const isUserSite = repository.toLowerCase() === 'wieslawsoltes.github.io';
@@ -11,6 +12,7 @@ export default defineConfig({
   base,
   output: 'static',
   trailingSlash: 'always',
+  integrations: [astroExpressiveCode()],
   build: {
     format: 'directory'
   },

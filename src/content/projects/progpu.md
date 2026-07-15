@@ -22,6 +22,10 @@ install: |-
   dotnet add package ProGPU.Backend --prerelease
   dotnet add package ProGPU.Scene --prerelease
 usageLanguage: csharp
+usageTitle: GalleryWindow.cs
+usageMark:
+  - range: "3-5"
+    label: GPU setup
 usage: |-
   using ProGPU.Backend;
 
