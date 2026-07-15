@@ -1,10 +1,32 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import SystemsMap from '@/components/SystemsMap.astro';
-import { projects } from '@/data/projects';
+import { getProjects, projectUrl } from '@/lib/content';
+
+const base = import.meta.env.BASE_URL;
+const projects = await getProjects();
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
+const ecosystemId = `${canonicalUrl.href}#projects`;
+const structuredData = {
+  '@type': 'ItemList',
+  '@id': ecosystemId,
+  name: 'Wiesław Šoltés open-source project ecosystem',
+  numberOfItems: projects.length,
+  itemListElement: projects.map((project, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    name: project.name,
+    url: new URL(projectUrl(project, base), Astro.site).href
+  }))
+};
 ---
 
-<BaseLayout title="Open desktop ecosystem" description="An interactive map of Wiesław Šoltés’s open-source graphics, framework, control, diagnostics, and application projects.">
+<BaseLayout
+  title="Open desktop ecosystem"
+  description="An interactive map of Wiesław Šoltés’s open-source graphics, framework, control, diagnostics, and application projects."
+  pageType="CollectionPage"
+  structuredData={structuredData}
+>
   <header class="editorial-hero section-shell">
     <p class="section-label">The ecosystem</p>
     <h1>Independent parts.<br /><em>Compounding value.</em></h1>

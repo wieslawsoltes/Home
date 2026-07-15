@@ -1,32 +1,43 @@
 ---
 import { Code } from 'astro:components';
+import { render } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import ProjectGlyph from '@/components/ProjectGlyph.astro';
 import {
-  capabilities,
-  capabilitiesForProject,
+  capabilityFromEntry,
   capabilityPackageUrl,
-  capabilityProject,
   capabilityUrl,
-  type Capability
-} from '@/data/capabilities';
-import { githubUrl, projectUrl } from '@/data/projects';
+  getCapabilities,
+  getCapabilityEntries,
+  getProjects,
+  githubUrl,
+  projectUrl,
+  type Capability,
+  type CapabilityEntry
+} from '@/lib/content';
 
-export function getStaticPaths() {
-  return capabilities.map((capability) => ({
-    params: { slug: capability.projectSlug, capability: capability.slug },
-    props: { capability }
-  }));
+export async function getStaticPaths() {
+  const entries = await getCapabilityEntries();
+  return entries.map((entry) => {
+    const capability = capabilityFromEntry(entry);
+    return {
+      params: { slug: capability.projectSlug, capability: capability.slug },
+      props: { entry }
+    };
+  });
 }
 
-interface Props { capability: Capability; }
+interface Props { entry: CapabilityEntry; }
 
-const { capability } = Astro.props;
-const project = capabilityProject(capability);
+const { entry } = Astro.props as Props;
+const { Content } = await render(entry);
+const capability = capabilityFromEntry(entry);
+const [projects, capabilities] = await Promise.all([getProjects(), getCapabilities()]);
+const project = projects.find((candidate) => candidate.slug === capability.projectSlug);
+if (!project) throw new Error(`Unknown capability project: ${capability.projectSlug}`);
 const base = import.meta.env.BASE_URL;
-const siblings = capabilitiesForProject(project.slug);
 const related = (capability.related ?? [])
-  .map((slug) => siblings.find((item) => item.slug === slug))
+  .map((id) => capabilities.find((item) => item.id === id))
   .filter((item): item is Capability => Boolean(item));
 const primaryPackage = capability.packages[0];
 const isToolInstall = capability.install.startsWith('dotnet tool');
@@ -44,9 +55,51 @@ const repoRoot = githubUrl(project);
 const branch = project.branch ?? 'main';
 const sourceUrl = `${repoRoot}/tree/${branch}/${capability.sourcePath}`;
 const docsUrl = capability.docsPath ? `${repoRoot}/blob/${branch}/${capability.docsPath}` : `${repoRoot}#readme`;
+const projectMedia = project.media.find((media) => !new URL(media.src).pathname.toLowerCase().endsWith('.svg')) ?? {
+  src: `https://opengraph.githubassets.com/portfolio-${project.slug}/wieslawsoltes/${project.repo}`,
+  alt: `${project.name} GitHub repository preview`
+};
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
+const siteHome = new URL(base, Astro.site);
+const projectUrlAbsolute = new URL(`projects/${project.slug}/`, siteHome);
+const softwareId = `${canonicalUrl.href}#software`;
+const languageNames = { csharp: 'C#', xml: 'XAML', bash: 'Shell', javascript: 'JavaScript' } as const;
+const structuredData = [
+  {
+    '@type': 'SoftwareSourceCode',
+    '@id': softwareId,
+    name: `${capability.name} — ${project.name}`,
+    description: capability.description,
+    url: canonicalUrl.href,
+    codeRepository: sourceUrl,
+    author: { '@id': `${siteHome.href}#person` },
+    maintainer: { '@id': `${siteHome.href}#person` },
+    programmingLanguage: languageNames[capability.usageLanguage],
+    runtimePlatform: '.NET',
+    genre: project.category,
+    isAccessibleForFree: true,
+    isPartOf: { '@id': `${projectUrlAbsolute.href}#software` },
+    keywords: [capability.name, project.name, ...capability.highlights, ...capability.packages.map((item) => item.name)].join(', ')
+  },
+  {
+    '@type': 'BreadcrumbList',
+    '@id': `${canonicalUrl.href}#breadcrumb`,
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Projects', item: siteHome.href },
+      { '@type': 'ListItem', position: 2, name: project.name, item: projectUrlAbsolute.href },
+      { '@type': 'ListItem', position: 3, name: capability.name, item: canonicalUrl.href }
+    ]
+  }
+];
 ---
 
-<BaseLayout title={`${capability.name} · ${project.name}`} description={capability.description}>
+<BaseLayout
+  title={`${capability.name} · ${project.name}`}
+  description={capability.description}
+  image={projectMedia?.src}
+  imageAlt={projectMedia?.alt}
+  structuredData={structuredData}
+>
   <article class="capability-page" style={`--project-accent:${project.accent}`} data-primary-package={primaryPackage.name}>
     <header class="capability-hero">
       <div class="capability-hero-mark" aria-hidden="true">
@@ -61,7 +114,7 @@ const docsUrl = capability.docsPath ? `${repoRoot}/blob/${branch}/${capability.d
         <div class="capability-title-grid">
           <div>
             <p class="project-kicker">{capability.eyebrow}</p>
-            <h1>{capability.name}</h1>
+            <h1 data-transition-title={`capability-title-${capability.projectSlug}-${capability.slug}`}>{capability.name}</h1>
           </div>
           <div class="capability-lede">
             <p>{capability.statement}</p>
@@ -80,7 +133,7 @@ const docsUrl = capability.docsPath ? `${repoRoot}/blob/${branch}/${capability.d
     <section class="capability-overview section-shell">
       <div data-reveal>
         <p class="section-label">Capability</p>
-        <h2>{capability.description}</h2>
+        <Content />
       </div>
       <ol data-reveal>
         {capability.highlights.map((highlight, index) => (
@@ -161,7 +214,7 @@ const docsUrl = capability.docsPath ? `${repoRoot}/blob/${branch}/${capability.d
         <div class="capability-card-grid">
           {related.map((item) => (
             <a href={capabilityUrl(item, base)} data-reveal>
-              <span>{item.eyebrow}</span><strong>{item.name}</strong><p>{item.description}</p><i>→</i>
+              <span>{item.eyebrow}</span><strong data-transition-title={`capability-title-${item.projectSlug}-${item.slug}`}>{item.name}</strong><p>{item.description}</p><i>→</i>
             </a>
           ))}
         </div>

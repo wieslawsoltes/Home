@@ -1,0 +1,74 @@
+import { defineCollection, reference } from 'astro:content';
+import { glob } from 'astro/loaders';
+import { z } from 'astro/zod';
+
+const packageLink = z.object({
+  name: z.string(),
+  note: z.string(),
+  url: z.url().optional()
+});
+
+const projects = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/projects' }),
+  schema: z.object({
+    order: z.number().int().nonnegative(),
+    name: z.string(),
+    eyebrow: z.string(),
+    category: z.enum(['Graphics', 'Frameworks', 'Avalonia', 'Uno Platform', 'Controls', 'Tools']),
+    repo: z.string(),
+    branch: z.string().optional(),
+    description: z.string(),
+    statement: z.string(),
+    accent: z.string().regex(/^#[0-9a-f]{6}$/i),
+    featured: z.boolean().default(false),
+    showInIndex: z.boolean().default(true),
+    tier: z.enum(['Flagship', 'Maintained', 'Experimental']),
+    status: z.enum(['Active', 'Preview', 'Maintained']),
+    packages: z.array(packageLink),
+    install: z.string(),
+    usageLanguage: z.enum(['csharp', 'xml', 'bash', 'javascript']),
+    usage: z.string(),
+    highlights: z.array(z.string()).min(1),
+    audience: z.array(z.string()).min(1),
+    architecture: z.array(z.object({ label: z.string(), detail: z.string() })).min(1),
+    compatibility: z.array(z.object({
+      label: z.string(),
+      value: z.string(),
+      state: z.enum(['ready', 'partial', 'planned']).default('ready')
+    })).min(1),
+    proof: z.array(z.object({ value: z.string(), label: z.string() })).min(1),
+    media: z.array(z.object({ src: z.url(), alt: z.string(), caption: z.string() })).min(1),
+    links: z.array(z.object({ label: z.string(), href: z.url() })),
+    limitations: z.string().optional(),
+    related: z.array(reference('projects')).default([]),
+    archive: z.object({
+      order: z.number().int().nonnegative(),
+      kind: z.enum(['Maintained', 'Earlier work']),
+      tags: z.array(z.string()).min(1)
+    }).optional()
+  })
+});
+
+const capabilities = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/capabilities' }),
+  schema: z.object({
+    order: z.number().int().nonnegative(),
+    project: reference('projects'),
+    name: z.string(),
+    eyebrow: z.string(),
+    description: z.string(),
+    statement: z.string(),
+    status: z.enum(['Stable', 'Active', 'Preview', 'Maintained']),
+    packages: z.array(packageLink).min(1),
+    install: z.string(),
+    usageLanguage: z.enum(['csharp', 'xml', 'bash', 'javascript']),
+    usage: z.string(),
+    highlights: z.array(z.string()).min(1),
+    layers: z.array(z.object({ label: z.string(), detail: z.string() })).min(1),
+    sourcePath: z.string(),
+    docsPath: z.string().optional(),
+    related: z.array(reference('capabilities')).default([])
+  })
+});
+
+export const collections = { projects, capabilities };

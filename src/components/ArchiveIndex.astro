@@ -1,8 +1,8 @@
 ---
-import { archiveProjects } from '@/data/archiveProjects';
-import { projects, projectUrl } from '@/data/projects';
+import { getProjects, projectUrl } from '@/lib/content';
 
 const base = import.meta.env.BASE_URL;
+const projects = await getProjects();
 
 const groups = [
   { kind: 'Maintained', title: 'Maintained building blocks', note: 'Focused libraries and controls that remain useful parts of the wider portfolio.' },
@@ -20,17 +20,17 @@ const groups = [
     <section class="archive-group" data-reveal>
       <header><h3>{group.title}</h3><p>{group.note}</p></header>
       <div class="archive-rows">
-        {archiveProjects.filter((project) => project.kind === group.kind).map((project) => {
-          const detailed = projects.find((candidate) => candidate.repo === project.repo);
-          return (
-          <a href={detailed ? projectUrl(detailed, base) : `https://github.com/wieslawsoltes/${project.repo}`}>
+        {projects
+          .filter((project) => project.archive?.kind === group.kind)
+          .sort((left, right) => (left.archive?.order ?? 0) - (right.archive?.order ?? 0))
+          .map((project) => (
+          <a href={projectUrl(project, base)}>
             <strong>{project.name}</strong>
             <p>{project.description}</p>
-            <span>{project.tags.join(' · ')}</span>
+            <span>{project.archive?.tags.join(' · ')}</span>
             <i>↗</i>
           </a>
-          );
-        })}
+          ))}
       </div>
     </section>
   ))}

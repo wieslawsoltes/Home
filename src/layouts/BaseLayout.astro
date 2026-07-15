@@ -1,44 +1,116 @@
 ---
 import '@/styles/global.css';
+import SiteSearch from '@/components/SiteSearch.astro';
+import { ClientRouter, fade } from 'astro:transitions';
 
 interface Props {
   title?: string;
   description?: string;
   image?: string;
+  imageAlt?: string;
+  pageType?: 'WebPage' | 'AboutPage' | 'CollectionPage' | 'ProfilePage';
+  structuredData?: Record<string, unknown> | Record<string, unknown>[];
 }
 
 const {
   title = 'Wiesław Šoltés — Open-source .NET systems',
   description = 'Open-source UI frameworks, GPU rendering, controls, and developer tools by Wiesław Šoltés.',
-  image
+  image,
+  imageAlt,
+  pageType = 'WebPage',
+  structuredData = []
 } = Astro.props;
 const base = import.meta.env.BASE_URL;
 const canonical = new URL(Astro.url.pathname, Astro.site);
+const home = new URL(base, Astro.site);
+const sitemap = new URL(`${base}sitemap.xml`, Astro.site);
 const pageTitle = title.includes('Wiesław') ? title : `${title} — Wiesław Šoltés`;
+const openGraphType = pageType === 'AboutPage' || pageType === 'ProfilePage' ? 'profile' : 'website';
+const imageUrl = image
+  ? new URL(image.match(/^https?:\/\//) ? image : image.replace(/^\//, ''), image.match(/^https?:\/\//) ? undefined : home).href
+  : undefined;
+const personId = `${home.href}#person`;
+const websiteId = `${home.href}#website`;
+const pageId = `${canonical.href}#webpage`;
+const extraStructuredData = Array.isArray(structuredData) ? structuredData : [structuredData];
+const primaryEntity = extraStructuredData.find((item) => typeof item['@id'] === 'string')?.['@id'];
+const jsonLd = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Person',
+      '@id': personId,
+      name: 'Wiesław Šoltés',
+      url: home.href,
+      jobTitle: 'Independent open-source software engineer',
+      sameAs: ['https://github.com/wieslawsoltes'],
+      knowsAbout: ['.NET', 'Avalonia', 'Uno Platform', 'WPF', 'WinForms', 'XAML', 'GPU rendering', 'developer tools']
+    },
+    {
+      '@type': 'WebSite',
+      '@id': websiteId,
+      url: home.href,
+      name: 'Wiesław Šoltés — Open-source .NET systems',
+      description: 'Open-source UI frameworks, GPU rendering, controls, and developer tools by Wiesław Šoltés.',
+      inLanguage: 'en',
+      publisher: { '@id': personId }
+    },
+    {
+      '@type': pageType,
+      '@id': pageId,
+      url: canonical.href,
+      name: pageTitle,
+      description,
+      inLanguage: 'en',
+      isPartOf: { '@id': websiteId },
+      about: { '@id': personId },
+      ...(primaryEntity ? { mainEntity: { '@id': primaryEntity } } : {}),
+      ...(imageUrl ? { primaryImageOfPage: { '@type': 'ImageObject', url: imageUrl } } : {})
+    },
+    ...extraStructuredData
+  ]
+}).replaceAll('<', '\\u003c');
 ---
 
 <!doctype html>
-<html lang="en" data-base={base}>
+<html lang="en" data-base={base} transition:animate="none">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#08090c" />
+    <meta name="color-scheme" content="dark" />
     <meta name="description" content={description} />
     <meta name="author" content="Wiesław Šoltés" />
-    <meta property="og:type" content="website" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta property="og:type" content={openGraphType} />
+    <meta property="og:site_name" content="Wiesław Šoltés" />
+    <meta property="og:locale" content="en_US" />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
-    {image && <meta property="og:image" content={image} />}
-    <meta name="twitter:card" content={image ? 'summary_large_image' : 'summary'} />
+    {openGraphType === 'profile' && <meta property="profile:first_name" content="Wiesław" />}
+    {openGraphType === 'profile' && <meta property="profile:last_name" content="Šoltés" />}
+    {imageUrl && <meta property="og:image" content={imageUrl} />}
+    {imageUrl?.startsWith('https://') && <meta property="og:image:secure_url" content={imageUrl} />}
+    {imageUrl && imageAlt && <meta property="og:image:alt" content={imageAlt} />}
+    <meta name="twitter:card" content={imageUrl ? 'summary_large_image' : 'summary'} />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    {imageUrl && <meta name="twitter:image" content={imageUrl} />}
+    {imageUrl && imageAlt && <meta name="twitter:image:alt" content={imageAlt} />}
     <link rel="canonical" href={canonical} />
+    <link rel="sitemap" type="application/xml" href={sitemap} />
+    <link rel="me" href="https://github.com/wieslawsoltes" />
     <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+    <script type="application/ld+json" set:html={jsonLd} is:inline />
+    <slot name="head" />
     <title>{pageTitle}</title>
+    <ClientRouter />
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
-    <div class="ambient-glow" aria-hidden="true"></div>
-    <header class="site-header" data-header>
+    <div class="ambient-glow" aria-hidden="true" transition:name="ambient-glow" transition:persist transition:animate="none"></div>
+    <header class="site-header" data-header transition:name="site-header" transition:persist transition:animate="none">
       <a class="wordmark" href={base} aria-label="Wiesław Šoltés, home">
         <span class="wordmark-mark" aria-hidden="true">W<span>/</span>S</span>
         <span class="wordmark-name">Wiesław Šoltés</span>
@@ -52,15 +124,19 @@ const pageTitle = title.includes('Wiesław') ? title : `${title} — Wiesław Š
         <a href={`${base}now/`}>Now</a>
         <a href={`${base}about/`}>About</a>
         <a href={`${base}#contact`}>Contact</a>
+        <button class="nav-search" type="button" data-search-open aria-haspopup="dialog" aria-controls="site-search-dialog" aria-keyshortcuts="Meta+K Control+K">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5"></circle><path d="m12.3 12.3 4 4"></path></svg>
+          Search <kbd data-search-shortcut>⌘K</kbd>
+        </button>
         <a class="nav-github" href="https://github.com/wieslawsoltes" target="_blank" rel="noreferrer">
           GitHub <span aria-hidden="true">↗</span>
         </a>
       </nav>
     </header>
-    <main id="main">
+    <main id="main" transition:name="page-content" transition:animate={fade({ duration: '220ms' })}>
       <slot />
     </main>
-    <footer class="site-footer" id="contact">
+    <footer class="site-footer" id="contact" transition:name="site-footer" transition:animate="none">
       <div class="footer-lead" data-reveal>
         <p class="section-label">Open source is a long conversation.</p>
         <h2>Let’s build the next useful thing.</h2>
@@ -74,107 +150,10 @@ const pageTitle = title.includes('Wiesław') ? title : `${title} — Wiesław Š
         <p>Built for the open web · <span data-year></span></p>
       </div>
     </footer>
+    <SiteSearch />
 
     <script>
-      const menu = document.querySelector<HTMLButtonElement>('.menu-toggle');
-      const nav = document.querySelector<HTMLElement>('.site-nav');
-      menu?.addEventListener('click', () => {
-        const open = menu.getAttribute('aria-expanded') === 'true';
-        menu.setAttribute('aria-expanded', String(!open));
-        nav?.toggleAttribute('data-open', !open);
-      });
-      nav?.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => {
-        menu?.setAttribute('aria-expanded', 'false');
-        nav.removeAttribute('data-open');
-      }));
-
-      const header = document.querySelector<HTMLElement>('[data-header]');
-      const updateHeader = () => header?.toggleAttribute('data-scrolled', window.scrollY > 24);
-      updateHeader();
-      window.addEventListener('scroll', updateHeader, { passive: true });
-
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.setAttribute('data-visible', '');
-            observer.unobserve(entry.target);
-          }
-        });
-      }, { threshold: 0.12, rootMargin: '0px 0px -48px' });
-      document.querySelectorAll('[data-reveal]').forEach((item) => observer.observe(item));
-
-      const glow = document.querySelector<HTMLElement>('.ambient-glow');
-      window.addEventListener('pointermove', (event) => {
-        if (!glow) return;
-        glow.style.setProperty('--pointer-x', `${event.clientX}px`);
-        glow.style.setProperty('--pointer-y', `${event.clientY}px`);
-      }, { passive: true });
-
-      document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((button) => {
-        button.addEventListener('click', async () => {
-          const target = document.getElementById(button.dataset.copy ?? '');
-          if (!target) return;
-          await navigator.clipboard.writeText(target.textContent ?? '');
-          const previous = button.textContent;
-          button.textContent = 'Copied';
-          setTimeout(() => { button.textContent = previous; }, 1400);
-        });
-      });
-
-      document.querySelectorAll<HTMLElement>('[data-code-tabs]').forEach((group) => {
-        const tabs = [...group.querySelectorAll<HTMLButtonElement>('[data-code-tab]')];
-        const panes = [...group.querySelectorAll<HTMLElement>('[data-code-pane]')];
-        tabs.forEach((tab) => tab.addEventListener('click', () => {
-          const selected = tab.dataset.codeTab;
-          tabs.forEach((candidate) => candidate.setAttribute('aria-selected', String(candidate === tab)));
-          panes.forEach((pane) => { pane.hidden = pane.dataset.codePane !== selected; });
-        }));
-      });
-
-      document.querySelectorAll<HTMLButtonElement>('[data-copy-panel]').forEach((button) => {
-        button.addEventListener('click', async () => {
-          const panel = button.closest('.code-panel');
-          const source = panel?.querySelector<HTMLElement>('[data-code-pane]:not([hidden]) pre, :scope > pre');
-          if (!source) return;
-          await navigator.clipboard.writeText(source.textContent ?? '');
-          const previous = button.textContent;
-          button.textContent = 'Copied';
-          setTimeout(() => { button.textContent = previous; }, 1400);
-        });
-      });
-
-      const year = document.querySelector<HTMLElement>('[data-year]');
-      if (year) year.textContent = String(new Date().getFullYear());
-
-      try {
-        const metadataUrl = `${document.documentElement.dataset.base ?? '/'}data/metadata.json`;
-        const response = await fetch(metadataUrl);
-        if (!response.ok) throw new Error('metadata unavailable');
-        const metadata = await response.json();
-        document.querySelectorAll<HTMLElement>('[data-repo-stats]').forEach((element) => {
-          const data = metadata.repositories?.[element.dataset.repoStats ?? ''];
-          if (!data) return;
-          const stars = Number(data.stars).toLocaleString();
-          const updated = new Intl.DateTimeFormat('en', { month: 'short', year: 'numeric' }).format(new Date(data.pushedAt));
-          element.innerHTML = `<span>★ ${stars}</span><span>${data.language ?? '.NET'} · ${updated}</span>`;
-        });
-        document.querySelectorAll<HTMLElement>('[data-package]').forEach((element) => {
-          const data = metadata.packages?.[element.dataset.package ?? ''];
-          const target = element.querySelector<HTMLElement>('[data-package-version]');
-          if (data?.version && target) target.textContent = `v${data.version}`;
-        });
-        const project = document.querySelector<HTMLElement>('[data-primary-package]');
-        const version = metadata.packages?.[project?.dataset.primaryPackage ?? '']?.version;
-        if (version && project) {
-          project.querySelectorAll<HTMLElement>('.code-panel').forEach((panel) => {
-            const walker = document.createTreeWalker(panel, NodeFilter.SHOW_TEXT);
-            while (walker.nextNode()) {
-              const node = walker.currentNode;
-              if (node.nodeValue?.includes('VERSION')) node.nodeValue = node.nodeValue.replaceAll('VERSION', version);
-            }
-          });
-        }
-      } catch { /* The static page remains complete when metadata is unavailable. */ }
+      import '@/scripts/site';
     </script>
   </body>
 </html>

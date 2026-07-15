@@ -1,7 +1,8 @@
 ---
-import { projects, projectUrl } from '@/data/projects';
+import { getProjects, projectUrl } from '@/lib/content';
 
 const base = import.meta.env.BASE_URL;
+const projects = await getProjects();
 const layers = [
   { name: 'Foundation', note: 'Pixels, vectors, text', slugs: ['progpu', 'svg-skia', 'pretext', 'effector'] },
   { name: 'Frameworks', note: 'Hosts and runtime seams', slugs: ['librewpf', 'librewinforms', 'avalonia-progpu', 'avalonia-silknet', 'nxui'] },
@@ -70,24 +71,3 @@ const relations: Record<string, string[]> = {
     ))}
   </div>
 </section>
-
-<script>
-  document.querySelectorAll<HTMLElement>('[data-system-map]').forEach((map) => {
-    const nodes = [...map.querySelectorAll<HTMLElement>('[data-map-node]')];
-    const reset = () => nodes.forEach((node) => node.removeAttribute('data-map-state'));
-    const activate = (source: HTMLElement) => {
-      const active = source.dataset.mapNode;
-      const related = new Set((source.dataset.relations ?? '').split(',').filter(Boolean));
-      nodes.forEach((node) => {
-        const slug = node.dataset.mapNode ?? '';
-        node.dataset.mapState = slug === active ? 'active' : related.has(slug) ? 'related' : 'dim';
-      });
-    };
-    nodes.forEach((node) => {
-      node.addEventListener('mouseenter', () => activate(node));
-      node.addEventListener('focus', () => activate(node));
-      node.addEventListener('mouseleave', reset);
-      node.addEventListener('blur', reset);
-    });
-  });
-</script>

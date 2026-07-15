@@ -1,6 +1,6 @@
 # Wiesław Šoltés — personal open-source portfolio
 
-A static Astro website for the open-source systems maintained at [github.com/wieslawsoltes](https://github.com/wieslawsoltes). It includes a modern landing page, interactive ecosystem map, tiered searchable archive, Now and About pages, and detailed install/usage stories for 28 major projects.
+A static Astro website for the open-source systems maintained at [github.com/wieslawsoltes](https://github.com/wieslawsoltes). It includes a modern landing page, interactive ecosystem map, tiered searchable archive, Now and About pages, and detailed install/usage stories for 43 projects.
 
 ## Local development
 
@@ -26,9 +26,11 @@ The build performs Astro/TypeScript checks first and writes the static site to `
 
 ## Updating projects
 
-Core project content lives in `src/data/projects.ts`; richer media, compatibility, architecture, evidence, links, limitations, and relationships live in `src/data/projectDetails.ts`. Adding an item automatically creates its dedicated `/projects/<slug>/` route and includes it in the searchable project index. Set `featured: true` to make a project eligible for the landing-page spotlight.
+Project content lives in schema-validated Markdown files under `src/content/projects/`. The filename becomes the project slug, frontmatter defines its repository, packages, install and usage samples, media, architecture, compatibility, relationships, and archive placement, while the Markdown body provides the project introduction. Adding an entry automatically creates its `/projects/<slug>/` route and includes it in the appropriate indexes. Set `featured: true` to make a project eligible for the landing-page spotlight.
 
-Compact maintained and historical entries live in `src/data/archiveProjects.ts`. The ecosystem graph is defined in `src/components/SystemsMap.astro`.
+Focused subsystem pages live under `src/content/capabilities/<project>/`. Their project and related-capability fields are validated content references, and each file creates `/projects/<project>/<capability>/`. Collection schemas are defined in `src/content.config.ts`; shared queries and URL helpers live in `src/lib/content.ts`.
+
+The ecosystem graph is defined in `src/components/SystemsMap.astro`.
 
 ## Metadata refresh
 
@@ -37,6 +39,18 @@ npm run metadata
 ```
 
 The script fetches repository activity from GitHub and current package versions from NuGet. GitHub Actions supplies its built-in `GITHUB_TOKEN`; no custom secret is required.
+
+## Search metadata
+
+Every page uses the shared layout for canonical URLs, descriptions, Open Graph and Twitter cards, crawler directives, and Schema.org JSON-LD. Project and capability routes describe their source repositories and breadcrumbs; the home and ecosystem pages expose their project lists as structured data.
+
+The static build also generates `sitemap.xml` and `robots.txt`. Both automatically respect the GitHub Pages base path, and every page links directly to the sitemap.
+
+The build generates a base-path-aware `search.json` containing every editorial, project, and capability page. The global search dialog ranks names, parent projects, repositories, NuGet package IDs, categories, descriptions, highlights, architecture terms, and Markdown content. Open it from the navigation, with `Cmd/Ctrl+K`, or with `/` while focus is outside an editor.
+
+## Client-side navigation
+
+Astro's client router adds progressive view transitions between internal pages. The header and ambient pointer field persist between routes, while matching project and capability titles carry visual continuity into their detail pages. All interactive behavior is initialized from `src/scripts/site.ts` on `astro:page-load`; its listeners use one abort signal and its observers are disconnected before every swap, so menus, search, filters, maps, copy controls, and metadata hydration can be initialized repeatedly without accumulating handlers. Browsers without native view transitions use Astro's fallback, and reduced-motion preferences remain respected.
 
 ## GitHub Pages
 

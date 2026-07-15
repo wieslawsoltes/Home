@@ -1,20 +1,38 @@
 ---
 import { Code } from 'astro:components';
+import { render } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import ProjectGlyph from '@/components/ProjectGlyph.astro';
-import { capabilitiesForProject, capabilityUrl } from '@/data/capabilities';
-import { projectDetail } from '@/data/projectDetails';
-import { projects, githubUrl, nugetUrl, projectUrl, type Project } from '@/data/projects';
+import {
+  capabilityUrl,
+  getCapabilities,
+  getProjectEntries,
+  getProjects,
+  githubUrl,
+  nugetUrl,
+  projectFromEntry,
+  projectUrl,
+  referenceId,
+  type Project,
+  type ProjectEntry
+} from '@/lib/content';
 
-export function getStaticPaths() {
-  return projects.map((project) => ({ params: { slug: project.slug }, props: { project } }));
+export async function getStaticPaths() {
+  const entries = await getProjectEntries();
+  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
 }
 
-interface Props { project: Project; }
+interface Props { entry: ProjectEntry; }
 
-const { project } = Astro.props;
-const detail = projectDetail(project);
-const capabilities = capabilitiesForProject(project.slug);
+const { entry } = Astro.props as Props;
+const { Content } = await render(entry);
+const project = projectFromEntry(entry);
+const [projects, allCapabilities] = await Promise.all([getProjects(), getCapabilities()]);
+const socialMedia = project.media.find((media) => !new URL(media.src).pathname.toLowerCase().endsWith('.svg')) ?? {
+  src: `https://opengraph.githubassets.com/portfolio-${project.slug}/wieslawsoltes/${project.repo}`,
+  alt: `${project.name} GitHub repository preview`
+};
+const capabilities = allCapabilities.filter((item) => item.projectSlug === project.slug);
 const base = import.meta.env.BASE_URL;
 const currentIndex = projects.findIndex((candidate) => candidate.slug === project.slug);
 const next = projects[(currentIndex + 1) % projects.length];
@@ -35,20 +53,55 @@ const packageInstallVariants = [
 const installVariants = isSourceInstall
   ? [{ label: 'Source', language: 'bash', code: project.install }]
   : packageInstallVariants;
-const related = detail.related
+const related = project.related
+  .map(referenceId)
   .map((slug) => projects.find((candidate) => candidate.slug === slug))
   .filter((candidate): candidate is Project => Boolean(candidate));
 const packageHref = (item: Project['packages'][number]) => item.url ?? nugetUrl(item.name);
 const repoRoot = `https://github.com/wieslawsoltes/${project.repo}`;
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
+const siteHome = new URL(base, Astro.site);
+const softwareId = `${canonicalUrl.href}#software`;
+const structuredData = [
+  {
+    '@type': 'SoftwareSourceCode',
+    '@id': softwareId,
+    name: project.name,
+    description: project.description,
+    url: canonicalUrl.href,
+    codeRepository: repoRoot,
+    author: { '@id': `${siteHome.href}#person` },
+    maintainer: { '@id': `${siteHome.href}#person` },
+    programmingLanguage: ['C#', 'XAML'],
+    runtimePlatform: '.NET',
+    genre: project.category,
+    isAccessibleForFree: true,
+    keywords: [project.name, project.category, ...project.highlights, ...project.packages.map((item) => item.name)].join(', ')
+  },
+  {
+    '@type': 'BreadcrumbList',
+    '@id': `${canonicalUrl.href}#breadcrumb`,
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Projects', item: siteHome.href },
+      { '@type': 'ListItem', position: 2, name: project.name, item: canonicalUrl.href }
+    ]
+  }
+];
 const resourceLinks = [
-  ...detail.links,
+  ...project.links,
   { label: 'Issues', href: `${repoRoot}/issues` },
   { label: 'Releases', href: `${repoRoot}/releases` },
   { label: 'Sponsor', href: 'https://github.com/sponsors/wieslawsoltes' }
 ].filter((item, index, all) => all.findIndex((candidate) => candidate.href === item.href) === index);
 ---
 
-<BaseLayout title={project.name} description={project.description} image={detail.media[0]?.src}>
+<BaseLayout
+  title={project.name}
+  description={project.description}
+  image={socialMedia.src}
+  imageAlt={socialMedia.alt}
+  structuredData={structuredData}
+>
   <article class="project-page" style={`--project-accent:${project.accent}`} data-primary-package={primaryPackage?.name}>
     <header class="project-hero">
       <div class="project-hero-backdrop" aria-hidden="true">
@@ -59,7 +112,7 @@ const resourceLinks = [
         <div class="project-hero-copy">
           <div class="project-title-line">
             <p class="project-kicker">{project.eyebrow}</p>
-            <h1>{project.name}</h1>
+            <h1 data-transition-title={`project-title-${project.slug}`}>{project.name}</h1>
           </div>
           <div class="project-hero-summary">
             <p>{project.statement}</p>
@@ -85,7 +138,7 @@ const resourceLinks = [
         <p class="section-label">Overview</p>
         <div>
           <h2>{project.description}</h2>
-          <p class="project-introduction">{detail.introduction}</p>
+          <div class="project-introduction"><Content /></div>
         </div>
       </div>
       <div class="project-highlights" data-reveal>
@@ -99,12 +152,12 @@ const resourceLinks = [
       <div class="project-audience" data-reveal>
         <p class="section-label">Built for</p>
         <h2>Where it fits.</h2>
-        <ul>{detail.audience.map((item) => <li>{item}</li>)}</ul>
+        <ul>{project.audience.map((item) => <li>{item}</li>)}</ul>
       </div>
       <div class="compatibility" data-reveal>
         <p class="section-label">Compatibility & status</p>
         <div class="compatibility-list">
-          {detail.compatibility.map((item) => (
+          {project.compatibility.map((item) => (
             <div>
               <span class:list={['compatibility-state', item.state ?? 'ready']}></span>
               <strong>{item.label}</strong>
@@ -120,8 +173,8 @@ const resourceLinks = [
         <p class="section-label">In the work</p>
         <h2 id={`media-${project.slug}`}>Real output,<br />not a mockup.</h2>
       </div>
-      <div class:list={['media-grid', { single: detail.media.length === 1 }]}>
-        {detail.media.map((media) => (
+      <div class:list={['media-grid', { single: project.media.length === 1 }]}>
+        {project.media.map((media) => (
           <figure data-reveal>
             <div class="media-frame"><img src={media.src} alt={media.alt} loading="lazy" decoding="async" /></div>
             <figcaption>{media.caption}</figcaption>
@@ -136,7 +189,7 @@ const resourceLinks = [
         <h2>Clear layers.<br />Replaceable seams.</h2>
       </div>
       <div class="architecture-flow">
-        {detail.architecture.map((item, index) => (
+        {project.architecture.map((item, index) => (
           <article data-reveal>
             <span>{String(index + 1).padStart(2, '0')}</span>
             <h3>{item.label}</h3>
@@ -145,7 +198,7 @@ const resourceLinks = [
         ))}
       </div>
       <div class="proof-strip" data-reveal>
-        {detail.proof.map((item) => <div><strong>{item.value}</strong><span>{item.label}</span></div>)}
+        {project.proof.map((item) => <div><strong>{item.value}</strong><span>{item.label}</span></div>)}
         <div data-repo-stats={project.repo}><strong>Live</strong><span>GitHub metadata</span></div>
       </div>
     </section>
@@ -163,7 +216,7 @@ const resourceLinks = [
           {capabilities.map((item, index) => (
             <a href={capabilityUrl(item, base)} data-reveal>
               <span>{String(index + 1).padStart(2, '0')} · {item.eyebrow}</span>
-              <strong>{item.name}</strong>
+              <strong data-transition-title={`capability-title-${item.projectSlug}-${item.slug}`}>{item.name}</strong>
               <p>{item.description}</p>
               <small>{item.packages.length} {item.packages.length === 1 ? 'module' : 'modules'}</small>
               <i>→</i>
@@ -220,10 +273,10 @@ const resourceLinks = [
       </div>
     </section>
 
-    {detail.limitations && (
+    {project.limitations && (
       <aside class="limitations section-shell" data-reveal>
         <p class="section-label">Adoption note</p>
-        <p>{detail.limitations}</p>
+        <p>{project.limitations}</p>
       </aside>
     )}
 
@@ -236,7 +289,7 @@ const resourceLinks = [
         <div class="related-grid">
           {related.map((item) => (
             <a href={projectUrl(item, base)} style={`--related-accent:${item.accent}`} data-reveal>
-              <span>{item.category}</span><strong>{item.name}</strong><p>{item.eyebrow}</p><i>↗</i>
+              <span>{item.category}</span><strong data-transition-title={`project-title-${item.slug}`}>{item.name}</strong><p>{item.eyebrow}</p><i>↗</i>
             </a>
           ))}
         </div>

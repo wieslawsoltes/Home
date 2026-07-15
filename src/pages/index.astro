@@ -4,14 +4,29 @@ import ProjectIndex from '@/components/ProjectIndex.astro';
 import ProjectGlyph from '@/components/ProjectGlyph.astro';
 import SystemsMap from '@/components/SystemsMap.astro';
 import ArchiveIndex from '@/components/ArchiveIndex.astro';
-import { featuredProjects, projectUrl } from '@/data/projects';
+import { getProjects, projectUrl } from '@/lib/content';
 
 const base = import.meta.env.BASE_URL;
+const projects = await getProjects();
+const featuredProjects = projects.filter((project) => project.featured);
 const proEdit = featuredProjects.find((project) => project.slug === 'proedit');
 const spotlights = [...featuredProjects.slice(0, 4), ...(proEdit ? [proEdit] : [])];
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
+const structuredData = {
+  '@type': 'ItemList',
+  '@id': `${canonicalUrl.href}#featured-projects`,
+  name: 'Featured open-source projects',
+  numberOfItems: featuredProjects.length,
+  itemListElement: featuredProjects.map((project, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    name: project.name,
+    url: new URL(projectUrl(project, base), Astro.site).href
+  }))
+};
 ---
 
-<BaseLayout>
+<BaseLayout pageType="CollectionPage" structuredData={structuredData}>
   <section class="home-hero" aria-labelledby="hero-title">
     <div class="hero-art" aria-hidden="true">
       <svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">

@@ -1,14 +1,15 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import { projects, projectUrl } from '@/data/projects';
+import { getProjects, projectUrl, type Project } from '@/lib/content';
 
 const base = import.meta.env.BASE_URL;
+const projects = await getProjects();
 const focus = ['progpu', 'proedit', 'cdp', 'inspector', 'htmlml', 'nativewebview', 'devtools-uno', 'xaml-playground', 'procad', 'dxf-parser', 'codexgui']
   .map((slug) => projects.find((project) => project.slug === slug))
-  .filter((project): project is (typeof projects)[number] => Boolean(project));
+  .filter((project): project is Project => Boolean(project));
 ---
 
-<BaseLayout title="Now" description="What Wiesław Šoltés is building and maintaining now across open-source .NET UI, graphics, diagnostics, and developer tooling.">
+<BaseLayout title="Now" description="What Wiesław Šoltés is building and maintaining now across open-source .NET UI, graphics, diagnostics, and developer tooling." pageType="ProfilePage">
   <header class="editorial-hero section-shell">
     <p class="section-label">Now · July 2026</p>
     <h1>Building the seams<br /><em>between systems.</em></h1>

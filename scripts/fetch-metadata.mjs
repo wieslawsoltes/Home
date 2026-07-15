@@ -1,23 +1,50 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
-const sourcePaths = [
-  resolve(root, 'src/data/projects.ts'),
-  resolve(root, 'src/data/longTailProjects.ts')
-];
-const capabilitySourcePaths = [
-  resolve(root, 'src/data/capabilities.ts'),
-  resolve(root, 'src/data/longTailCapabilities.ts')
-];
 const outputPath = resolve(root, 'public/data/metadata.json');
-const source = (await Promise.all(sourcePaths.map((path) => readFile(path, 'utf8')))).join('\n');
-const capabilitySource = (await Promise.all(capabilitySourcePaths.map((path) => readFile(path, 'utf8')))).join('\n');
-const repositories = [...new Set([...source.matchAll(/repo:\s*'([^']+)'/g)].map((match) => match[1]))];
-const packageObjects = [...`${source}\n${capabilitySource}`.matchAll(/\{\s*name:\s*'([^']+)'\s*,\s*note:[^}]*\}/g)];
-const packages = [...new Set(packageObjects
-  .filter((match) => !/\burl:\s*'/.test(match[0]))
-  .map((match) => match[1]))];
+
+async function markdownFiles(directory) {
+  const entries = await readdir(directory, { withFileTypes: true });
+  return (await Promise.all(entries.map((entry) => {
+    const path = resolve(directory, entry.name);
+    if (entry.isDirectory()) return markdownFiles(path);
+    return entry.name.endsWith('.md') ? [path] : [];
+  }))).flat();
+}
+
+const scalar = (value) => {
+  const text = value.trim();
+  if (text.startsWith('"')) return JSON.parse(text);
+  if (text.startsWith("'") && text.endsWith("'")) return text.slice(1, -1).replaceAll("''", "'");
+  return text;
+};
+
+const contentPaths = await markdownFiles(resolve(root, 'src/content'));
+const sources = await Promise.all(contentPaths.map((path) => readFile(path, 'utf8')));
+const repositories = [...new Set(sources.flatMap((source) =>
+  [...source.matchAll(/^repo:\s*(.+)$/gm)].map((match) => scalar(match[1]))
+))];
+const discoveredPackageIds = sources.flatMap((source) => {
+  const entries = [];
+  let inPackages = false;
+  let current;
+  const finish = () => {
+    if (current && !current.hasUrl) entries.push(current.name);
+    current = undefined;
+  };
+  for (const line of source.split('\n')) {
+    if (line === 'packages:') { inPackages = true; continue; }
+    if (!inPackages) continue;
+    if (line && !line.startsWith(' ')) { finish(); inPackages = false; continue; }
+    const name = line.match(/^  - name:\s*(.+)$/);
+    if (name) { finish(); current = { name: scalar(name[1]), hasUrl: false }; continue; }
+    if (current && /^    url:/.test(line)) current.hasUrl = true;
+  }
+  finish();
+  return entries;
+});
+const packages = [...new Set(discoveredPackageIds)];
 const token = process.env.GITHUB_TOKEN ?? process.env.GH_TOKEN;
 
 async function fetchJson(url, headers = {}) {

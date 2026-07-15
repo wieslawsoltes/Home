@@ -1,13 +1,14 @@
 ---
 import ProjectGlyph from './ProjectGlyph.astro';
-import { projects, projectUrl } from '@/data/projects';
+import { getProjects, projectUrl } from '@/lib/content';
 
 const base = import.meta.env.BASE_URL;
+const projects = await getProjects();
 const visibleProjects = projects.filter((project) => project.showInIndex !== false);
 const categories = ['All', 'Graphics', 'Frameworks', 'Avalonia', 'Uno Platform', 'Controls', 'Tools'];
 ---
 
-<section class="project-index section-shell" id="work">
+<section class="project-index section-shell" id="work" data-project-index>
   <div class="section-heading" data-reveal>
     <p class="section-label">Selected systems · 01—{String(visibleProjects.length).padStart(2, '0')}</p>
     <h2>Work that compounds.</h2>
@@ -42,7 +43,7 @@ const categories = ['All', 'Graphics', 'Frameworks', 'Avalonia', 'Uno Platform',
       >
         <span class="project-number">{String(index + 1).padStart(2, '0')}</span>
         <span class="project-primary">
-          <strong>{project.name}</strong>
+          <strong data-transition-title={`project-title-${project.slug}`}>{project.name}</strong>
           <small>{project.tier} · {project.eyebrow}</small>
         </span>
         <span class="project-category">{project.category}</span>
@@ -54,31 +55,3 @@ const categories = ['All', 'Graphics', 'Frameworks', 'Avalonia', 'Uno Platform',
   </div>
   <p class="empty-projects" hidden data-empty>No projects match that search.</p>
 </section>
-
-<script>
-  const buttons = [...document.querySelectorAll<HTMLButtonElement>('[data-filter]')];
-  const search = document.querySelector<HTMLInputElement>('[data-project-search]');
-  const items = [...document.querySelectorAll<HTMLElement>('[data-project]')];
-  const empty = document.querySelector<HTMLElement>('[data-empty]');
-  let selected = 'All';
-
-  function filterProjects() {
-    const query = search?.value.trim().toLowerCase() ?? '';
-    let visible = 0;
-    items.forEach((item) => {
-      const categoryMatch = selected === 'All' || item.dataset.category === selected;
-      const searchMatch = !query || item.dataset.search?.includes(query);
-      const show = categoryMatch && searchMatch;
-      item.hidden = !show;
-      if (show) visible++;
-    });
-    if (empty) empty.hidden = visible !== 0;
-  }
-
-  buttons.forEach((button) => button.addEventListener('click', () => {
-    selected = button.dataset.filter ?? 'All';
-    buttons.forEach((candidate) => candidate.setAttribute('aria-pressed', String(candidate === button)));
-    filterProjects();
-  }));
-  search?.addEventListener('input', filterProjects);
-</script>
