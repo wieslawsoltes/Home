@@ -62,6 +62,8 @@ proof:
     label: frame scheduling
 media:
   - src: https://opengraph.githubassets.com/portfolio-long-tail/wieslawsoltes/Lottie
+    width: 1200
+    height: 600
     alt: Lottie Avalonia controls repository preview
     caption: Four focused packages cover packaged Lottie assets, custom animation loops, composition-backed Skia, and SKSL effects.
 links:

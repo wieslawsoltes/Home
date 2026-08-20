@@ -52,6 +52,8 @@ proof:
     label: issues and implementation
 media:
   - src: https://opengraph.githubassets.com/portfolio-v2/wieslawsoltes/ProText
+    width: 1200
+    height: 600
     alt: ProText GitHub repository preview
     caption: The ProText repository contains the current source, samples, releases, and issue history.
 links:

@@ -4,7 +4,7 @@ name: CodexGui
 eyebrow: Native Codex workspace
 category: Uno Platform
 repo: CodexGui
-description: A native Avalonia desktop client for Codex app-server with threads, approvals, rich Markdown, stdio and WebSocket transports, and extensible plugin surfaces.
+description: A native Avalonia desktop client for Codex app-server with thread and approval workflows, typed stdio/WebSocket transports, and ProMarkdown-powered rich conversation rendering including Mermaid diagrams.
 statement: A focused native workspace for long-running Codex collaboration.
 accent: "#89e2bf"
 tier: Experimental
@@ -14,8 +14,8 @@ packages:
     note: Desktop application and global .NET tool.
   - name: CodexGui.AppServer
     note: Typed app-server protocol client and transports.
-  - name: CodexGui.Markdown
-    note: Rich Markdown rendering for Avalonia.
+  - name: ProMarkdown
+    note: Pinned source dependency for native Markdown, selection, links, syntax, and Mermaid rendering.
 install: dotnet tool install --global CodexGui.App --prerelease
 usageLanguage: bash
 usage: codexgui
@@ -23,25 +23,25 @@ highlights:
   - Native Avalonia client
   - Threads and approvals
   - stdio and WebSocket transports
-  - Rich Markdown and plugins
+  - ProMarkdown rendering with Mermaid diagrams
 audience:
   - Developers who want a native Codex client
   - App-server integration authors
-  - Avalonia and Uno teams exploring extensible agent workspaces
+  - Avalonia teams exploring extensible agent workspaces
 architecture:
   - label: Application
-    detail: WinUI-compatible XAML and C# compose the cross-platform application.
+    detail: Avalonia XAML and C# compose the native desktop application.
   - label: Tooling
     detail: Focused packages add diagnostics, protocol, and workspace capabilities.
   - label: Targets
-    detail: Uno carries the experience across desktop, mobile, and WebAssembly.
+    detail: Local app-server processes and remote WebSocket endpoints feed the same workspace.
 compatibility:
   - label: Avalonia desktop
     value: Current host
     state: ready
-  - label: Uno Platform
-    value: Platform direction
-    state: partial
+  - label: ProMarkdown
+    value: Pinned source dependency
+    state: ready
   - label: stdio / WebSocket
     value: Supported
     state: ready
@@ -57,6 +57,8 @@ proof:
     label: single-command install
 media:
   - src: https://opengraph.githubassets.com/portfolio-v2/wieslawsoltes/CodexGui
+    width: 1200
+    height: 600
     alt: CodexGui GitHub repository preview
     caption: The CodexGui repository contains the current source, samples, releases, and issue history.
 links:
@@ -67,6 +69,7 @@ related:
   - avalonia-development-plugin
   - cdp
   - xaml-visual-editor
+  - promarkdown
 ---
 
-CodexGui turns the Codex app-server protocol into a native cross-platform workflow. Its typed transport and modular Markdown stack stay reusable while the application adds thread navigation, approvals, rich output, terminal context, and plugin UI, with an Uno Platform direction alongside the current Avalonia host.
+CodexGui turns the Codex app-server protocol into a native desktop workflow. Its typed transports keep local process and remote WebSocket sessions consistent, while the pinned ProMarkdown stack adds native rich conversation rendering and complete Mermaid support beside thread, approval, detail, and terminal surfaces.

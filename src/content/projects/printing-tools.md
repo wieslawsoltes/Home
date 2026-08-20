@@ -65,6 +65,8 @@ proof:
     label: cross-platform CI
 media:
   - src: https://opengraph.githubassets.com/portfolio-long-tail/wieslawsoltes/PrintingTools
+    width: 1200
+    height: 600
     alt: PrintingTools GitHub repository preview
     caption: The repository includes the portable API, Avalonia preview UI, native adapters, documentation, and platform-specific verification harnesses.
 links:

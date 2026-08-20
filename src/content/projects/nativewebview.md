@@ -4,7 +4,7 @@ name: NativeWebView
 eyebrow: Native browser embedding
 category: Controls
 repo: NativeWebView
-description: A cross-platform Avalonia WebView that uses each operating system’s browser engine, with embedded, GPU-surface, offscreen, dialog, and authentication workflows.
+description: A cross-platform Avalonia WebView using each operating system’s browser engine, with embedded, GPU-surface, offscreen, dialog, authentication, snapshot, native context-menu, zoom, profile-storage, and diagnostics workflows.
 statement: Embed the platform browser without shipping another Chromium runtime.
 accent: "#77cfff"
 featured: true
@@ -32,8 +32,8 @@ usage: |-
 highlights:
   - Native platform engines
   - Embedded and offscreen modes
-  - JavaScript messaging
-  - Desktop, mobile, and browser targets
+  - JavaScript messaging and extensible native context menus
+  - Snapshots, status text, zoom, profiles, and diagnostics
 audience:
   - Avalonia apps embedding trusted web content
   - OAuth and system-browser authentication flows
@@ -47,6 +47,8 @@ architecture:
     detail: Each package binds the native browser engine and capability set.
   - label: Modes
     detail: Embedded, GPU-surface, and offscreen presentation fit different composition needs.
+  - label: Operations
+    detail: Snapshots, status text, zoom events, profiles, context menus, integrity metadata, and diagnostics expose native runtime behavior.
 compatibility:
   - label: Windows / macOS / Linux
     value: Control + dialog + auth
@@ -69,6 +71,8 @@ proof:
     label: no bundled Chromium
 media:
   - src: https://opengraph.githubassets.com/portfolio-v2/wieslawsoltes/NativeWebView
+    width: 1200
+    height: 600
     alt: NativeWebView GitHub repository preview
     caption: The NativeWebView repository contains the current source, samples, releases, and issue history.
 links:
@@ -83,4 +87,4 @@ related:
   - xaml-playground
 ---
 
-NativeWebView normalizes browser hosting without normalizing away platform capabilities. A common control selects a registered backend, while platform packages bind WebView2, WKWebView, WebKitGTK, mobile views, or browser hosting.
+NativeWebView normalizes browser hosting without normalizing away platform capabilities. A common control selects a registered backend, while platform packages bind WebView2, WKWebView, WebKitGTK, mobile views, or browser hosting and expose snapshots, status text, zoom, profiles, context menus, and render diagnostics where supported.

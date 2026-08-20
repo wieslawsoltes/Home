@@ -54,6 +54,8 @@ proof:
     label: issues and implementation
 media:
   - src: https://opengraph.githubassets.com/portfolio-v2/wieslawsoltes/XamlVisualEditor
+    width: 1200
+    height: 600
     alt: XamlVisualEditor GitHub repository preview
     caption: The XamlVisualEditor repository contains the current source, samples, releases, and issue history.
 links:

@@ -4,7 +4,7 @@ project: prodatagrid
 name: ProDataGrid
 eyebrow: Virtualized data workbench
 status: Active
-description: A production-oriented Avalonia grid with row and column virtualization, editing, sorting, filtering, grouping, selection, and extensible columns.
+description: A production-oriented Avalonia grid with retained and drawn paths, flat and hierarchical layouts, row and column virtualization, editing, sorting, filtering, grouping, summaries, selection, automation, and extensible columns.
 statement: The core table surface for dense, interactive application data.
 packages:
   - name: ProDataGrid
@@ -21,9 +21,9 @@ usage: |-
     </DataGrid.Columns>
   </DataGrid>
 highlights:
-  - Rows and columns virtualize together
+  - Retained, drawn, flat, and hierarchical layouts
   - Built-in edit and validation pipeline
-  - Sorting, filtering, grouping, and summaries
+  - Sorting, filtering, grouping, summaries, and automation
   - Fluent and Simple theme support
 layers:
   - label: Source
@@ -41,4 +41,4 @@ related:
   - prodatagrid/diagnostics
 ---
 
-## A production-oriented Avalonia grid with row and column virtualization, editing, sorting, filtering, grouping, selection, and extensible columns.
+## A production-oriented Avalonia grid combines retained and drawn paths, flat and hierarchical layouts, two-axis virtualization, editing, data operations, selection, lifecycle events, automation, and extensible columns.

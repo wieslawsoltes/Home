@@ -4,7 +4,7 @@ project: progpu
 name: Compatibility Shims
 eyebrow: Portable classic drawing APIs
 status: Preview
-description: ProGPU-backed SkiaSharp and System.Drawing.Common compatibility shims let existing drawing-oriented code target the modern GPU substrate during migration.
+description: ProGPU-backed SkiaSharp and System.Drawing.Common compatibility shims, metadata parity gates, and retained WebGPU execution let existing drawing-oriented code target the modern GPU substrate during migration.
 statement: Preserve familiar drawing shapes while changing the implementation below them.
 packages:
   - name: ProGPU.SkiaSharp
@@ -17,7 +17,7 @@ usage: |-
   using var paint = new SKPaint { Color = SKColors.CornflowerBlue };
   canvas.DrawRoundRect(new SKRect(20, 20, 220, 100), 16, 16, paint);
 highlights:
-  - SkiaSharp-shaped API
+  - Broad SkiaSharp API and metadata parity
   - System.Drawing-shaped API
   - ProGPU-backed implementation
   - Migration and portability bridge
@@ -37,4 +37,4 @@ related:
   - progpu/framework-bridges
 ---
 
-## ProGPU-backed SkiaSharp and System.Drawing.Common compatibility shims let existing drawing-oriented code target the modern GPU substrate during migration.
+## ProGPU-backed SkiaSharp and System.Drawing.Common compatibility shims use metadata parity gates and retained WebGPU execution to carry existing drawing-oriented code onto the modern substrate.

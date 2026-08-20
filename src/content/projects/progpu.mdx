@@ -4,12 +4,12 @@ name: ProGPU
 eyebrow: GPU-first UI substrate
 category: Graphics
 repo: ProGPU
-description: Cross-platform rendering, composition, vector, text, compute, and framework interop built directly on WebGPU and Silk.NET.
-statement: A lightweight GPU foundation for the next generation of .NET interfaces.
+description: A cross-platform GPU-first .NET UI substrate spanning WebGPU rendering, retained composition, OpenType text, media, WinUI-shaped controls, XAML compilation, mobile and browser hosts, and compatibility layers.
+statement: A GPU foundation that reaches from the device to complete portable application surfaces.
 story:
   label: Engineering story
   title: The frame is a chain of contracts.
-  intro: ProGPU treats device creation, retained composition, geometry, text, and presentation as explicit boundaries. Frameworks can replace one layer without inheriting an opaque renderer.
+  intro: ProGPU treats device creation, retained composition, geometry, text, media, controls, XAML, and presentation as explicit boundaries. Frameworks can replace one layer without inheriting an opaque renderer.
 accent: "#8ea2ff"
 featured: true
 status: Preview
@@ -22,6 +22,12 @@ packages:
     note: Retained visuals, compositor commands, effects, and presentation.
   - name: ProGPU.Text
     note: Text layout, glyph metrics, and GPU text rendering.
+  - name: ProGPU.Media
+    note: Cross-platform playback, audio, effects, diagnostics, and provider contracts.
+  - name: ProGPU.WinUI
+    note: Portable WinUI-shaped app model, controls, input, automation, and composition.
+  - name: ProGPU.Xaml.SourceGenerator
+    note: Roslyn-first XAML compiler and incremental source-generator integration.
 install: |-
   dotnet add package ProGPU.Backend --prerelease
   dotnet add package ProGPU.Scene --prerelease
@@ -37,24 +43,24 @@ usage: |-
   // See the Gallery sample for complete window and frame setup.
   var options = new BackendOptions();
 highlights:
-  - WebGPU-native pipelines
-  - Retained scene composition
-  - Vector, text, and compute
-  - Avalonia, Uno, WPF, and WinForms bridges
+  - WebGPU rendering, retained composition, vector, and OpenType text
+  - Portable WinUI controls, Fluent themes, input, and automation
+  - Cross-platform media playback, editing, effects, and export
+  - XAML compiler, hot reload, Avalonia/Uno/WPF/WinForms, mobile, and browser hosts
 tier: Flagship
 audience:
-  - UI framework authors replacing a renderer
-  - Graphics tools that need WebGPU-native primitives
-  - Teams exploring portable GPU composition in .NET
+  - UI framework authors replacing a renderer or portable application model
+  - Graphics, media, CAD, document, and data tools that need WebGPU-native primitives
+  - Teams building portable XAML, mobile, browser, compatibility, or NativeAOT surfaces
 architecture:
   - label: Backend
     detail: Creates devices, surfaces, swapchains, queues, and platform services through WebGPU and Silk.NET.
   - label: Primitives
-    detail: Vector, text, image, and compute packages prepare GPU-ready resources.
+    detail: Vector, OpenType text, image, media, voxel, and compute packages prepare GPU-ready resources.
   - label: Scene
     detail: A retained visual tree records composition commands and effects.
   - label: Interop
-    detail: Avalonia, Uno, WPF, and WinForms bridges connect existing UI contracts.
+    detail: Portable WinUI and XAML layers plus Avalonia, Uno, WPF, WinForms, Android, iOS, and browser hosts connect application contracts.
 compatibility:
   - label: Windows
     value: Preview
@@ -65,16 +71,19 @@ compatibility:
   - label: Linux
     value: Preview
     state: partial
+  - label: Android / iOS / Browser
+    value: Native and WebAssembly hosts
+    state: ready
   - label: NativeAOT
-    value: Design target
-    state: planned
+    value: Typed runtime paths
+    state: partial
 proof:
   - value: WebGPU
     label: native rendering API
-  - value: 5 layers
-    label: backend to scene composition
-  - value: 4 bridges
-    label: framework integration directions
+  - value: 40+ packages
+    label: substrate to application surface
+  - value: 7 hosts
+    label: framework and platform lanes
 media:
   - src: https://raw.githubusercontent.com/wieslawsoltes/ProGPU/main/eng/Assets/ProGpuIcon.png
     alt: ProGPU project mark
@@ -84,12 +93,17 @@ links:
     href: https://github.com/wieslawsoltes/ProGPU
   - label: Samples
     href: https://github.com/wieslawsoltes/ProGPU/tree/main/samples
+  - label: XAML compiler
+    href: https://github.com/wieslawsoltes/ProGPU/tree/main/src/ProGPU.Xaml
+  - label: Media stack
+    href: https://github.com/wieslawsoltes/ProGPU/tree/main/src/ProGPU.Media
 limitations: ProGPU is an active preview. APIs and backend behavior can change between prerelease packages; validate the current samples before adopting it in production.
 related:
   - avalonia-progpu
   - avalonia-silknet
   - librewpf
   - librewinforms
+  - webscene
 ---
 
 import StoryFlow from '../../components/story/StoryFlow.astro';
@@ -121,8 +135,20 @@ The useful unit is not a drawing API. It is the **whole route from application i
     {
       signal: 'Interop',
       label: 'Bridge the framework',
-      detail: 'Avalonia, Uno, WPF, and WinForms integrations translate existing UI contracts into the same frame path.',
+      detail: 'Avalonia, Uno, WPF, WinForms, Android, iOS, and browser integrations translate application contracts into the same frame path.',
       href: './framework-bridges/'
+    },
+    {
+      signal: 'Application',
+      label: 'Compile the interface',
+      detail: 'A Roslyn-first XAML pipeline, portable WinUI controls, Fluent resources, input, and automation build a complete UI layer.',
+      href: './xaml-tooling/'
+    },
+    {
+      signal: 'Media',
+      label: 'Move timed pixels',
+      detail: 'Playback, tracks, audio, retained effects, editing, thumbnails, and export share the GPU scene and native providers.',
+      href: './media/'
     }
   ]}
 />

@@ -4,7 +4,7 @@ project: cdp
 name: Test Studio
 eyebrow: Visual native UI test authoring
 status: Preview
-description: A complete test-design workspace records interactions, synchronizes step lists with YAML, offers live selector IntelliSense and assertion inference, composes visual node flows, launches apps, runs suites, and presents screenshots, logs, telemetry, and reports.
+description: A complete test-design workspace records interactions, synchronizes step lists with YAML, offers live selector IntelliSense and assertion inference, composes visual node flows, launches apps, runs suites, and publishes evidence to five test-management systems.
 statement: Author serious native UI tests visually, declaratively, or both.
 packages:
   - name: Chrome.DevTools.Inspector
@@ -27,7 +27,7 @@ highlights:
   - Recording and visual node flows
   - Synchronized YAML with 50+ commands
   - Live selectors and assertion inference
-  - Screenshots, telemetry, suites, and reports
+  - Screenshots, telemetry, suites, reports, and external providers
 layers:
   - label: Record
     detail: Pointer and focus events become stable selector-driven steps.
@@ -45,4 +45,4 @@ related:
   - cdp/inspector
 ---
 
-## A complete test-design workspace records interactions, synchronizes step lists with YAML, offers live selector IntelliSense and assertion inference, composes visual node flows, launches apps, runs suites, and presents screenshots, logs, telemetry, and reports.
+## A complete test-design workspace records interactions, synchronizes step lists with YAML, offers live selector IntelliSense and assertion inference, composes visual node flows, launches apps, runs suites, and publishes evidence to TestMo, TestRail, Xray, Zephyr Scale, and Qase.

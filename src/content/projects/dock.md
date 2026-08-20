@@ -4,7 +4,7 @@ name: Dock
 eyebrow: Docking workspace system
 category: Controls
 repo: Dock
-description: A complete docking layout system for Avalonia with floating windows, serialization, theming, and multiple MVVM integrations.
+description: A complete docking layout system for Avalonia 11 and 12 with floating windows, ItemsSource documents, deferred and cached content, serialization, theming, and multiple MVVM integrations.
 statement: Composable workspaces for serious desktop applications.
 accent: "#7dc7ff"
 featured: true
@@ -16,6 +16,8 @@ packages:
     note: Framework-neutral MVVM model implementation.
   - name: Dock.Avalonia.Themes.Fluent
     note: Fluent theme for Dock controls.
+  - name: Dock.Model.ReactiveUI
+    note: ReactiveUI-compatible model lane for current ReactiveUI package families.
 install: |-
   dotnet add package Dock.Avalonia
   dotnet add package Dock.Model.Mvvm
@@ -25,10 +27,10 @@ usage: |-
   <dock:DockControl Layout="{Binding Layout}"
                     Factory="{Binding Factory}" />
 highlights:
-  - Documents and tool panes
-  - Floating windows
+  - ItemsSource documents, tool panes, and floating windows
+  - Deferred materialization and optional tab content caching
   - JSON, XML, YAML, and Protobuf layouts
-  - MVVM, ReactiveUI, and Prism
+  - MVVM, ReactiveUI, Prism, ReactiveProperty, and dependency injection
 tier: Flagship
 audience:
   - IDE and engineering-tool authors
@@ -44,8 +46,11 @@ architecture:
   - label: Persistence
     detail: JSON, XML, YAML, and Protobuf layout serialization.
 compatibility:
-  - label: Avalonia
-    value: Supported
+  - label: Avalonia 12
+    value: Current packages
+    state: ready
+  - label: Avalonia 11
+    value: Source-linked package lane
     state: ready
   - label: MVVM
     value: Supported
@@ -81,4 +86,4 @@ related:
   - xaml-visual-editor
 ---
 
-Dock separates workspace models from Avalonia presentation. Factories create document and tool layouts, themes render them, and serializers preserve them across sessions and application architectures.
+Dock separates workspace models from Avalonia presentation. Factories and ItemsSource collections create documents and tools; themes, deferred materialization, and optional content caching control presentation; serializers preserve the result across sessions and application architectures.

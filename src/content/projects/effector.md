@@ -52,6 +52,8 @@ proof:
     label: issues and implementation
 media:
   - src: https://opengraph.githubassets.com/portfolio-v2/wieslawsoltes/Effector
+    width: 1200
+    height: 600
     alt: Effector GitHub repository preview
     caption: The Effector repository contains the current source, samples, releases, and issue history.
 links:

@@ -61,6 +61,8 @@ proof:
     label: buttons, input, timeout result
 media:
   - src: https://opengraph.githubassets.com/portfolio-long-tail/wieslawsoltes/NativeMessageBox
+    width: 1200
+    height: 600
     alt: NativeMessageBox GitHub repository preview
     caption: The project packages managed, native, mobile, WebAssembly, sample, and documentation layers around one dialog contract.
 links:

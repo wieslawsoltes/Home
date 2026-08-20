@@ -4,7 +4,7 @@ project: cdp
 name: Inspector & CLI
 eyebrow: Human and scripted diagnostics
 status: Preview
-description: Inspector controls, shared view models, WYSIWYG tools, a desktop client, in-process diagnostics, and CLI commands provide multiple ways to work with CDP targets.
+description: Inspector controls, shared view models, WYSIWYG tools, command and source palettes, V8 debugging, a desktop client, in-process diagnostics, and CLI commands provide multiple ways to work with CDP targets.
 statement: Use the same diagnostics surface from a visual tool or a terminal.
 packages:
   - name: Chrome.DevTools.Inspector.Controls
@@ -24,8 +24,8 @@ usage: |-
   cdp-inspector tree --target 0
   cdp-inspector screenshot --target 0 --output app.png
 highlights:
-  - Desktop inspector composition
-  - WYSIWYG overlays and editing
+  - Desktop inspector and command palette
+  - Source navigation, refactoring, and V8 debugging
   - In-process diagnostic tools
   - Scriptable CLI client
 layers:
@@ -44,4 +44,4 @@ related:
   - cdp/authoring-tools
 ---
 
-## Inspector controls, shared view models, WYSIWYG tools, a desktop client, in-process diagnostics, and CLI commands provide multiple ways to work with CDP targets.
+## Inspector controls, source and command palettes, language services, V8 debugging, WYSIWYG tools, a desktop client, in-process diagnostics, and CLI commands provide multiple ways to work with CDP targets.

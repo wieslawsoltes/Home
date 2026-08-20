@@ -1,6 +1,6 @@
 # Wiesław Šoltés — personal open-source portfolio
 
-A static Astro website for the open-source systems maintained at [github.com/wieslawsoltes](https://github.com/wieslawsoltes). It includes a modern landing page, interactive ecosystem map, tiered searchable archive, Now and About pages, and detailed install/usage stories for 43 projects.
+A static Astro website for the open-source systems maintained at [github.com/wieslawsoltes](https://github.com/wieslawsoltes). It includes a modern landing page, interactive ecosystem map, tiered searchable archive, Now and About pages, and detailed install/usage stories for 49 public projects.
 
 ## Local development
 
