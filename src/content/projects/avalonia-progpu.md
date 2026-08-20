@@ -58,6 +58,8 @@ proof:
     label: custom vector operations
 media:
   - src: https://opengraph.githubassets.com/portfolio-v2/wieslawsoltes/Avalonia
+    width: 1200
+    height: 600
     alt: Avalonia ProGPU GitHub repository preview
     caption: The Avalonia ProGPU repository contains the current source, samples, releases, and issue history.
 links:

@@ -3,9 +3,9 @@ order: 2
 name: LibreWinForms
 eyebrow: Portable WinForms APIs
 category: Frameworks
-repo: winforms
+repo: LibreWinForms
 branch: librewinforms-progpu-port
-description: Cross-platform WinForms-shaped APIs and SDK backed by ProGPU, Silk.NET, and the shared LibreWPF interop layer.
+description: Cross-platform WinForms-shaped APIs and SDK backed by ProGPU, Silk.NET, and LibreWPF interop, with familiar startup, managed controls, DataGridView validation, drawing, and WPF hosting.
 statement: Classic desktop APIs, carried onto a modern GPU stack.
 accent: "#8be8c3"
 featured: true
@@ -18,7 +18,7 @@ packages:
   - name: LibreWinForms.WindowsFormsIntegration
     note: Bridge for hosting WinForms in LibreWPF.
 install: |-
-  <Project Sdk="LibreWinForms.Sdk/0.1.0-preview.11">
+  <Project Sdk="LibreWinForms.Sdk/0.1.0-preview.43">
     <PropertyGroup>
       <OutputType>WinExe</OutputType>
       <TargetFramework>net10.0</TargetFramework>
@@ -33,7 +33,7 @@ usage: |-
   Application.Run(new MainForm());
 highlights:
   - Familiar System.Windows.Forms
-  - Portable managed controls
+  - Portable managed controls and DataGridView samples
   - GPU-backed drawing
   - WPF/WinForms interop
 tier: Flagship
@@ -69,16 +69,18 @@ proof:
   - value: GPU-backed
     label: drawing direction
 media:
-  - src: https://opengraph.githubassets.com/portfolio-v2/wieslawsoltes/winforms
+  - src: https://opengraph.githubassets.com/portfolio-2026/wieslawsoltes/LibreWinForms
+    width: 1200
+    height: 600
     alt: LibreWinForms GitHub repository preview
     caption: The LibreWinForms repository contains the current source, samples, releases, and issue history.
 links:
   - label: Repository
-    href: https://github.com/wieslawsoltes/winforms
+    href: https://github.com/wieslawsoltes/LibreWinForms
   - label: Issues
-    href: https://github.com/wieslawsoltes/winforms/issues
+    href: https://github.com/wieslawsoltes/LibreWinForms/issues
   - label: Releases
-    href: https://github.com/wieslawsoltes/winforms/releases
+    href: https://github.com/wieslawsoltes/LibreWinForms/releases
 limitations: LibreWinForms is a research-grade preview. Control, accessibility, platform service, and behavioral parity are incomplete.
 related:
   - progpu
@@ -86,4 +88,4 @@ related:
   - avalonia-silknet
 ---
 
-LibreWinForms explores how the established System.Windows.Forms surface can run over portable managed controls and a modern GPU renderer while retaining the application entry points developers already know.
+LibreWinForms carries the established System.Windows.Forms surface onto portable managed controls and a modern GPU renderer while retaining familiar application startup, double-click behavior, drawing, DataGridView contracts, and LibreWPF WindowsFormsHost integration.

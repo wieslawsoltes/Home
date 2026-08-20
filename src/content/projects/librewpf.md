@@ -3,9 +3,9 @@ order: 1
 name: LibreWPF
 eyebrow: WPF, beyond Windows
 category: Frameworks
-repo: wpf
+repo: LibreWPF
 branch: progpu-rendering-port
-description: A portable WPF runtime and SDK that retains familiar managed WPF source and XAML while rendering through ProGPU and Silk.NET.
+description: A portable WPF runtime and SDK retaining managed WPF source and XAML while adding ProGPU/WebGPU composition, portable DPI and display metrics, native popups, rich-text fallback, and typed diagnostics.
 statement: Keep the WPF programming model. Change the platform beneath it.
 accent: "#75d8ff"
 featured: true
@@ -18,7 +18,7 @@ packages:
   - name: LibreWPF.Transport
     note: Managed assemblies, themes, XAML tasks, and runtime metadata.
 install: |-
-  <Project Sdk="LibreWPF.Sdk/0.1.0-preview.15">
+  <Project Sdk="LibreWPF.Sdk/0.1.0-preview.43">
     <PropertyGroup>
       <OutputType>WinExe</OutputType>
       <TargetFramework>net10.0-windows</TargetFramework>
@@ -33,7 +33,7 @@ highlights:
   - Source-compatible WPF XAML
   - macOS, Linux, and Windows
   - ProGPU/WebGPU composition
-  - Portable SDK switch
+  - Portable SDK switch, DPI, popups, and rich text
 tier: Flagship
 audience:
   - WPF maintainers evaluating a portable future
@@ -67,16 +67,18 @@ proof:
   - value: ProGPU
     label: portable compositor
 media:
-  - src: https://opengraph.githubassets.com/portfolio-v2/wieslawsoltes/wpf
+  - src: https://opengraph.githubassets.com/portfolio-2026/wieslawsoltes/LibreWPF
+    width: 1200
+    height: 600
     alt: LibreWPF GitHub repository preview
     caption: The LibreWPF repository contains the current source, samples, releases, and issue history.
 links:
   - label: Repository
-    href: https://github.com/wieslawsoltes/wpf
+    href: https://github.com/wieslawsoltes/LibreWPF
   - label: Issues
-    href: https://github.com/wieslawsoltes/wpf/issues
+    href: https://github.com/wieslawsoltes/LibreWPF/issues
   - label: Releases
-    href: https://github.com/wieslawsoltes/wpf/releases
+    href: https://github.com/wieslawsoltes/LibreWPF/releases
 limitations: This is an experimental compatibility effort, not a drop-in production replacement for Microsoft WPF. Platform services, control coverage, and rendering parity are still evolving.
 related:
   - progpu
@@ -84,4 +86,4 @@ related:
   - avalonia-progpu
 ---
 
-LibreWPF keeps the WPF application model and redirects the platform below it. The work combines transported managed WPF sources, a portable SDK, and a ProGPU compositor so existing XAML knowledge remains useful beyond Windows.
+LibreWPF keeps the WPF application model and redirects the platform below it. Transported managed sources, the package SDK, retained ProGPU composition, portable display metrics and DPI, Cocoa and XWayland window behavior, popups, rich-text fallback, and typed diagnostics keep expanding the compatibility lane beyond Windows.

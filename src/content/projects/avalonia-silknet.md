@@ -58,6 +58,8 @@ proof:
     label: renderer boundary
 media:
   - src: https://opengraph.githubassets.com/portfolio-v2/wieslawsoltes/Avalonia
+    width: 1200
+    height: 600
     alt: Avalonia Silk.NET GitHub repository preview
     caption: The Avalonia Silk.NET repository contains the current source, samples, releases, and issue history.
 links:

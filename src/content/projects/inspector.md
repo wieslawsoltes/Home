@@ -67,6 +67,8 @@ proof:
     label: set, insert, remove, move, reparent
 media:
   - src: https://opengraph.githubassets.com/portfolio-inspector/wieslawsoltes/Inspector
+    width: 1200
+    height: 600
     alt: Inspector GitHub repository preview
     caption: Inspector combines Avalonia runtime adapters, session infrastructure, a command-line tool, tests, and an instrumented sample application.
 links:

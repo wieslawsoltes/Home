@@ -4,13 +4,17 @@ project: cdp
 name: Authoring Toolkits
 eyebrow: Editors, language services, and layout
 status: Preview
-description: Standalone Markdown, document, graph, split-layout, minimap, XAML compiler, and language-server packages extract reusable tooling from the inspector workspace.
+description: Standalone HTML, Markdown, document, PDF, graph, split-layout, minimap, XAML compiler, JavaScript/TypeScript language-service, and source-debugger packages extract reusable tooling from the inspector workspace.
 statement: Build serious .NET authoring tools from focused, reusable subsystems.
 packages:
   - name: Chrome.DevTools.Markdown.Editor
     note: Interactive Markdown editor canvas.
   - name: Chrome.DevTools.Document.Editor
     note: Rich document editor for office formats.
+  - name: Chrome.DevTools.Pdf.Editor
+    note: Interactive PDF editor canvas built with PdfPig and SkiaSharp.
+  - name: Chrome.DevTools.Html.Renderer
+    note: Low-allocation HTML/CSS parsing, layout, and SkiaSharp rendering.
   - name: Chrome.DevTools.Editor.Nodes
     note: Generic graph node editor.
   - name: Chrome.DevTools.Editor.Splits
@@ -24,10 +28,10 @@ usage: |-
       Document="{Binding Document}"
       Selection="{Binding Selection}" />
 highlights:
-  - Markdown parser, renderer, and editor
-  - Office document renderer and editor
+  - HTML, Markdown, document, and PDF surfaces
+  - JavaScript and TypeScript language services
   - Node editor and split layouts
-  - XAML and C# language tooling
+  - XAML, C#, V8, source-map, and WebAssembly tooling
 layers:
   - label: Model
     detail: Purpose-built ASTs preserve document or language structure.
@@ -44,4 +48,4 @@ related:
   - cdp/automation
 ---
 
-## Standalone Markdown, document, graph, split-layout, minimap, XAML compiler, and language-server packages extract reusable tooling from the inspector workspace.
+## Standalone HTML, Markdown, document, PDF, graph, split-layout, minimap, XAML, JavaScript, TypeScript, and debugger packages extract reusable tooling from the inspector workspace.

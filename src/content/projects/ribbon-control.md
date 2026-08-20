@@ -63,6 +63,8 @@ proof:
     label: customization state
 media:
   - src: https://opengraph.githubassets.com/portfolio-long-tail/wieslawsoltes/RibbonControl
+    width: 1200
+    height: 600
     alt: RibbonControl GitHub repository preview
     caption: The repository includes XAML-only, MVVM-only, and hybrid samples plus headless, visual, performance, and automation coverage.
 links:

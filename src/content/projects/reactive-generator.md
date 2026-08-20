@@ -64,6 +64,8 @@ proof:
     label: snapshot-tested output
 media:
   - src: https://opengraph.githubassets.com/portfolio-long-tail/wieslawsoltes/ReactiveGenerator
+    width: 1200
+    height: 600
     alt: ReactiveGenerator GitHub repository preview
     caption: The repository includes generators, analyzers, code fixes, demos, integration tests, and verified generated-source snapshots.
 links:

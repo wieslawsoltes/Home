@@ -4,7 +4,7 @@ name: StaticViewLocator
 eyebrow: Reflection-free Avalonia views
 category: Avalonia
 repo: StaticViewLocator
-description: A compile-time Avalonia view locator with convention mapping, generic, base-class, and interface fallbacks, and configurable MSBuild rules.
+description: A compile-time Avalonia view locator with convention and generic MVVM-contract mapping, exact factories, generated ReactiveUI and IDataTemplate adapters, inheritance fallbacks, and configurable MSBuild rules.
 statement: Resolve view models to views at compile time and keep runtime discovery AOT-friendly.
 accent: "#6fc9ff"
 showInIndex: false
@@ -23,10 +23,10 @@ usage: |-
           data is null ? null : TryGetFactory(data.GetType())?.Invoke();
   }
 highlights:
-  - Compile-time factory tables
-  - Generic and inheritance fallback
+  - Compile-time exact factory tables
+  - Generic MVVM contract mappings
+  - Generated ReactiveUI and Avalonia adapters
   - Configurable naming conventions
-  - Optional referenced-assembly scanning
 audience:
   - Avalonia MVVM applications
   - NativeAOT-conscious desktop teams
@@ -54,14 +54,16 @@ compatibility:
     value: Supported
     state: ready
 proof:
-  - value: 4 steps
-    label: exact to interface fallback
+  - value: 3 adapters
+    label: exact, ReactiveUI, IDataTemplate
   - value: MSBuild
     label: compiler-visible configuration
   - value: Static
     label: direct view factories
 media:
   - src: https://opengraph.githubassets.com/portfolio-long-tail/wieslawsoltes/StaticViewLocator
+    width: 1200
+    height: 600
     alt: StaticViewLocator GitHub repository preview
     caption: The repository pairs the generator with runtime, snapshot, generic, inheritance, and interface-resolution tests.
 links:
@@ -85,4 +87,4 @@ archive:
     - Source generation
 ---
 
-StaticViewLocator resolves Avalonia view-model-to-view conventions during compilation and emits direct factories plus deterministic fallback helpers. It removes reflection-heavy discovery while still supporting generic, inherited, interface-based, and modular application models.
+StaticViewLocator resolves conventions and configured generic MVVM contracts during compilation, then emits exact factories plus optional ReactiveUI IViewLocator and Avalonia IDataTemplate adapters. It removes reflection-heavy discovery while retaining deterministic generic, inherited, interface-based, and modular application fallbacks.

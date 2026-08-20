@@ -4,7 +4,7 @@ name: TreeDataGrid
 eyebrow: Hierarchical data control
 category: Controls
 repo: TreeDataGrid
-description: An Avalonia control that presents hierarchical and tabular data together, with both tree and flat operating modes.
+description: An Avalonia control that presents hierarchical and tabular data together with flat and tree modes, configurable virtualization buffers, retained-row lifecycle hooks, displayed-row lookup, layout diagnostics, and selection models.
 statement: A tree and a table, resolved into one efficient control.
 accent: "#a6d76b"
 featured: true
@@ -22,8 +22,8 @@ usage: |-
 highlights:
   - Hierarchical and flat modes
   - Code or XAML columns
-  - Selection models
-  - Virtualized data presentation
+  - Selection and displayed-row lookup
+  - Buffered virtualization, lifecycle hooks, and diagnostics
 tier: Flagship
 audience:
   - File explorers and object browsers
@@ -74,4 +74,4 @@ related:
   - nodeeditor
 ---
 
-TreeDataGrid combines hierarchical expansion with tabular columns and virtualized presentation. The model layer supports both flat and hierarchical sources, typed columns, sorting, and selection.
+TreeDataGrid combines hierarchical expansion with tabular columns and virtualized presentation. The model layer supports flat and hierarchical sources, typed columns, sorting, selection, displayed-row lookup, while opt-in buffers, retained-element lifecycle hooks, and layout diagnostics make virtualization tunable and observable.

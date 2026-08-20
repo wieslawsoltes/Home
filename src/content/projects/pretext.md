@@ -4,7 +4,7 @@ name: Pretext
 eyebrow: Universal text preparation
 category: Graphics
 repo: PretextSharp
-description: Universal text preparation and line layout with grapheme-aware wrapping, locale segmentation, bidi, and streaming line walking.
+description: Universal text preparation and line layout with grapheme-aware wrapping, locale segmentation, bidi, streaming line walking, and glyph-aware output for rendering pipelines.
 statement: Predictable, allocation-conscious text layout for any SkiaSharp UI.
 accent: "#ffce8a"
 status: Active
@@ -27,7 +27,7 @@ highlights:
   - Unicode-aware wrapping
   - Locale-sensitive segmentation
   - Bidirectional text
-  - Streaming, allocation-light APIs
+  - Streaming, allocation-light and glyph-output APIs
 tier: Maintained
 audience:
   - Teams building graphics software on .NET
@@ -59,6 +59,8 @@ proof:
     label: issues and implementation
 media:
   - src: https://opengraph.githubassets.com/portfolio-v2/wieslawsoltes/PretextSharp
+    width: 1200
+    height: 600
     alt: Pretext GitHub repository preview
     caption: The Pretext repository contains the current source, samples, releases, and issue history.
 links:
@@ -73,4 +75,4 @@ related:
   - svg-skia
 ---
 
-Pretext is maintained as a focused part of a wider open-source .NET UI ecosystem. Its boundaries are designed so applications can adopt the useful layer without taking the entire stack.
+Pretext keeps segmentation, bidi preparation, wrapping, line walking, and glyph-oriented output behind focused APIs so renderers and controls can adopt text preparation without taking a complete UI stack.

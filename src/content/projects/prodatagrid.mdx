@@ -4,12 +4,12 @@ name: ProDataGrid
 eyebrow: High-performance data UI
 category: Controls
 repo: ProDataGrid
-description: A high-performance Avalonia DataGrid family with charting, formulas, diagnostics, virtualization, and production-grade editing.
+description: A high-performance Avalonia data platform with retained and drawn grid paths, flat and virtual surfaces, source-generated AOT schemas and views, hierarchy, charting, formulas, diagnostics, and production-grade editing.
 statement: Dense data workflows without compromising interaction or speed.
 story:
   label: Product architecture
   title: Speed only matters when interaction survives it.
-  intro: ProDataGrid treats virtualization, editing, formulas, charting, and diagnostics as one data-workbench problem. Performance cannot erase selection, keyboard flow, validation, or the ability to inspect a live control.
+  intro: ProDataGrid treats virtualization, generated schemas, editing, formulas, charting, and diagnostics as one data-workbench problem. Performance cannot erase selection, keyboard flow, validation, automation, or the ability to inspect a live control.
 accent: "#5ce1b9"
 featured: true
 status: Active
@@ -22,6 +22,8 @@ packages:
     note: Parsing, evaluation, and recalculation.
   - name: ProDiagnostics
     note: Runtime visual tree and property inspection.
+  - name: ProDataGrid.SourceGenerators
+    note: Reflection-free row schemas, typed columns, operation controllers, views, and AOT fast paths.
 install: dotnet add package ProDataGrid
 usageLanguage: xml
 usage: |-
@@ -32,20 +34,22 @@ usage: |-
     </DataGrid.Columns>
   </DataGrid>
 highlights:
-  - Row and column virtualization
-  - Formula engine and charting
-  - Fluent and Simple themes
-  - Built-in developer diagnostics
+  - Retained, drawn, flat, hierarchical, and virtual surfaces
+  - AOT-ready generated schemas, columns, operations, and views
+  - Formula engine, charting, selection, editing, and summaries
+  - Performance benchmarks and built-in developer diagnostics
 tier: Flagship
 audience:
   - Business and engineering desktop applications
-  - Large, editable data sets
+  - Large, editable, virtual, remote, or hierarchical data sets
   - Teams needing formulas, charts, and runtime diagnostics
 architecture:
   - label: Model
     detail: Application state stays in portable domain objects and view models.
   - label: Control
-    detail: Avalonia controls expose focused properties, commands, and events.
+    detail: Retained, drawn, and virtual surfaces expose focused properties, commands, lifecycle events, automation, and editing.
+  - label: Generate
+    detail: Incremental generators produce schemas, columns, accessors, operations, views, and NativeAOT integration at compile time.
   - label: Theme
     detail: Templates and styles make the surface adaptable to each application.
 compatibility:
@@ -59,28 +63,35 @@ compatibility:
     value: Themes
     state: ready
   - label: NativeAOT
-    value: Tracked
-    state: partial
+    value: Generated fast path
+    state: ready
 proof:
-  - value: 2-axis
-    label: virtualization
-  - value: Formula
-    label: calculation engine
-  - value: Diagnostics
-    label: built-in inspection
+  - value: 5 surfaces
+    label: retained through virtual
+  - value: Generated
+    label: AOT schemas and views
+  - value: Benchmarked
+    label: scroll, sort, hierarchy, and layout
 media:
   - src: https://opengraph.githubassets.com/portfolio-v2/wieslawsoltes/ProDataGrid
+    width: 1200
+    height: 600
     alt: ProDataGrid GitHub repository preview
     caption: The ProDataGrid repository contains the current source, samples, releases, and issue history.
 links:
   - label: Documentation
     href: https://wieslawsoltes.github.io/ProDataGrid/
   - label: Samples
-    href: https://github.com/wieslawsoltes/ProDataGrid/tree/main/samples
+    href: https://github.com/wieslawsoltes/ProDataGrid/tree/master/src/DataGridSample
+  - label: Source generator guide
+    href: https://github.com/wieslawsoltes/ProDataGrid/blob/master/docfx/articles/source-generators-feature-spec.md
+  - label: Optimized paths
+    href: https://github.com/wieslawsoltes/ProDataGrid/blob/master/docfx/articles/optimized-cell-paths.md
 related:
   - treedatagrid
   - dock
   - protext
+  - promvvm
 ---
 
 import StoryFlow from '../../components/story/StoryFlow.astro';
@@ -114,6 +125,12 @@ A serious grid is a coordination surface. It must keep a large data set moving w
       label: 'Inspect the live system',
       detail: 'ProDiagnostics exposes trees, properties, and transport seams when a complex control needs evidence.',
       href: './diagnostics/'
+    },
+    {
+      signal: 'Compile time',
+      label: 'Generate the repetitive surface',
+      detail: 'Typed schemas, columns, operations, views, and AOT fast paths move reflection and boilerplate out of runtime.',
+      href: './source-generation/'
     }
   ]}
 />

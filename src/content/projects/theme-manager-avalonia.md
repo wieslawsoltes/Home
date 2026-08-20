@@ -60,6 +60,8 @@ proof:
     label: application theme boundary
 media:
   - src: https://opengraph.githubassets.com/portfolio-long-tail/wieslawsoltes/ThemeManager.Avalonia
+    width: 1200
+    height: 600
     alt: ThemeManager.Avalonia GitHub repository preview
     caption: A focused abstraction initializes an Avalonia theme family and controls its application-wide variant.
 links:

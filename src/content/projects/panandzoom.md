@@ -5,7 +5,7 @@ eyebrow: Spatial navigation control
 category: Controls
 repo: PanAndZoom
 branch: master
-description: A focused Avalonia control for smooth zoom-to-point, panning, constraints, animations, and programmable viewport navigation.
+description: A focused Avalonia control for smooth zoom-to-point, panning, built-in or custom content bounds, resize policies, keyboard and multi-touch navigation, history, rotation, state, and animation.
 statement: A precise, reusable viewport for diagrams, maps, editors, and infinite canvases.
 accent: "#72d4ff"
 tier: Maintained
@@ -22,9 +22,9 @@ usage: |-
   </paz:ZoomBorder>
 highlights:
   - Pointer-centered zoom
-  - Pan and viewport constraints
-  - Animated navigation
-  - Double-click zoom modes
+  - Built-in and overridable content bounds
+  - Resize policies, animation, history, and saved views
+  - Keyboard, wheel, multi-touch, rotation, grid, and accessibility
 audience:
   - Diagram and node editor authors
   - Map, image, and document viewers
@@ -52,8 +52,8 @@ compatibility:
 proof:
   - value: Zoom-to-point
     label: cursor-stable navigation
-  - value: Constraints
-    label: bounded viewport
+  - value: 5 modes
+    label: content bounds policies
   - value: Animations
     label: programmable transitions
 media:
@@ -71,4 +71,4 @@ related:
   - procad
 ---
 
-PanAndZoom concentrates the geometry and input details of an infinite-canvas viewport into one control. Pointer-centered zoom, constraints, animation, and programmable navigation remain independent from the content inside.
+PanAndZoom concentrates the geometry and input details of an infinite-canvas viewport into one control. Pointer-centered zoom, five content-bounds policies, custom validation hooks, resize behavior, history, keyboard and touch input, rotation, snapping, state serialization, and animation remain independent from the content inside.

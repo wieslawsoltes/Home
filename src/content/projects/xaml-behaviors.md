@@ -4,7 +4,7 @@ name: XAML Behaviors
 eyebrow: Composable interaction
 category: Avalonia
 repo: Xaml.Behaviors
-description: Reusable actions, triggers, and behaviors for Avalonia, including strongly typed source-generated options for AOT-friendly apps.
+description: Reusable actions, triggers, and behaviors for Avalonia, including AOT-friendly generated options, flyout lifecycle events, and resilient state handling.
 statement: Add interaction in XAML without turning views into code-behind.
 accent: "#bd9bff"
 featured: true
@@ -29,7 +29,7 @@ usage: |-
 highlights:
   - Actions and triggers
   - Drag and drop behaviors
-  - ReactiveUI integrations
+  - Flyout and control lifecycle events
   - AOT-friendly source generators
 tier: Flagship
 audience:
@@ -40,9 +40,9 @@ architecture:
   - label: XAML / C#
     detail: Applications compose reusable behavior through normal Avalonia APIs.
   - label: Integration
-    detail: Focused packages connect to Avalonia properties, input, and rendering.
+    detail: Focused packages connect to Avalonia properties, input, rendering, and flyout lifecycle events.
   - label: Platform
-    detail: The implementation remains portable across Avalonia targets where supported.
+    detail: Late-attached triggers synchronize with loaded controls, while invalid DataTrigger conversions remain safely inactive.
 compatibility:
   - label: Avalonia
     value: Supported
@@ -78,4 +78,4 @@ related:
   - nodeeditor
 ---
 
-XAML Behaviors turns routed events and observable state into reusable actions. The library ranges from small interaction primitives to drag-and-drop, viewport, responsive, and strongly typed generated behaviors.
+XAML Behaviors turns routed events and observable state into reusable actions. The library ranges from small interaction primitives to drag-and-drop, viewport, responsive, and strongly typed generated behaviors. Flyout opened and closed events support command binding with the expected logical and data context, triggers attached after a control loads synchronize their lifecycle, and non-convertible DataTrigger values stay inactive instead of interrupting the application.

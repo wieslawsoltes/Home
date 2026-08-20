@@ -4,7 +4,7 @@ name: DevToolsUno
 eyebrow: In-app Uno diagnostics
 category: Uno Platform
 repo: DevToolsUno
-description: An in-app diagnostics suite for Uno Platform applications with live tree, property, binding, resource, style, event, asset, screenshot, and memory inspection.
+description: A responsive in-app diagnostics suite for Uno Platform with live tree, property, binding, resource, style, event, asset, screenshot, and memory inspection.
 statement: Inspect the running Uno interface without leaving the application.
 accent: "#74d7f7"
 featured: true
@@ -27,7 +27,7 @@ usage: |-
 highlights:
   - Logical and visual trees
   - Bindings, resources, and styles
-  - Events, assets, and memory
+  - Responsive tabbed inspectors
   - Screenshots and keyboard inspection
 audience:
   - Uno Platform application teams
@@ -39,7 +39,7 @@ architecture:
   - label: Observe
     detail: Adapters capture logical and visual trees, properties, bindings, events, resources, and assets.
   - label: Inspect
-    detail: A dedicated Uno diagnostics window provides filtering, pinning, source views, and pointer inspection.
+    detail: A responsive tabbed diagnostics window provides contextual inspectors, filtering, pinning, source views, and pointer inspection.
   - label: Act
     detail: Configurable hotkeys select hovered controls, freeze popups, and capture screenshots.
 compatibility:
@@ -79,4 +79,4 @@ related:
   - cdp
 ---
 
-DevToolsUno attaches to an Uno Application, Window, or FrameworkElement and opens a dedicated diagnostics shell inside the running app. It brings visual-tree inspection, binding analysis, resource and style exploration, event routes, assets, screenshots, and memory tracking into one keyboard-driven surface.
+DevToolsUno attaches to an Uno Application, Window, or FrameworkElement and opens a dedicated diagnostics shell inside the running app. Responsive tabbed panes keep contextual inspectors and wrapped command rows usable in compact windows while bringing visual-tree inspection, binding analysis, resource and style exploration, event routes, assets, screenshots, and memory tracking into one keyboard-driven surface.
